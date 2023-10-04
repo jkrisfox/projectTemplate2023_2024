@@ -25,7 +25,7 @@ export default function ToDos() {
 
     function addNewTodo() {
         if(newTodo && newTodo.length) {
-            fetch("api/todos", { method: "post", body: JSON.stringify({value: newTodo, done: false}) } ).then((response) => {
+            fetch("/api/todos", { method: "post", body: JSON.stringify({value: newTodo, done: false}) } ).then((response) => {
                 return response.json().then((newTodo) => {
                     setTodos([...todos, newTodo]);
                     setNewTodo('');
