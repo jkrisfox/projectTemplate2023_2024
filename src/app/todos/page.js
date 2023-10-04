@@ -31,12 +31,19 @@ export default function ToDos() {
                     setNewTodo('');
                 });
             });
-            
         }
     }
 
     function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+        const todoToRemove = todos[index]
+        fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"}).then((response) => {
+            return response.json().then(() => {
+                console.log("removing from front end");
+                // setTodos(todos.filter((v) => v.id!==index));
+                // TODO: update correctly on frontend
+                setTodos(todos.filter((v,idx) => idx!==index));
+            });
+        })
     }
 
     useEffect(() => {
