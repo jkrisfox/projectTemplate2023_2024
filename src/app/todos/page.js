@@ -56,7 +56,12 @@ export default function ToDos() {
         const todoToUpdate = todos[index]
         fetch("/api/todos", { method: "patch", body: JSON.stringify({idx: todoToUpdate.id, isDone: event.target.checked}) } ).then((response) => {
             return response.json().then(() => {
-                console.log("updated checkbox");  // TODO: figure out how to update on frontend
+                console.log("updated checkbox");
+                // copy todos, update changed checkbox, set new state
+                // TODO: why does it only update on frontend when you go to homepage and then back to todos page???
+                const updatedTodos = todos.slice();
+                updatedTodos[index].done = event.target.checked;
+                setTodos(updatedTodos);
             });
         })
     };
