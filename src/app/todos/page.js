@@ -31,13 +31,26 @@ export default function ToDos() {
                     setNewTodo('');
                 });
             });
-            
         }
     }
+    async function updateTodo({index, ndone}) {
+        const todoToUpdate = todos[index]
+        const test = await fetch(`api/todos/${todoToUpdate.id}`, { method: "put", body: JSON.stringify({ndone})} ).then((response) => {});
 
-    function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
     }
+
+    async function removeTodo({ index }) {
+        //check API for idx & delete
+        const todoToRemove = todos[index]
+        const test = await fetch(`api/todos/${todoToRemove.id}`, { method: "delete" }).then(response => console.log(response));
+
+        //display ?
+        setTodos(todos.filter((v, idx) => idx !== index));
+    }
+
+ 
+
+
 
     useEffect(() => {
         fetch("/api/todos", { method: "get" }).then((response) => response.ok && response.json()).then(
@@ -56,7 +69,7 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                    <Checkbox checked={todo.done} onClick={() => updateTodo({index:idx}, true)}/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
