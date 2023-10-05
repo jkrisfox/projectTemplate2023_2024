@@ -35,8 +35,15 @@ export default function ToDos() {
         }
     }
 
-    function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+    function removeTodo({ idx }) {
+        /*setTodos(todos.filter((v,idx) => idx!==index));*/
+
+        fetch(`api/todos/${idx}`, { method: "delete" }).then((response) => response.ok 
+                                                                        && response.json()).then(
+            () => {
+                setTodos(todos.filter(todo => todo.id !== idx));
+            }
+        );
     }
 
     useEffect(() => {
@@ -50,9 +57,9 @@ export default function ToDos() {
 
     const loadingItems = <CircularProgress/>;
 
-    const toDoItems = isLoading ? loadingItems : todos.map((todo, idx) => {
-        return <ListItem key={idx} secondaryAction={
-            <IconButton edge="end" onClick={() => removeTodo({index: idx})}><DeleteForever/></IconButton>   
+    const toDoItems = isLoading ? loadingItems : todos.map((todo) => {
+        return <ListItem key={todo.id} secondaryAction={
+            <IconButton edge="end" onClick={() => removeTodo({index: todo.id})}><DeleteForever/></IconButton>   
         }>  
             <ListItemButton>
                 <ListItemIcon>
