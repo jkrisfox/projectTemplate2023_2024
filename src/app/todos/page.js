@@ -38,9 +38,6 @@ export default function ToDos() {
         const todoToRemove = todos[index]
         fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"}).then((response) => {
             return response.json().then(() => {
-                console.log("removing from front end");
-                // setTodos(todos.filter((v) => v.id!==index));
-                // TODO: update correctly on frontend
                 setTodos(todos.filter((v,idx) => idx!==index));
             });
         })
@@ -55,6 +52,15 @@ export default function ToDos() {
         );
     }, []);
 
+    const handleCheckboxChange = (event, index) => {
+        const todoToUpdate = todos[index]
+        fetch("/api/todos", { method: "patch", body: JSON.stringify({idx: todoToUpdate.id, isDone: event.target.checked}) } ).then((response) => {
+            return response.json().then(() => {
+                console.log("updated checkbox");  // TODO: figure out how to update on frontend
+            });
+        })
+    };
+
     const loadingItems = <CircularProgress/>;
 
     const toDoItems = isLoading ? loadingItems : todos.map((todo, idx) => {
@@ -63,7 +69,7 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                    <Checkbox checked={todo.done} onChange={(event) => handleCheckboxChange(event, idx)} disableRipple/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
