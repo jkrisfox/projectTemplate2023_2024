@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { checkLoggedIn } from "@/lib/auth";
 
+
 export async function GET(request) {
   const loggedInData = await checkLoggedIn();
   if (loggedInData.loggedIn) {
@@ -16,6 +17,7 @@ export async function GET(request) {
   }
   return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
+
 
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
@@ -35,15 +37,33 @@ export async function POST(request) {
 
 
 export async function DELETE(request) {
-  console.log(request);
   const loggedInData = await checkLoggedIn();
   if (loggedInData.loggedIn) {
     const index = await request.json();
     const deleteTodo = await prisma.toDo.delete({
-      where: {id: index}, 
+      where: {
+        id: index
+      }, 
     });
-    return NextResponse.json(index)
+    return NextResponse.json(index);
   }
-  return NextResponse.json({error: 'not signed in'}, {status: 403})
+  return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
 
+
+export async function PATCH(request) {
+  const loggedInData = await checkLoggedIn();
+  if (loggedInData.loggedIn) {
+    const { idx, isDone } = await request.json();
+    const updateTodo = await prisma.toDo.update({
+      where: {
+        id: idx
+      }, 
+      data: {
+        done: isDone
+      }, 
+    });
+    return NextResponse.json(isDone);
+  }
+  return NextResponse.json({error: 'not signed in'}, {status: 403});
+}
