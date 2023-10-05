@@ -33,9 +33,19 @@ export default function ToDos() {
             });
         }
     }
-    async function updateTodo({index, ndone}) {
+    async function updateTodo({index}) {
         const todoToUpdate = todos[index]
-        const test = await fetch(`api/todos/${todoToUpdate.id}`, { method: "put", body: JSON.stringify({ndone})} ).then((response) => {});
+        const test = await fetch(`api/todos/${todoToUpdate.id}`, { method: "put", body: JSON.stringify({value: todoToUpdate.value , done: !todoToUpdate.done})} ).then((response) => {
+            if (response.ok) {
+                //map builds new arr w/ exist values, modify changed on (working on)
+                //settodos redraws whole screen (not seen visually)
+                //mapping, splice, ways to modify arr in js
+                //most eff w/ immutable change (screen knows to redraw)
+                
+                setTodos(todos.map((value)=> {return value.id===todoToUpdate.id ? {...todoToUpdate, done: !todoToUpdate.done} : value}))
+
+            }
+        });
 
     }
 
@@ -69,7 +79,7 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} onClick={() => updateTodo({index:idx}, true)}/>
+                    <Checkbox checked={todo.done} onClick={() => updateTodo({index:idx})}/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
