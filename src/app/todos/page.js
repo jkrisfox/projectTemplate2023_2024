@@ -12,6 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { TextField } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import { PlusOneSharp } from '@mui/icons-material';
 
 export default function ToDos() {
 
@@ -36,7 +37,12 @@ export default function ToDos() {
     }
 
     function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+        const todoToRemove = todos[index];
+        fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"}).then((response)=> {
+            return response.json().then(()=>{
+                setTodos(todos.filter((v,idx) => idx!==index));
+            })
+        })
     }
 
     useEffect(() => {
