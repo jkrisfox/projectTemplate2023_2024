@@ -36,8 +36,28 @@ export default function ToDos() {
     }
 
     function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+        // Make API call here to delete the todo from database: wseems to be working, need to add error handling
+        let id = todos[index].id;
+        fetch(`api/todos/${id}`, {method: "delete"}).then((response) => {
+            console.log("testing");
+            if(response.ok){
+                setTodos(todos.filter((v,idx) => idx!==index));  
+            }
+        });
+     
     }
+
+    function updateTodo ({ index }) {
+        //Make API call here to change done field
+        let id = todos[index].id;   
+        fetch(`api/todos/${id}`, { method: "put", body: JSON.stringify({ done: !(todos[index].done)}) } ).then((response) => {
+           // console.log("testing");
+           if(response.ok){
+                todos[index].done = !todos[index].done;
+           }
+        });
+    }
+
 
     useEffect(() => {
         fetch("/api/todos", { method: "get" }).then((response) => response.ok && response.json()).then(
@@ -56,7 +76,7 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                    <Checkbox onClick = {() => updateTodo({index: idx})} disableRipple/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
