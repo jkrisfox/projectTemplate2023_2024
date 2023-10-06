@@ -35,7 +35,8 @@ export default function ToDos() {
             
         }
     }
-
+    // create  toggleToDo function...
+    
     function removeTodo({ index }) {
         const todoToRemove = todos[index];
         fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"}).then((response)=> {
@@ -51,8 +52,10 @@ export default function ToDos() {
                 todos && setTodos(todos);
                 setIsLoading(false);
             }
-        );
+        );   
     }, []);
+
+
 
     const loadingItems = <CircularProgress/>;
 
@@ -62,7 +65,9 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                    <Checkbox checked={todo.done} disableRipple
+                    onChange ={() => toggleTodo({ index: idx })}
+                    />
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
