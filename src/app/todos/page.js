@@ -16,7 +16,7 @@ import { PlusOneSharp } from '@mui/icons-material';
 
 export default function ToDos() {
 
-    const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState([]); // todos is state. setToDos is func that sets the state. u
     const [isLoading, setIsLoading] = useState(true);
     const [newTodo, setNewTodo] = useState('');
 
@@ -35,8 +35,49 @@ export default function ToDos() {
             
         }
     }
-    // create  toggleToDo function...
+    // let { index } = param; "{ index: idx }"
+    // the issue was that index was an object, and i was trying to pass the value of index. So 
+    // enclosing index in {} extracts the value of that object. Sort of like typecasting, but not really.
+    function toggleTodo({index}) {
+        const updatedTodos = [...todos];
+        if(updatedTodos[index])
+        {
+            updatedTodos[index] = {
+                ...updatedTodos[index],
+                done: !updatedTodos[index].done
+            };
+        }
+        
+        setTodos(updatedTodos);
     
+        // Update the TODO in the database
+        const todoToUpdate = updatedTodos[index];
+        fetch(`/api/todos/${todoToUpdate.id}`, {
+            method: "put",
+            body: JSON.stringify(todoToUpdate),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+         //.then(response => {
+        //     if (!response.ok) {
+        //         throw new Error("Network response was not ok");
+        //     }
+        //     return response.json();
+        // })
+        // .then(updatedTodoFromServer => {
+        //     // Handle the updated todo from the server if necessary
+        //     console.log("Todo updated successfully:", updatedTodoFromServer);
+        // })
+        // .catch(error => {
+        //     console.error("There was a problem updating the todo: ", error);
+        //     // If there's an error, you might want to revert the UI state
+        //     // to reflect the actual state in the database
+        //     setTodos([...todos]); // Revert the UI state
+        // });
+    }
+    
+
     function removeTodo({ index }) {
         const todoToRemove = todos[index];
         fetch(`/api/todos/${todoToRemove.id}`, {method: "delete"}).then((response)=> {
@@ -56,7 +97,6 @@ export default function ToDos() {
     }, []);
 
 
-
     const loadingItems = <CircularProgress/>;
 
     const toDoItems = isLoading ? loadingItems : todos.map((todo, idx) => {
@@ -68,7 +108,7 @@ export default function ToDos() {
                     <Checkbox checked={todo.done} disableRipple
                     onChange ={() => toggleTodo({ index: idx })}
                     />
-                </ListItemIcon>
+                </ListItemIcon> 
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
         </ListItem>;

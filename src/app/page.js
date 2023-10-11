@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-export default function Home() {
+function Home() {
   return (
     <>
       <h1>Welcome to CSC 307</h1>
@@ -14,6 +14,9 @@ export default function Home() {
         <li>Prisma: <a href="https://www.prisma.io/docs/getting-started">https://www.prisma.io/docs/getting-started</a></li>
       </ul>
       <h2></h2>
+
     </>
   )
 }
+
+export default Home;
