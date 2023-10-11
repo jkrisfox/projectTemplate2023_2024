@@ -36,7 +36,23 @@ export default function ToDos() {
     }
 
     function removeTodo({ index }) {
+        var remv = todos[index];
+        fetch(`api/todos/${remv.id}`, { method: "delete"}).then();
         setTodos(todos.filter((v,idx) => idx!==index));
+    }
+
+    function makeCheck ({index}) {
+        var tar = todos[index];
+        fetch(`api/todos/${tar.id}`, { method: "put", body: JSON.stringify({value: tar.value, done: !tar.done})}).then((response) => {
+        setTodos(todos.map((value) => {
+            if (value.id === tar.id) {
+                return {...tar, done: !tar.done};
+            }
+            else {
+                return value;
+            }
+                } ))
+            });
     }
 
     useEffect(() => {
