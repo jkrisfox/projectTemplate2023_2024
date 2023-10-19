@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Joe made a diagram :D
+
+```mermaid
+graph TD;
+    Register-->Login;
+    Login-->ProfilePage{Profile Page};
+    ProfilePage-->Map;
+    Map-->PinCreation{Pin Creation};
+    PinCreation-->Listing{Listing};
+    UserClicksPin-->Listing;
+```
 
 ## Getting Started
 
