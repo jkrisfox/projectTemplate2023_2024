@@ -1,15 +1,5 @@
 Joe made a diagram :D
 
-```mermaid
-graph TD;
-    Register-->Login;
-    Login-->ProfilePage{Profile Page};
-    ProfilePage-->Map;
-    Map-->PinCreation{Pin Creation};
-    PinCreation-->Listing{Listing};
-    UserClicksPin-->Listing;
-```
-
 Here's one that might describe a more complete flow:
 ```mermaid
 graph TD;
