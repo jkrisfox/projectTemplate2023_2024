@@ -63,7 +63,7 @@ export async function PATCH(request) {
         done: isDone
       }, 
     });
-    return NextResponse.json(isDone);
+    return NextResponse.json({done: isDone});
   }
   return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
