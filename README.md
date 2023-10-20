@@ -2,12 +2,12 @@ Joe made a diagram :D
 
 Here's one that might describe a more complete flow:
 ```mermaid
-graph TD;
+graph TD
     start[Start];
     login[Login/Signup];
-    anonymous[Anonymous View];
     profile[User Profile];
-    map[Map View];
+    anonymous[Anonymous View];
+    mapView[Map View];
     listing[Listing View];
     pin[Pin Location];
     review[Review Location];
@@ -19,19 +19,17 @@ graph TD;
 
     start --> login;
     start --> anonymous;
-    login -->|Success| profile;
-    profile --> map;
-    anonymous --> map;
-    map --> listing;
-    profile --> pin;
+    login --> profile;
+    profile --> mapView;
+    anonymous --> mapView;
+    mapView --> pin;
     pin --> review;
-    map --> review;
-    map --> image;
-    profile --> image;
-    map --> holiday;
+    mapView --> listing;
+    listing --> image;
+    mapView --> holiday;
+    mapView --> route;
     profile --> save;
     profile --> privacy;
-    map --> route;
 ```
 ## Getting Started
 
