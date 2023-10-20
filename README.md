@@ -10,6 +10,39 @@ graph TD;
     UserClicksPin-->Listing;
 ```
 
+Here's one that might describe a more complete flow:
+```mermaid
+graph TD
+    start[Start]
+    login[Login/Signup]
+    anonymous[Anonymous View]
+    profile[User Profile]
+    map[Map View]
+    listing[Listing View]
+    pin[Pin Location]
+    review[Review Location]
+    image[Submit/View Image]
+    holiday[Holiday Filter]
+    route[Route Selection]
+    save[Save Favorite]
+    privacy[House Privacy Settings]
+
+    start --> login
+    start --> anonymous
+    login -->|Success| profile
+    profile --> map
+    anonymous --> map
+    map --> listing
+    profile --> pin
+    pin --> review
+    map --> review
+    map --> image
+    profile --> image
+    map --> holiday
+    profile --> save
+    profile --> privacy
+    map --> route
+```
 ## Getting Started
 
 First, get a database running. You will need Docker installed on your machine. 
