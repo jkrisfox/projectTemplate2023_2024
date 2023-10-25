@@ -15,6 +15,7 @@ import Signup from './Signup';
 import { useSession } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { signOut } from "next-auth/react"
+import { useState } from 'react';
 
 const theme = createTheme({});
 
@@ -25,13 +26,40 @@ export default function RootLayout({ children, title }) {
   let loginSection;
 
   if (status === 'authenticated') {
-    loginSection = <Button variant="outlined" color="inherit" onClick={() => signOut()}>Sign Out</Button>;
+    loginSection = <Button variant="outlined" color="inherit" onClick={() => signOut()}>Profile</Button>;
   } else {
     loginSection = <>
       <Login/>
       <Signup/>
     </>;
   }
+
+  const [op, setOp] = useState(true);
+
+  function opClose()
+  {
+    setOp(false);
+  }
+
+  function opOpen()
+  {
+    setOp(true);
+  }
+
+  let navB;
+
+  if (op === true)
+  {
+    navB = <Button variant="outlined" color="inherit" onClick= {() => opClose()}>Option</Button>
+  } else{
+    navB = <>
+      <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick= {()=> opOpen()}>Close</Button>
+      <NavBar/>
+      
+    </>;
+  }
+
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -40,14 +68,22 @@ export default function RootLayout({ children, title }) {
         <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
+              
+            <Box sx={{ flexGrow: 1, mr:40, }}>
+                <Stack direction='row' spacing={0}>
+                  {navB}
+                </Stack>
+              </Box>
+              
               <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              
               <Typography
                 variant="h6"
                 noWrap
                 component="a"
                 href="/"
                 sx={{
-                  mr: 2,
+                  mr: 75,
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'monospace',
                   fontWeight: 700,
@@ -58,7 +94,7 @@ export default function RootLayout({ children, title }) {
               >
                 {title}
               </Typography>
-              <NavBar />
+              
               <Box sx={{ flexGrow: 0 }}>
                 <Stack direction='row' spacing={2}>
                   {loginSection}

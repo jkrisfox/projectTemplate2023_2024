@@ -20,6 +20,8 @@ export default function NavBar() {
                   href={l.path}
                   sx={{ my: 2, color: 'white', display: 'block', textDecoration: (isActive ? 'underline' : 'inherit') }}
                   key={l.path}
+                  variant = "outlined"
+                  color = "inherit"
           >{l.name}</Button>
         )
       })}

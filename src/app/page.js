@@ -1,19 +1,121 @@
-import Image from 'next/image'
+'use client'
 
-export default function Home() {
-  return (
-    <>
-      <h1>Welcome to CSC 307</h1>
-      <p>
-        This application is a Next.js application. It already contains a way to login and sign-up as well as a rough ToDo list application as a way to demonstrate create and update of a todo. 
-      </p>
-      <h2>Documentation</h2>
-      <ul>
-        <li>NextJS: <a href="https://nextjs.org/docs">https://nextjs.org/docs</a></li>
-        <li>Material UI: <a href="https://mui.com/material-ui/getting-started/">https://mui.com/material-ui/getting-started/</a></li>
-        <li>Prisma: <a href="https://www.prisma.io/docs/getting-started">https://www.prisma.io/docs/getting-started</a></li>
-      </ul>
-      <h2></h2>
-    </>
-  )
+import { useState, useEffect } from 'react';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import AddBox from '@mui/icons-material/AddBox';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import { Box, TextField } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+
+export default function ToDos() {
+
+    const [todos, setTodos] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [newTodo, setNewTodo] = useState('');
+
+    function inputChangeHandler(e) {
+        setNewTodo(e.target.value);
+    }
+
+    function addNewTodo() {
+        if(newTodo && newTodo.length) {
+            fetch("api/todos", { method: "post", body: JSON.stringify({value: newTodo, done: false}) } ).then((response) => {
+                return response.json().then((newTodo) => {
+                    setTodos([...todos, newTodo]);
+                    setNewTodo('');
+                });
+            });
+            
+        }
+    }
+
+    function removeTodo({ index }) {
+        var remv = todos[index];
+        fetch(`api/todos/${remv.id}`, { method: "delete"}).then();
+        setTodos(todos.filter((v,idx) => idx!==index));
+    }
+
+    function makeCheck ({index}) {
+        var tar = todos[index];
+        fetch(`api/todos/${tar.id}`, { method: "put", body: JSON.stringify({value: tar.value, done: !tar.done})}).then((response) => {
+        setTodos(todos.map((value) => {
+            if (value.id === tar.id) {
+                return {...tar, done: !tar.done};
+            }
+            else {
+                return value;
+            }
+                } ))
+            });
+    }
+
+    useEffect(() => {
+        fetch("/api/todos", { method: "get" }).then((response) => response.ok && response.json()).then(
+            todos => {
+                todos && setTodos(todos);
+                setIsLoading(false);
+            }
+        );
+    }, []);
+
+    const loadingItems = <CircularProgress/>;
+
+    const toDoItems = isLoading ? loadingItems : todos.map((todo, idx) => {
+        return <ListItem key={idx} secondaryAction={
+            <IconButton edge="end" onClick={() => removeTodo({index: idx})}><DeleteForever/></IconButton>   
+        }>  
+        <Box sx = {{width: '100%', maxwidth: 325, height: '100%', maxHeight: 500, border: 5}}>
+            <ListItemButton sx ={{width: 250, height: 250}} >
+                <ListItemIcon>
+                    <Checkbox checked={todo.done} disableRipple onChange={() => makeCheck({index: idx})}/>
+                </ListItemIcon>
+                <ListItemText primary={todo.value}/>
+            </ListItemButton>
+            </Box> 
+        </ListItem>;
+    });
+
+    return (
+        <>
+            <h2><center>Explore</center></h2>
+            
+            <List sx={{ width: '100%', maxWidth: 325 , height: '100%', maxHeight: 500}}>
+                { toDoItems }
+                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo}><AddBox/></IconButton>}>
+                    <TextField label="New ToDo Item" fullWidth variant="outlined" value={newTodo} onChange={inputChangeHandler}/> 
+                </ListItem>}
+            </List>
+            
+            <List sx={{ml: 45, mt: -62, width: '100%', maxWidth: 325, height: '100%', maxHeight: 500}}>
+                { toDoItems }
+                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo}><AddBox/></IconButton>}>
+                    <TextField label="New ToDo Item" fullWidth variant="outlined" value={newTodo} onChange={inputChangeHandler}/> 
+                </ListItem>}
+            </List>
+            <List sx={{ml: 90, mt: -62, width: '100%', maxWidth: 325 ,height: '100%', maxHeight: 500}}>
+                { toDoItems }
+                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo}><AddBox/></IconButton>}>
+                    <TextField label="New ToDo Item" fullWidth variant="outlined" value={newTodo} onChange={inputChangeHandler}/> 
+                </ListItem>}
+            </List>
+            <List sx={{ml: 135, mt: -62, width: '100%', maxWidth: 325 , height: '100%', maxHeight: 500}}>
+                { toDoItems }
+                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo}><AddBox/></IconButton>}>
+                    <TextField label="New ToDo Item" fullWidth variant="outlined" value={newTodo} onChange={inputChangeHandler}/> 
+                </ListItem>}
+            </List>
+            <List sx={{ml: 180, mt: -62, width: '100%', maxWidth: 325 , height: '100%', maxHeight: 500}}>
+                { toDoItems }
+                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo}><AddBox/></IconButton>}>
+                    <TextField label="New ToDo Item" fullWidth variant="outlined" value={newTodo} onChange={inputChangeHandler}/> 
+                </ListItem>}
+            </List>
+        </>
+    );
 }
