@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import mapsKey from 'src/lib/mapsAPIKey.js'
 
 export default function Home() {
   return (
