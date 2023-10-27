@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from 'next/link';
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -34,6 +35,7 @@ const theme = createTheme({
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
 });
+
 export default function RootLayout({ children, title }) {
   const { data: session, status } = useSession();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -68,6 +70,7 @@ export default function RootLayout({ children, title }) {
       </>
     );
   }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -111,6 +114,19 @@ export default function RootLayout({ children, title }) {
               >
                 <AccountCircleIcon sx={{ color: "white" }} />
               </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={isMenuOpen}
+                onClose={handleMenuClose}
+              >
+                <Link href="/profile" style={{ textDecoration: 'none', color:'inherit' }}>
+                  <MenuItem component="a" onClick={handleMenuClose}>
+                    View Profile
+                  </MenuItem>
+                </Link>
+                <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                <MenuItem onClick={() => { handleMenuClose(); signOut(); }}>Log Out</MenuItem>
+              </Menu>
               </Box>
               <Box sx={{ flexGrow: 0 }}>
                 <Stack direction="row" spacing={2}>
