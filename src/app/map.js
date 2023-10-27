@@ -15,16 +15,14 @@ const center = {
 };
 
 export default function Map() {
-  debugger;
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.MAPS_KEY
+    googleMapsApiKey: process.env.MAPS_KEY,
   })
-debugger;
+  console.log("loaded?" + isLoaded);
   const [map, setMap] = useState(null)
 
   const onLoad = useCallback(function callback(map) {
-    debugger;
     // This is just an example of getting and using the map instance!!! don't just blindly copy!
     const bounds = new window.google.maps.LatLngBounds(center);
     map.fitBounds(bounds);
@@ -33,7 +31,6 @@ debugger;
   }, [])
 
   const onUnmount = useCallback(function callback(map) {
-    debugger;
     setMap(null)
   }, [])
 
@@ -48,5 +45,5 @@ debugger;
         { /* Child components, such as markers, info windows, etc. */ }
         <></>
       </GoogleMap>
-  ) : <></>
+  ) : <>MAPS API NOT LOADED...</>
 }

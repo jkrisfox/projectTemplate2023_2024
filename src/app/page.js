@@ -6,7 +6,9 @@ export default function Home() {
   return (
     <>
       <h1>Welcome to CSC 307</h1>
-      <Map></Map>
+      <div>
+        <Map></Map> WHAT IS HAPPENING??????
+      </div>
     </>
   )
 }
