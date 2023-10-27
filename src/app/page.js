@@ -3,6 +3,7 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <>
+      <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
       <h1>Welcome to CSC 307</h1>
       <p>
         This application is a Next.js application. It already contains a way to login and sign-up as well as a rough ToDo list application as a way to demonstrate create and update of a todo. 
