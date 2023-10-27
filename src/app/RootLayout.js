@@ -1,46 +1,90 @@
-'use client'
+"use client";
+import React, { useState } from "react";
+import Link from 'next/link';
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
+import AdbIcon from "@mui/icons-material/Adb";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import NavBar from "./NavBar";
+import Login from "./Login";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Signup from "./Signup";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import { Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import AdbIcon from '@mui/icons-material/Adb';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import NavBar from './NavBar';
-import Login from './Login';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Signup from './Signup';
-import { useSession } from 'next-auth/react';
-import { Button } from '@mui/material';
-import { signOut } from "next-auth/react"
-
-const theme = createTheme({});
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#4FB18C",
+    },
+    background: {
+      default: "#FFFFFF",
+    },
+    text: {
+      primary: "#black",
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+});
 
 export default function RootLayout({ children, title }) {
+  const { data: session, status } = useSession();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const isMenuOpen = Boolean(anchorEl);
 
-  const { data: session, status }  = useSession();
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   let loginSection;
 
-  if (status === 'authenticated') {
-    loginSection = <Button variant="outlined" color="inherit" onClick={() => signOut()}>Sign Out</Button>;
+  if (status === "authenticated") {
+    loginSection = (
+      <Button
+        variant="outlined"
+        color='white'
+        sx={{ color: "white" }}
+        onClick={() => signOut()}
+      >
+        Sign Out
+      </Button>
+    );
   } else {
-    loginSection = <>
-      <Login/>
-      <Signup/>
-    </>;
+    loginSection = (
+      <>
+        <Login />
+        <Signup />
+      </>
+    );
   }
+
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              <AdbIcon
+                sx={{
+                  display: { xs: "none", md: "flex", color: "white" },
+                  mr: 1,
+                }}
+              />
               <Typography
                 variant="h6"
                 noWrap
@@ -48,19 +92,44 @@ export default function RootLayout({ children, title }) {
                 href="/"
                 sx={{
                   mr: 2,
-                  display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
                   fontWeight: 700,
-                  letterSpacing: '.3rem',
-                  color: 'inherit',
-                  textDecoration: 'none',
+                  letterSpacing: ".3rem",
+                  color: "white",
+                  textDecoration: "none",
                 }}
               >
                 {title}
               </Typography>
               <NavBar />
+              <Box pr={6}>
+              <IconButton color="inherit">
+                <FavoriteIcon sx={{ color: "white" }} />
+              </IconButton>
+              <IconButton
+                edge="end"
+                color="inherit"
+                onClick={handleProfileMenuOpen}
+              >
+                <AccountCircleIcon sx={{ color: "white" }} />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={isMenuOpen}
+                onClose={handleMenuClose}
+              >
+                <Link href="/profile" style={{ textDecoration: 'none', color:'inherit' }}>
+                  <MenuItem component="a" onClick={handleMenuClose}>
+                    View Profile
+                  </MenuItem>
+                </Link>
+                <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                <MenuItem onClick={() => { handleMenuClose(); signOut(); }}>Log Out</MenuItem>
+              </Menu>
+              </Box>
               <Box sx={{ flexGrow: 0 }}>
-                <Stack direction='row' spacing={2}>
+                <Stack direction="row" spacing={2}>
                   {loginSection}
                 </Stack>
               </Box>
