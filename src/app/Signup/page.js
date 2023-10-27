@@ -64,6 +64,11 @@ export default function Signup() {
   return (
     <>
       <Box sx={{width: 0.5, margin: 'auto', textAlign: 'center'}}>
+      <Box
+        component="img"
+        alt="SLO Marketplace Logo"
+        src="/logo-192x192.png"
+      />
         <h1>Sign Up</h1>
         <form onSubmit={handleSignup}>
           { error ? (
@@ -110,7 +115,7 @@ export default function Signup() {
           />
           <br></br>
           <br></br>
-          <Button type="submit">Signup</Button>
+          <Button type="submit">Sign Up</Button>
         </form>
       </Box>
     </>
