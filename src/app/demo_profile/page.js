@@ -28,7 +28,7 @@ export default function Profile() {
       </ul>
       <h2>Photo Gallery</h2>
       <div className="photo-gallery">
-        <Image src="/kevin3.jpg" alt="Gallery Image 1" width={100} height={100} />
+        <Image src="/kevin2.jpg" alt="Gallery Image 1" width={100} height={100} />
         <Image src="/kevin3.jpg" alt="Gallery Image 2" width={100} height={100} />
         <Image src="/kevin3.jpg" alt="Gallery Image 3" width={100} height={100} />
       </div>

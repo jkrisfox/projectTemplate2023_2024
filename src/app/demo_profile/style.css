@@ -1,4 +1,70 @@
-/* Profile.css */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+}
+
+.profile-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image img {
+  border-radius: 50%;
+  border: 4px solid #ff4500; /* Instagram-like border color */
+}
+
+.profile-info {
+  margin-left: 20px;
+}
+
+.profile-name {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.profile-bio {
+  color: #777;
+}
+
+.skill-list,
+.link-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.skill-item,
+.link-item {
+  margin-bottom: 10px;
+}
+
+.profile-link {
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.photo-gallery img {
+  margin: 5px;
+  border-radius: 5px;
+  margin: 120px; /* Adjust the margin as needed */
+
+  max-width: 500px; /* Adjust the maximum width for larger images */
+  max-height: 500px;
+  scale: 3;
+}
+
+
+/* Profile.css 
 .profile-container {
     max-width: 800px;
     margin: auto;
@@ -57,4 +123,4 @@
     justify-content: space-between;
     margin-top: 20px;
   }
-  
+  */

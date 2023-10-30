@@ -12,6 +12,8 @@ export default function Home() {
         <li>NextJS: <a href="https://nextjs.org/docs">https://nextjs.org/docs</a></li>
         <li>Material UI: <a href="https://mui.com/material-ui/getting-started/">https://mui.com/material-ui/getting-started/</a></li>
         <li>Prisma: <a href="https://www.prisma.io/docs/getting-started">https://www.prisma.io/docs/getting-started</a></li>
+        
+          <li> link: <a href="/demo_profile"> demo profile page</a>   </li>
       </ul>
       <h2></h2>
     </>
