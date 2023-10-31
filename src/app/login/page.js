@@ -5,6 +5,7 @@ import { Box, Card, CardContent, Typography, TextField, Button, Link, Checkbox, 
 
 export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   return (
     <Box sx={{
@@ -47,15 +48,52 @@ export default function LoginPage() {
                 fullWidth
                 sx={{ marginBottom: 2 }}
               />
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 2 }}>
-                <FormControlLabel
-                  control={<Checkbox color="primary" />}
-                  label={<Typography variant="body2" sx={{ fontSize: '0.8rem' }}>Remember 30 days</Typography>}
+              {isRegistering && (
+                <TextField
+                  label="Reconfirm Password"
+                  variant="outlined"
+                  type="password"
+                  fullWidth
+                  sx={{ marginBottom: 2 }}
                 />
-                <Link href="#" variant="body2" sx={{ fontSize: '0.8rem', alignSelf: 'center' }}>Forgot password?</Link>
-              </Box>
-              <Button variant="contained" color="primary" fullWidth sx={{ borderRadius: 2 }}>
-                {isRegistering ? "Create Account" : "Log in"}
+              )}
+              {verificationSent && (
+                <>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 2 }}>
+                    <TextField
+                      label="Verification Code"
+                      variant="outlined"
+                      fullWidth
+                      sx={{ flex: '1 1 auto', marginRight: 1 }}
+                    />
+                    <Button variant="text" color="primary" sx={{ marginLeft: 1 }}>Resend</Button>
+                  </Box>
+                  <Typography variant="body2" color="green" sx={{ marginBottom: 2 }}>
+                    We sent you a verification email!
+                  </Typography>
+                </>
+              )}
+              {!isRegistering && (
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 2 }}>
+                  <FormControlLabel
+                    control={<Checkbox color="primary" />}
+                    label={<Typography variant="body2" sx={{ fontSize: '0.8rem' }}>Remember 30 days</Typography>}
+                  />
+                  <Link href="#" variant="body2" sx={{ fontSize: '0.8rem', alignSelf: 'center' }}>Forgot password?</Link>
+                </Box>
+              )}
+              <Button 
+                variant="contained" 
+                color="primary" 
+                fullWidth 
+                sx={{ borderRadius: 2 }}
+                onClick={() => {
+                  if (isRegistering) {
+                    setVerificationSent(true);
+                  }
+                }}
+              >
+                {verificationSent ? "Confirm" : isRegistering ? "Register" : "Log in"}
               </Button>
               <Button 
                 variant="outlined" 
