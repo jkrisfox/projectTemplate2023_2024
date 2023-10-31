@@ -1,9 +1,11 @@
 'use client'
 
-import React from 'react';
-import { Box, Card, CardContent, Typography, TextField, Button, Link } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Card, CardContent, Typography, TextField, Button, Link, Checkbox, FormControlLabel } from '@mui/material';
 
 export default function LoginPage() {
+  const [isRegistering, setIsRegistering] = useState(false);
+
   return (
     <Box sx={{
       display: 'flex',
@@ -29,8 +31,8 @@ export default function LoginPage() {
               justifyContent: 'center',
               height: '100%',
             }}>
-              <Typography variant="h4" gutterBottom sx={{ marginBottom: '60px' }}>
-                Welcome back!
+              <Typography variant="h5" gutterBottom sx={{ marginBottom: '60px' }}>
+                {isRegistering ? "Register Account" : "Welcome back!"}
               </Typography>
               <TextField
                 label="Cal Poly email"
@@ -45,15 +47,24 @@ export default function LoginPage() {
                 fullWidth
                 sx={{ marginBottom: 2 }}
               />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 2 }}>
-                <Typography variant="body2">Remember 30 days</Typography>
-                <Link href="#" variant="body2">Forgot password?</Link>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 2 }}>
+                <FormControlLabel
+                  control={<Checkbox color="primary" />}
+                  label={<Typography variant="body2" sx={{ fontSize: '0.8rem' }}>Remember 30 days</Typography>}
+                />
+                <Link href="#" variant="body2" sx={{ fontSize: '0.8rem', alignSelf: 'center' }}>Forgot password?</Link>
               </Box>
               <Button variant="contained" color="primary" fullWidth sx={{ borderRadius: 2 }}>
-                Log in
+                {isRegistering ? "Create Account" : "Log in"}
               </Button>
-              <Button variant="outlined" color="primary" fullWidth sx={{ borderRadius: 2, marginTop: 2 }}>
-                Register
+              <Button 
+                variant="outlined" 
+                color="primary" 
+                fullWidth 
+                sx={{ borderRadius: 2, marginTop: 2 }}
+                onClick={() => setIsRegistering(!isRegistering)}
+              >
+                {isRegistering ? "Back to Login" : "Register"}
               </Button>
             </Box>
           </CardContent>
