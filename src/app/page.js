@@ -1,8 +1,11 @@
-import Image from 'next/image'
+"use client"
+
+import Hero from '../components/Hero';
 
 export default function Home() {
   return (
     <>
+    <Hero/>
       <h1>Welcome to CSC 307</h1>
       <p>
         This application is a Next.js application. It already contains a way to login and sign-up as well as a rough ToDo list application as a way to demonstrate create and update of a todo. 
