@@ -53,15 +53,14 @@ export default function ToDos() {
 
     function toggleDone({ id, done }) {
         fetch(`/api/todos/${id}`, {
-            method: 'PUT', // Use PUT to update the 'done' property
-            body: JSON.stringify({ done: !done }), // Toggle the 'done' property
+            method: 'PUT', 
+            body: JSON.stringify({ done: !done }), 
             headers: {
                 'Content-Type': 'application/json',
             },
         })
             .then((response) => {
                 if (response.ok) {
-                    // Update the todos by mapping over them and toggling the 'done' property of the matching todo item
                     setTodos((prevTodos) => prevTodos.map((todo) => {
                         if (todo.id === id) {
                             return { ...todo, done: !done };

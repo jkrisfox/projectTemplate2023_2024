@@ -14,7 +14,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Signup from './Signup';
 import { useSession } from 'next-auth/react';
 import { Button } from '@mui/material';
-import { signOut } from "next-auth/react"
+import { signOut } from "next-auth/react";
+import './globals.css';
 
 const theme = createTheme({});
 
@@ -37,40 +38,35 @@ export default function RootLayout({ children, title }) {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="static">
+        <AppBar className="fullNav" position="static">
           <Container maxWidth="xl">
+          
             <Toolbar disableGutters>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-              <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="/"
-                sx={{
-                  mr: 2,
-                  display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  letterSpacing: '.3rem',
-                  color: 'inherit',
-                  textDecoration: 'none',
-                }}
-              >
-                {title}
+              
+              <Typography variant="h5" component="a" href="/" className="title-text">
+              Stronger<br />Together
               </Typography>
+              <Typography variant="h6" component="a" href="/" className="slogan-text">
+              Lift, Laugh, Love
+              </Typography>
+
               <NavBar />
-              <Box sx={{ flexGrow: 0 }}>
-                <Stack direction='row' spacing={2}>
-                  {loginSection}
-                </Stack>
-              </Box>
+      
             </Toolbar>
           </Container>
         </AppBar>
       </Box>
-      <Box component="main" sx={{ p: 3 }}>
+      <Box component="main" sx={{ p: 3 }} className="main-content">
         {children}
       </Box>
     </ThemeProvider>
   );
 }
+
+/*
+<Box sx={{ flexGrow: 0 }}>
+                <Stack direction='column' spacing={2}>
+                  {loginSection}
+                </Stack>
+              </Box>
+*/
