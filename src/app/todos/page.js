@@ -36,8 +36,25 @@ export default function ToDos() {
     }
 
     function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+        const todoToRemove = todos[index];
+        fetch(`/api/todos/${todoToRemove.id}`, { method: "delete" } ).then((response) => {
+            return response.json().then(() => {
+            setTodos(todos.filter((v,idx) => idx!==index))
+            });
+        });
     }
+
+    function checkBox({ index }){
+        const todoUpdate = todos[index];
+        fetch(`/api/todos/${todoUpdate.id}`, { method: "put", body: JSON.stringify({value: todoUpdate.value, done: !todoUpdate.done}) } ).then((response) => {
+            if (response.ok){
+                setTodos(todos.map((x) => {
+                    return x.id === todoUpdate.id ? {...todoUpdate , done: !todoUpdate.done}: x}))
+            }
+        });
+    }
+
+    
 
     useEffect(() => {
         fetch("/api/todos", { method: "get" }).then((response) => response.ok && response.json()).then(
@@ -56,7 +73,7 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                    <Checkbox checked={todo.done} onClick={() => checkBox ({index: idx})}/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
