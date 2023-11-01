@@ -13,14 +13,10 @@ datasource db {
 model User {
   id  Int @id @default(autoincrement())
   email String @unique
-  password String 
-  toDos ToDo[]
-}
-
-model ToDo {
-  id Int @id @default(autoincrement())
-  value String
-  done Boolean
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int 
+  password String
+  isVerified Boolean @default(false)
+  isAdmin Boolean @default(false)
+  name String @default("")
+  phoneNumber String @default("")
+  location String @default("")
 }
