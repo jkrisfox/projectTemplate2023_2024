@@ -10,6 +10,7 @@ import AdbIcon from "@mui/icons-material/Adb";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import NavBar from "./NavBar";
+import Footer from "./Footer";
 import Login from "./Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Signup from "./Signup";
@@ -74,7 +75,7 @@ export default function RootLayout({ children, title }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{display: "flex"}}>
         <CssBaseline />
         <AppBar position="static">
           <Container maxWidth="xl">
@@ -134,12 +135,13 @@ export default function RootLayout({ children, title }) {
                 </Stack>
               </Box>
             </Toolbar>
-          </Container>
+          </Container>  
         </AppBar>
       </Box>
-      <Box component="main" sx={{ p: 3 }}>
+      <Box component="main" sx={{ p: 3, height:'100vh' }}>
         {children}
       </Box>
+      <Footer/>
     </ThemeProvider>
   );
 }
