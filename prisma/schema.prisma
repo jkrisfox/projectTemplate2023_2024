@@ -16,7 +16,7 @@ model User {
   password String
   isVerified Boolean @default(false)
   isAdmin Boolean @default(false)
-  name String @default("")
-  phoneNumber String @default("")
-  location String @default("")
+  name String?
+  phoneNumber String?
+  location String?
 }
