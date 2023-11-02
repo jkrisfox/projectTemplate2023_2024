@@ -42,7 +42,9 @@ export async function DELETE(request) {
     const index = await request.json();
     const deleteTodo = await prisma.toDo.delete({
       where: {
-        id: index
+        id: {
+          equals: index
+        }
       }, 
     });
     return NextResponse.json(index);
@@ -63,7 +65,7 @@ export async function PATCH(request) {
         done: isDone
       }, 
     });
-    return NextResponse.json({done: isDone});
+    return NextResponse.json(isDone);
   }
   return NextResponse.json({error: 'not signed in'}, {status: 403});
 }
