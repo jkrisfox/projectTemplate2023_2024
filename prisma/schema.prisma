@@ -24,3 +24,11 @@ model ToDo {
   owner User @relation(fields: [ownerId], references: [id])
   ownerId Int 
 }
+
+model Equipment {
+  id            Int     @id @default(autoincrement())
+  name          String
+  short_description String
+  long_description  String
+  image_path    String
+}
