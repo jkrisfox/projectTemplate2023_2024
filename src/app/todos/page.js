@@ -54,12 +54,15 @@ export default function ToDos() {
 
     const handleCheckboxChange = (event, index) => {
         const todoToUpdate = todos[index]
-        fetch("/api/todos", { method: "patch", body: JSON.stringify({idx: todoToUpdate.id, isDone: !todoToUpdate.done}) } ).then((response) => {
-            return response.json().then(() => {
-                const updatedTodos = todos.map((t) => t.id === todoToUpdate.id ? {...t, done: !todoToUpdate.done} : t)
-                setTodos(updatedTodos);
-            });
-        })
+        const updatedTodo = { ...todoToUpdate, done: !todoToUpdate.done }; 
+        fetch(`/api/todos/${todoToUpdate.id}`, {
+            method: "put", 
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedTodo)
+        });
+        setTodos([...todos.slice(0, index), updatedTodo, ...todos.slice(index + 1)]);
     };
 
     const loadingItems = <CircularProgress/>;
