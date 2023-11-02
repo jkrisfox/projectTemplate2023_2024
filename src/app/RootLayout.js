@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Link from 'next/link';
+import Link from "next/link";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -19,6 +19,7 @@ import { signOut } from "next-auth/react";
 import { Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { usePathname } from 'next/navigation';
 
 const theme = createTheme({
   palette: {
@@ -38,6 +39,8 @@ const theme = createTheme({
 });
 
 export default function RootLayout({ children, title }) {
+  const pathname = usePathname();  // Use the hook here
+  
   const { data: session, status } = useSession();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -56,7 +59,7 @@ export default function RootLayout({ children, title }) {
     loginSection = (
       <Button
         variant="outlined"
-        color='white'
+        color="white"
         sx={{ color: "white" }}
         onClick={() => signOut()}
       >
@@ -72,10 +75,9 @@ export default function RootLayout({ children, title }) {
     );
   }
 
-
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{display: "flex"}}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="static">
           <Container maxWidth="xl">
@@ -105,29 +107,39 @@ export default function RootLayout({ children, title }) {
               </Typography>
               <NavBar />
               <Box pr={6}>
-              <IconButton color="inherit">
-                <FavoriteIcon sx={{ color: "white" }} />
-              </IconButton>
-              <IconButton
-                edge="end"
-                color="inherit"
-                onClick={handleProfileMenuOpen}
-              >
-                <AccountCircleIcon sx={{ color: "white" }} />
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={isMenuOpen}
-                onClose={handleMenuClose}
-              >
-                <Link href="/profile" style={{ textDecoration: 'none', color:'inherit' }}>
-                  <MenuItem component="a" onClick={handleMenuClose}>
-                    View Profile
+                <IconButton color="inherit">
+                  <FavoriteIcon sx={{ color: "white" }} />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  color="inherit"
+                  onClick={handleProfileMenuOpen}
+                >
+                  <AccountCircleIcon sx={{ color: "white" }} />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={isMenuOpen}
+                  onClose={handleMenuClose}
+                >
+                  <Link
+                    href="/profile"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <MenuItem component="a" onClick={handleMenuClose}>
+                      View Profile
+                    </MenuItem>
+                  </Link>
+                  <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose();
+                      signOut();
+                    }}
+                  >
+                    Log Out
                   </MenuItem>
-                </Link>
-                <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-                <MenuItem onClick={() => { handleMenuClose(); signOut(); }}>Log Out</MenuItem>
-              </Menu>
+                </Menu>
               </Box>
               <Box sx={{ flexGrow: 0 }}>
                 <Stack direction="row" spacing={2}>
@@ -135,13 +147,13 @@ export default function RootLayout({ children, title }) {
                 </Stack>
               </Box>
             </Toolbar>
-          </Container>  
+          </Container>
         </AppBar>
       </Box>
-      <Box component="main" sx={{ p: 3, height:'100vh' }}>
+      <Box component="main" sx={{ p: 0, height: "100vh" }}>
         {children}
       </Box>
-      <Footer/>
+      {/* <Footer /> */}
     </ThemeProvider>
   );
 }
