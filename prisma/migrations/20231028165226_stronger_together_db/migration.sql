@@ -12,8 +12,6 @@ CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOC
 -- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
 
--- DropForeignKey
-ALTER TABLE "ToDo" DROP CONSTRAINT "ToDo_ownerId_fkey";
 
 -- AlterTable
 ALTER TABLE "User" ADD COLUMN     "ProfileImage" BYTEA,
@@ -21,8 +19,6 @@ ADD COLUMN     "experience" TEXT NOT NULL,
 ADD COLUMN     "name" TEXT NOT NULL,
 ADD COLUMN     "verified" BOOLEAN;
 
--- DropTable
-DROP TABLE "ToDo";
 
 -- CreateTable
 CREATE TABLE "Friendship" (

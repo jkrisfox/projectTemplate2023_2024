@@ -140,9 +140,12 @@ model EventFilter {
 }
 
 model Equipments {
-  id            Int    @id @default(autoincrement())
-  equipmentName String
-  description   String
+  id                Int    @id @default(autoincrement())
+  equipmentName     String
+  short_description String
+  long_description  String
+  description       String
+  image_path        String
 }
 
 // all the enum types
@@ -156,12 +159,4 @@ enum FriendshipStatus {
 enum VoteType {
   UPVOTE
   DOWNVOTE
-}
-
-model Equipment {
-  id            Int     @id @default(autoincrement())
-  name          String
-  short_description String
-  long_description  String
-  image_path    String
 }

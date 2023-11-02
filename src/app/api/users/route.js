@@ -32,7 +32,7 @@ export async function GET(request) {
   // authenticate the user before returning the informations
   const loggedInData = await checkLoggedIn();
   if (loggedInData.loggedIn) {
-    const user = await prisma.User.findFirst({
+    const user = await prisma.User.findUnique({
       where: {
         id: {
           equals: loggedInData.user.id
