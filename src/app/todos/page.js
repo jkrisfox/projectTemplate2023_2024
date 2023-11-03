@@ -1,5 +1,5 @@
 'use client'
-
+//this is a test
 import { useState, useEffect } from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
@@ -31,29 +31,36 @@ export default function ToDos() {
                     setNewTodo('');
                 });
             });
-            
         }
     }
+    async function updateTodo({index}) {
+        const todoToUpdate = todos[index]
+        const test = await fetch(`api/todos/${todoToUpdate.id}`, { method: "put", body: JSON.stringify({value: todoToUpdate.value , done: !todoToUpdate.done})} ).then((response) => {
+            if (response.ok) {
+                //map builds new arr w/ exist values, modify changed on (working on)
+                //settodos redraws whole screen (not seen visually)
+                //mapping, splice, ways to modify arr in js
+                //most eff w/ immutable change (screen knows to redraw)
+                
+                setTodos(todos.map((value)=> {return value.id===todoToUpdate.id ? {...todoToUpdate, done: !todoToUpdate.done} : value}))
 
-    function removeTodo({ index }) {
-        var remv = todos[index];
-        fetch(`api/todos/${remv.id}`, { method: "delete"}).then();
-        setTodos(todos.filter((v,idx) => idx!==index));
+            }
+        });
+
     }
 
-    function makeCheck ({index}) {
-        var tar = todos[index];
-        fetch(`api/todos/${tar.id}`, { method: "put", body: JSON.stringify({value: tar.value, done: !tar.done})}).then((response) => {
-        setTodos(todos.map((value) => {
-            if (value.id === tar.id) {
-                return {...tar, done: !tar.done};
-            }
-            else {
-                return value;
-            }
-                } ))
-            });
+    async function removeTodo({ index }) {
+        //check API for idx & delete
+        const todoToRemove = todos[index]
+        const test = await fetch(`api/todos/${todoToRemove.id}`, { method: "delete" }).then(response => console.log(response));
+
+        //display ?
+        setTodos(todos.filter((v, idx) => idx !== index));
     }
+
+ 
+
+
 
     useEffect(() => {
         fetch("/api/todos", { method: "get" }).then((response) => response.ok && response.json()).then(
@@ -73,6 +80,7 @@ export default function ToDos() {
             <ListItemButton>
                 <ListItemIcon>
                     <Checkbox checked={todo.done} disableRipple onChange={() => makeCheck({index: idx})}/>
+
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
