@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import RootLayout from './RootLayout';
 import AuthProvider from './AuthProvider';
 
+
 const inter = Inter({ subsets: ['latin'] })
 const COMPANY_NAME = "Pet Place";
 
@@ -14,7 +15,7 @@ export default function Layout({ children }) {
     <html lang="en">
       <body>
         <AuthProvider>
-          <RootLayout children={children} title={COMPANY_NAME}/>        
+          <RootLayout   children={children} title={COMPANY_NAME}/>        
         </AuthProvider>
       </body>
     </html>
