@@ -33,8 +33,8 @@ function Catalog() {
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        Available now on the platform
+      <Typography variant="h3" sx={{ marginBottom: 2, color: "#2B7257",}}>
+        <strong>Available now on the platform</strong>
       </Typography>
       {categories.map((category, index) => (
         <Link key={index} href="#" sx={{ marginRight: 2, cursor: "pointer" }}>
