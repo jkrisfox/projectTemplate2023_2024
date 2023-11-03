@@ -13,6 +13,8 @@ import {
   FormControlLabel,
 } from "@mui/material";
 
+const RESEND_INTERVAL = 30;
+
 export default function LoginPage() {
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,11 +26,24 @@ export default function LoginPage() {
   const [verificationCode, setVerificationCode] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [countdown, setCountdown] = useState(0);
+  const [canResend, setCanResend] = useState(true);
+
   const validatePassword = () => {
     const isValid = password.length >= 8;
     setIsPasswordValid(isValid);
+    if (!isValid) {
+      setErrorMessage("Password should be at least 8 characters long.");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return false;
+    }
 
-    return isValid && password === confirmPassword;
+    setErrorMessage("");
+    return true;
   };
 
   const generateCode = () => {
@@ -39,8 +54,23 @@ export default function LoginPage() {
     if (enteredCode === verificationCode) {
       console.log("Code verified!");
     } else {
-      console.error("Incorrect code.");
+      setErrorMessage("Incorrect verification code.");
     }
+  };
+
+  const startCountdown = () => {
+    setCanResend(false);
+    setCountdown(RESEND_INTERVAL);
+    const interval = setInterval(() => {
+        setCountdown((prevCountdown) => {
+            if (prevCountdown <= 1) {
+                clearInterval(interval);
+                setCanResend(true);
+                return 0;
+            }
+            return prevCountdown - 1;
+        });
+    }, 1000);
   };
 
   return (
@@ -100,6 +130,7 @@ export default function LoginPage() {
                 fullWidth
                 sx={{ marginBottom: 2 }}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={verificationSent}
               />
               {isRegistering && (
                 <TextField
@@ -109,7 +140,13 @@ export default function LoginPage() {
                   fullWidth
                   sx={{ marginBottom: 2 }}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={verificationSent}
                 />
+              )}
+              {errorMessage && (
+                <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
+                  {errorMessage}
+                </Typography>
               )}
               {verificationSent && isPasswordValid && (
                 <>
@@ -141,6 +178,7 @@ export default function LoginPage() {
                       variant="text"
                       color="primary"
                       sx={{ marginLeft: 1 }}
+                      disabled={!canResend}
                       onClick={async () => {
                         const code = generateCode();
                         setVerificationCode(code);
@@ -154,13 +192,15 @@ export default function LoginPage() {
                           }),
                         });
                         
-
-                        if (!response.ok) {
-                          console.error("Failed to resend email.");
+                        if (response.ok) {
+                          setVerificationSent(true);
+                          startCountdown();
+                        } else {
+                          setErrorMessage("Failed to send email.");
                         }
                       }}
                     >
-                      Resend
+                      {canResend ? "Resend" : `${countdown}s`}
                     </Button>
                   </Box>
                 </>
@@ -217,11 +257,14 @@ export default function LoginPage() {
 
                         if (response.ok) {
                           setVerificationSent(true);
+                          startCountdown();
                         } else {
                           console.error("Failed to send email.");
                         }
                       } else {
-                        console.log("Password validation failed!");
+                        if (!validatePassword()) {
+                          setErrorMessage("Password validation failed!");
+                        }
                       }
                     } else {
                       // email verification code sent

@@ -33,7 +33,7 @@ export default function ToDos() {
                 });
         }
     }
-
+  
     function removeTodo({ id }) {
     fetch(`/api/todos/${id}`, {
         method: 'DELETE',
@@ -75,6 +75,18 @@ export default function ToDos() {
                 console.error('Error while toggling ToDo item:', error);
             });
     }
+
+    function checkBox({ index }){
+        const todoUpdate = todos[index];
+        fetch(`/api/todos/${todoUpdate.id}`, { method: "put", body: JSON.stringify({value: todoUpdate.value, done: !todoUpdate.done}) } ).then((response) => {
+            if (response.ok){
+                setTodos(todos.map((x) => {
+                    return x.id === todoUpdate.id ? {...todoUpdate , done: !todoUpdate.done}: x}))
+            }
+        });
+    }
+
+    
 
     useEffect(() => {
         fetch("/api/todos", { method: "get" })
