@@ -1,0 +1,126 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+}
+
+.profile-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image img {
+  border-radius: 50%;
+  border: 4px solid #ff4500; /* Instagram-like border color */
+}
+
+.profile-info {
+  margin-left: 20px;
+}
+
+.profile-name {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.profile-bio {
+  color: #777;
+}
+
+.skill-list,
+.link-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.skill-item,
+.link-item {
+  margin-bottom: 10px;
+}
+
+.profile-link {
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.photo-gallery img {
+  margin: 5px;
+  border-radius: 5px;
+  margin: 120px; /* Adjust the margin as needed */
+
+  max-width: 500px; /* Adjust the maximum width for larger images */
+  max-height: 500px;
+  scale: 3;
+}
+
+
+/* Profile.css 
+.profile-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .profile-image {
+    border-radius: 50%;
+    margin-right: 20px;
+  }
+  
+  .profile-info {
+    flex-grow: 1;
+  }
+  
+  .profile-name {
+    font-size: 28px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .profile-bio {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .skill-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .skill-item {
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .profile-link {
+    text-decoration: none;
+    color: #007bff;
+    display: inline-block;
+    margin-top: 5px;
+  }
+  
+  .photo-gallery {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  */
