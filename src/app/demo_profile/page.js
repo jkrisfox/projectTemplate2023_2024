@@ -6,18 +6,33 @@ export default function Profile() {
     <div className="profile-container">
       <div className="profile-header">
         <div className="profile-image">
-            <Image src="/goated.jpg" alt="Profile Picture" width={200} height={200} />
+          <Image src="/goated.jpg" alt="Profile Picture" width={200} height={200} />
         </div>
         <div className="profile-info">
           <h1 className="profile-name">Your Name</h1>
           <p className="profile-bio">Short bio or description goes here.</p>
         </div>
       </div>
-      <h2>Skills</h2>
-      <ul className="skill-list">
-        <li className="skill-item">Skill 1</li>
-        <li className="skill-item">Skill 2</li>
-        <li className="skill-item">Skill 3</li>
+      <h2>Pet Info</h2>
+      <ul className="pet-info-list"> {/* Changed class name */}
+        <li className="pet-info-item">
+          <strong>Species:</strong> Dog
+        </li>
+        <li className="pet-info-item">
+          <strong>Breed:</strong> Labrador Retriever
+        </li>
+        <li className="pet-info-item">
+          <strong>Age:</strong> 3 years
+        </li>
+        <li className="pet-info-item">
+          <strong>Vaccine Status:</strong> Up to date
+        </li>
+        <li className="pet-info-item">
+          <strong>Neuter Status:</strong> Neutered
+        </li>
+        <li className="pet-info-item">
+          <strong>Location:</strong> New York, NY
+        </li>
       </ul>
       <h2>Links</h2>
       <ul className="skill-list">
