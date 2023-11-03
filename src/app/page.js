@@ -1,3 +1,5 @@
+// TODO: make homepage from wireframe
+
 import Image from 'next/image'
 import Map from './map'
 
