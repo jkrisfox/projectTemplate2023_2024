@@ -9,6 +9,8 @@ export default function NavBar() {
   const links = [
     { path: '/', name: 'Home' }, 
     { path: '/todos', name: 'ToDos' },
+    {path: '/CreateListing', name: 'Create Listing'}
+
   ];
 
   return (
