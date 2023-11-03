@@ -12,6 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import EventIcon from '@mui/icons-material/Event';
+import { Card, CardContent, Box } from "@mui/material";
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -30,16 +31,6 @@ const Events = () => {
     const userId = '123'; // simulated current userID
 
     const [editIndex, setEditIndex] = useState(null);
-    const [editEvent, setEditEvent] = useState({
-        title: '',
-        creator: '',
-        startTime: '',
-        endTime: '',
-        location: '',
-        interestedCount: 0,
-        goingCount: 0,
-        creatorId: ''
-    });
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -152,32 +143,36 @@ const Events = () => {
             <List>
                 {events.map((event, index) => (
                     <ListItem key={index}>
-                        <ListItemText
-                            primary={event.title}
-                            secondary={
-                                <>
-                                    <p>Creator: {event.creator}</p>
-                                    <p>Time: {event.startTime} - {event.endTime}</p>
-                                    <p>Location: {event.location}</p>
-                                    <Button startIcon={<ThumbUpIcon />} onClick={() => handleInterested(index)}>
-                                        Interested ({event.interestedCount})
-                                    </Button>
-                                    <Button startIcon={<EventIcon />} onClick={() => handleGoing(index)}>
-                                        Going ({event.goingCount})
-                                    </Button>
-                                    {event.creatorId === userId && (
+                        <Card>
+                            <CardContent>
+                                <ListItemText
+                                    primary={event.title}
+                                    secondary={
                                         <>
-                                            <Button onClick={() => handleRemoveEvent(index)}>
-                                                Delete
+                                            <p>Creator: {event.creator}</p>
+                                            <p>Time: {event.startTime} - {event.endTime}</p>
+                                            <p>Location: {event.location}</p>
+                                            <Button startIcon={<ThumbUpIcon />} onClick={() => handleInterested(index)}>
+                                                Interested ({event.interestedCount})
                                             </Button>
-                                            <Button onClick={() => handleEditEvent(index)}>
-                                                Edit
+                                            <Button startIcon={<EventIcon />} onClick={() => handleGoing(index)}>
+                                                Going ({event.goingCount})
                                             </Button>
+                                            {event.creatorId === userId && (
+                                                <>
+                                                    <Button onClick={() => handleRemoveEvent(index)}>
+                                                        Delete
+                                                    </Button>
+                                                    <Button onClick={() => handleEditEvent(index)}>
+                                                        Edit
+                                                    </Button>
+                                                </>
+                                            )}
                                         </>
-                                    )}
-                                </>
-                            }
-                        />
+                                    }
+                                />
+                            </CardContent>
+                        </Card>
                     </ListItem>
                 ))}
             </List>
