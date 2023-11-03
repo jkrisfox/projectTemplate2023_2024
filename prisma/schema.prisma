@@ -144,7 +144,6 @@ model Equipments {
   equipmentName     String
   short_description String
   long_description  String
-  description       String
   image_path        String
 }
 
