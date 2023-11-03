@@ -79,7 +79,8 @@ export default function ToDos() {
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} onClick={() => updateTodo({index:idx})}/>
+                    <Checkbox checked={todo.done} disableRipple onChange={() => makeCheck({index: idx})}/>
+
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>

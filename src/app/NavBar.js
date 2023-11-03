@@ -8,9 +8,7 @@ export default function NavBar() {
   const pathname = usePathname();
   const links = [
     { path: '/', name: 'Home' }, 
-    { path: '/todos', name: 'ToDos' }
-    /*,
-    {path: '/demo_profile', name: 'demoprofile'} */
+    { path: '/search', name: 'Search'}
   ];
 
   return (
@@ -22,6 +20,8 @@ export default function NavBar() {
                   href={l.path}
                   sx={{ my: 2, color: 'white', display: 'block', textDecoration: (isActive ? 'underline' : 'inherit') }}
                   key={l.path}
+                  variant = "outlined"
+                  color = "inherit"
           >{l.name}</Button>
         )
       })}

@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import AdbIcon from '@mui/icons-material/Adb';
+import AdbIcon from '@mui/icons-material/Pets';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import NavBar from './NavBar';
@@ -15,6 +15,8 @@ import Signup from './Signup';
 import { useSession } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { signOut } from "next-auth/react"
+import { useState } from 'react';
+import Link from 'next/link';
 
 const theme = createTheme({});
 
@@ -25,13 +27,48 @@ export default function RootLayout({ children, title }) {
   let loginSection;
 
   if (status === 'authenticated') {
-    loginSection = <Button variant="outlined" color="inherit" onClick={() => signOut()}>Sign Out</Button>;
+    loginSection = <Button component = {Link} variant="outlined" color="inherit" href = '/todos'>Profile</Button>;
   } else {
     loginSection = <>
       <Login/>
       <Signup/>
     </>;
   }
+
+  const [op, setOp] = useState(true);
+
+  function opClose()
+  {
+    setOp(false);
+  }
+
+  function opOpen()
+  {
+    setOp(true);
+  }
+
+  let navB;
+
+  if (op === true)
+  {
+    navB = <Button variant="outlined" color="inherit" onClick= {() => opClose()}>Option</Button>;
+  } else{
+    if (status === 'authenticated'){
+      navB = <>
+        <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick= {()=> opOpen()}>Close</Button>
+        <NavBar/>
+        <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick={() => signOut()}>SignOut</Button>
+      </>
+    }
+    else{
+      navB = <>
+        <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick= {()=> opOpen()}>Close</Button>
+        <NavBar/>
+      </>
+    }
+  }
+
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -40,14 +77,24 @@ export default function RootLayout({ children, title }) {
         <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              
+            <Box sx={{ flexGrow: 0, mr: 150 }}>
+                <Stack direction='row' spacing={0}>
+                  {navB}
+                </Stack>
+              </Box>
+              
+              <AdbIcon sx={{position: 'absolute', right: '55%' ,display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              
               <Typography
                 variant="h6"
                 noWrap
-                component="a"
+                component={Link}
                 href="/"
                 sx={{
-                  mr: 2,
+                  position: "absolute",
+                  left: '45%',
+                  //mr: 75,
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'monospace',
                   fontWeight: 700,
@@ -58,8 +105,8 @@ export default function RootLayout({ children, title }) {
               >
                 {title}
               </Typography>
-              <NavBar />
-              <Box sx={{ flexGrow: 0 }}>
+              
+              <Box sx={{ position: 'absolute',right : '0%' }}>
                 <Stack direction='row' spacing={2}>
                   {loginSection}
                 </Stack>
