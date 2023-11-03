@@ -1,0 +1,61 @@
+.profile-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.profile-form {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    border: 3px solid black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    max-width: 1000px;
+    height: 900px;
+    width: 100%;
+}
+
+.profile-photo{
+    position:relative
+}
+
+.profile-photo img {
+    max-width: 150px;
+    height: 150px;
+    border-radius: 70%;
+    display: block;
+    margin-bottom: 10px;
+    position:relative
+}
+
+.spacing {
+    position:relative;
+    top: 10px;
+    
+}
+
+.font {
+    font-size:x-large;
+    top: 10px;
+}
+
+.middle {
+    text-align: left;
+    margin-left: 10%;
+    margin-top: 5%;
+
+}
+
+.profile-photo input[type="file"] {
+    display: none;
+}
+
+
+
+input[type="file"] {
+    cursor: pointer;
+}
+
+/* Add any additional styling as needed */
