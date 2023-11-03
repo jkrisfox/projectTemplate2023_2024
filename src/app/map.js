@@ -10,16 +10,16 @@ const containerStyle = {
 };
 
 const center = {
-  lat: -3.745,
-  lng: -38.523
+  lat: 35.299878,
+  lng: -120.662337
 };
 
 export default function Map() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.MAPS_KEY,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_KEY,
   })
-  console.log("loaded?" + isLoaded);
+
   const [map, setMap] = useState(null)
 
   const onLoad = useCallback(function callback(map) {
@@ -45,5 +45,5 @@ export default function Map() {
         { /* Child components, such as markers, info windows, etc. */ }
         <></>
       </GoogleMap>
-  ) : <>MAPS API NOT LOADED...</>
+  ) : <>Loading...</>
 }
