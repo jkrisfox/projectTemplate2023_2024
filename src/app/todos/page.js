@@ -25,18 +25,33 @@ export default function ToDos() {
 
     function addNewTodo() {
         if(newTodo && newTodo.length) {
-            fetch("api/todos", { method: "post", body: JSON.stringify({value: newTodo, done: false}) } ).then((response) => {
+            fetch("/api/todos", { method: "post", body: JSON.stringify({value: newTodo, done: false}) } ).then((response) => {
                 return response.json().then((newTodo) => {
                     setTodos([...todos, newTodo]);
                     setNewTodo('');
                 });
             });
-            
         }
     }
 
     function removeTodo({ index }) {
-        setTodos(todos.filter((v,idx) => idx!==index));
+        const todoItem = todos[index];
+        fetch(`/api/todos/${todoItem.id}`, { method: 'delete' }).then((res) => {
+            if (res.ok) {
+                setTodos(todos.filter((v,idx) => idx!==index));
+            }
+        });
+    }
+
+    function toggleDone({idx, item}) {
+        let updatedItem = {...item, done: !item.done};
+        fetch(`/api/todos/${item.id}}`, {method: 'put', body: JSON.stringify(updatedItem)}).then((res) => {
+            if(res.ok) {
+                const updatedTodos = [...todos];
+                updatedTodos[idx] = updatedItem;
+                setTodos(updatedTodos);
+            }
+        });
     }
 
     useEffect(() => {
@@ -52,11 +67,13 @@ export default function ToDos() {
 
     const toDoItems = isLoading ? loadingItems : todos.map((todo, idx) => {
         return <ListItem key={idx} secondaryAction={
-            <IconButton edge="end" onClick={() => removeTodo({index: idx})}><DeleteForever/></IconButton>   
+            <IconButton edge="end" onClick={() => removeTodo({index: idx})} aria-label='delete todo'><DeleteForever/></IconButton>   
         }>  
             <ListItemButton>
                 <ListItemIcon>
-                    <Checkbox checked={todo.done} disableRipple/>
+                    <Checkbox checked={todo.done} disableRipple onChange={() => {
+                        toggleDone({idx, item: todo})
+                    }} aria-label="toggle done"/>
                 </ListItemIcon>
                 <ListItemText primary={todo.value}/>
             </ListItemButton>
@@ -68,7 +85,7 @@ export default function ToDos() {
             <h2>My ToDos</h2>
             <List sx={{ width: '100%', maxWidth: 500 }}>
                 { toDoItems }
-                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo}><AddBox/></IconButton>}>
+                {!isLoading && <ListItem key="newItem" secondaryAction={<IconButton edge="end" onClick={addNewTodo} aria-label="add button"><AddBox/></IconButton>}>
                     <TextField label="New ToDo Item" fullWidth variant="outlined" value={newTodo} onChange={inputChangeHandler}/> 
                 </ListItem>}
             </List>
