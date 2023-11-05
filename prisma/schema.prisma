@@ -19,4 +19,6 @@ model User {
   name String?
   phoneNumber String?
   location String?
+  profileImageName String?
+  heroImageName String?
 }
