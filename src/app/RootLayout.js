@@ -21,6 +21,9 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const theme = createTheme({
   palette: {
+    nav: {
+      main: '#FFFFFF',
+    },
     primary: {
       main: "#4FB18C",
     },
@@ -55,7 +58,7 @@ export default function RootLayout({ children, title }) {
     loginSection = (
       <Button
         variant="outlined"
-        color='white'
+        color="nav"
         sx={{ color: "white" }}
         onClick={() => signOut()}
       >
