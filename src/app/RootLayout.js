@@ -2,36 +2,34 @@
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import AdbIcon from '@mui/icons-material/Adb';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import NavBar from './NavBar';
-import Login from './Login';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Signup from './Signup';
 import { useSession } from 'next-auth/react';
-import { Button } from '@mui/material';
-import { signOut } from "next-auth/react";
+import { usePathname } from 'next/navigation';
 import './globals.css';
 
 const theme = createTheme({});
 
 export default function RootLayout({ children, title }) {
-
   const { data: session, status }  = useSession();
+  const isLoggedIn = status === 'authenticated';
+  const isLoginPage = usePathname() === '/login';
+  console.log("isLoginPage: ", isLoginPage);
+  console.log("Pathname: ", usePathname());
 
-  let loginSection;
-
-  if (status === 'authenticated') {
-    loginSection = <Button variant="outlined" color="inherit" onClick={() => signOut()}>Sign Out</Button>;
-  } else {
-    loginSection = <>
-      <Login/>
-      <Signup/>
-    </>;
+  if (isLoginPage) {
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box component="main" sx={{ p: 3 }}>
+          {children}
+        </Box>
+      </ThemeProvider>
+    );
   }
 
   return (
@@ -62,11 +60,3 @@ export default function RootLayout({ children, title }) {
     </ThemeProvider>
   );
 }
-
-/*
-<Box sx={{ flexGrow: 0 }}>
-                <Stack direction='column' spacing={2}>
-                  {loginSection}
-                </Stack>
-              </Box>
-*/
