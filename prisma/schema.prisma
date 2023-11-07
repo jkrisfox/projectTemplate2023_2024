@@ -1,7 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// TODO: database schema
 
 generator client {
   provider = "prisma-client-js"
@@ -13,10 +12,32 @@ datasource db {
 }
 
 model User {
-  id  Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+  username String @unique
   email String @unique
-  password String 
+  password String
+  savedListings Listing[]
+  pins Pin[]
   toDos ToDo[]
+}
+
+model Pin {
+    id Int @id @default(autoincrement())
+    owner User @relation(fields: [ownerId], references: [id])
+    ownerId Int
+    address Listing @relation(fields: [placeId], references: [placeId])
+    placeId String
+    score Int
+    image Bytes
+    season String
+    year Int
+}
+
+model Listing {
+  placeId String @id
+  blacklisted Boolean
+  pins Pin[]
+  users User[]
 }
 
 model ToDo {
