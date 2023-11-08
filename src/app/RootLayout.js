@@ -25,7 +25,7 @@ export default function RootLayout({ children, title }) {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Box component="main" sx={{ p: 3 }}>
+        <Box component="main" sx={{ p: 0 }}>
           {children}
         </Box>
       </ThemeProvider>
