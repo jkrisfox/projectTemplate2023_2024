@@ -23,7 +23,7 @@ model User {
 }
 
 model Listing {
-  id Int @id
+  id Int @id @default(autoincrement())
   placeId String @unique
   blacklisted Boolean
   users User[]
@@ -32,7 +32,7 @@ model Listing {
 }
 
 model Review {
-  id Int @id
+  id Int @id @default(autoincrement())
   user User @relation(fields: [userId], references: [id])
   userId Int
   listing Listing @relation(fields: [listingId], references: [id])
@@ -43,7 +43,7 @@ model Review {
 }
 
 model Image {
-  id Int @id
+  id Int @id @default(autoincrement())
   user User @relation(fields: [userId], references: [id])
   userId Int
   listing Listing @relation(fields: [listingId], references: [id])
