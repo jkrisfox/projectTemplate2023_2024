@@ -19,8 +19,9 @@ import { checkLoggedIn } from "@/lib/auth";
 // }
 
 
-function getListingId(placeId) {
-  const listingId = prisma.listing.findUnique({
+// returns the listingId of a placeId, (creates a new Listing if there is no listing with that placeId)
+async function getListingId(placeId) {
+  const listingId = await prisma.listing.findUnique({
     where: {
       placeId: placeId, 
     }, 
@@ -28,13 +29,14 @@ function getListingId(placeId) {
       id: true, 
     }
   });
+
   // if a Listing with the placeId exists, return its id
-  if (listingId != NULL) {
-    return listingId;
+  if (listingId != null) {
+    return listingId["id"];
   }
 
   // otherwise, create a new Listing and return its id
-  const newListingId = prisma.listing.create({
+  const newListingId = await prisma.listing.create({
     data: {
       placeId: placeId, 
     }, 
@@ -42,12 +44,13 @@ function getListingId(placeId) {
       id: true, 
     }
   });
-  return newListingId;
+  return newListingId["id"];
 }
 
 
-function getSeasonId(seasonName) {
-  const seasonId = prisma.season.findUnique({
+// returns the seasonId of seasonName, or null if there is no season with that name
+async function getSeasonId(seasonName) {
+  const seasonId = await prisma.season.findUnique({
     where: {
       name: seasonName, 
     }, 
@@ -55,7 +58,10 @@ function getSeasonId(seasonName) {
       id: true, 
     }
   });
-  return seasonId;
+  if ("id" in seasonId) {
+    return seasonId["id"];
+  }
+  return null;
 }
 
 
@@ -66,26 +72,29 @@ export async function POST(request) {
     return NextResponse.json({error: 'not signed in'}, {status: 403});
   }
 
+  let data;
   try {
-    const { placeId, seasonName, score } = await request.json();
+    data = await request.json();
   }
   catch(error) {
     console.error(error);
-    return NextResponse.json({error: error}, {status: "error"}, {data: request});
+    return NextResponse.json({error: error}, {status: 501}, {data: request});
   }
+  const {placeId, seasonName, score} = data;
 
-  seasonId = getSeasonId(seasonName);
-  if (seasonId === NULL) {
-    return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: "error"});
+  const listingId = await getListingId(placeId);
+  const seasonId = await getSeasonId(seasonName);
+  if (seasonId === null) {
+    return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 502});
   }
   if (!Number.isInteger(score)) {
-    return NextResponse.json({error: `score ${score} is not an Integer`}, {status: "error"});
+    return NextResponse.json({error: `score ${score} is not an Integer`}, {status: 503});
   }
 
   const review = await prisma.review.create({
     data: {
         userId: loggedInData.user?.id, 
-        listingId: getListingId(placeId), 
+        listingId: listingId, 
         seasonId: seasonId, 
         score: score, 
     }
