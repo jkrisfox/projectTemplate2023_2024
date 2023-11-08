@@ -2,15 +2,19 @@
 
 import Image from 'next/image'
 import Map from './map'
+import Link from 'next/link';
 
 
 export default function Home() {
   return (
-    <>
-      <h1>Welcome to CSC 307</h1>
-      <div>
-        <Map></Map> WHAT IS HAPPENING??????
-      </div>
-    </>
+    <Link href="/review">
+    
+        <h1>Welcome to CSC 307</h1>
+        <div>
+          <Map></Map>
+          Leave a Review!
+        </div>
+      
+    </Link>
   )
 }
