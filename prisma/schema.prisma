@@ -11,14 +11,87 @@ datasource db {
 }
 
 model User {
-  id  Int @id @default(autoincrement())
   email String @unique
   password String
   isVerified Boolean @default(false)
   isAdmin Boolean @default(false)
   name String?
   phoneNumber String?
-  location String?
   profileImageName String?
   heroImageName String?
+  id                 String             @id @default(uuid())
+  fullName           String
+  hashedPassword     String?
+  location           String?
+  isStudent          Boolean            @default(false)
+  studentVerification StudentVerification?
+  listings           Listing[]
+  favoriteListings   Listing[]          @relation("UserFavorites")
+  receivedMessages   Message[]          @relation("userReceived")
+  sentMessages       Message[]          @relation("userSent")
+  adminActions       AdminAction[]
+  profilePicture     String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 }
+
+model StudentVerification {
+  id          String   @id @default(uuid())
+  userId      String   @unique 
+  user        User     @relation(fields: [userId], references: [id])
+  isVerified  Boolean  @default(false)
+  verifiedAt  DateTime?
+}
+
+model Listing {
+  id             String           @id @default(uuid())
+  title          String
+  description    String
+  price          Float?
+  isFree         Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  userId         String
+  user           User             @relation(fields: [userId], references: [id])
+  categoryId     String
+  category       Category         @relation(fields: [categoryId], references: [id])
+  images         String[]
+  location       String?
+  priceHistory   PriceHistory[]
+  favoriteBy     User[]           @relation("UserFavorites")
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String
+  listings  Listing[]
+}
+
+model Message {
+  id           String   @id @default(uuid())
+  content      String
+  createdAt    DateTime @default(now())
+  senderId     String
+  sender       User     @relation(name: "userSent", fields: [senderId], references: [id])
+  recipientId  String
+  recipient    User     @relation(name: "userReceived", fields: [recipientId], references: [id])
+}
+
+model AdminAction {
+  id            String   @id @default(uuid())
+  actionType    String   // e.g. 'BAN_USER', 'DELETE_POST'
+  description   String?
+  createdAt     DateTime @default(now())
+  affectedUserId String
+  affectedUser  User     @relation(fields: [affectedUserId], references: [id])
+}
+
+model PriceHistory {
+  id         String   @id @default(uuid())
+  listingId  String
+  price      Float
+  changedAt  DateTime @default(now())
+  listing    Listing  @relation(fields: [listingId], references: [id])
+}
+
+
