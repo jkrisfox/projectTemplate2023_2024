@@ -1,20 +1,21 @@
-/*
-  Warnings:
-
-  - Added the required column `name` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
 
 -- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
 
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "ProfileImage" BYTEA,
-ADD COLUMN     "experience" TEXT,
-ADD COLUMN     "name" TEXT NOT NULL,
-ADD COLUMN     "verified" BOOLEAN;
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "experience" TEXT,
+    "verified" BOOLEAN,
+    "ProfileImage" BYTEA,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Friendship" (
@@ -121,6 +122,9 @@ CREATE TABLE "_Attendee" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Votes_postId_userId_key" ON "Votes"("postId", "userId");
 
 -- CreateIndex
@@ -185,16 +189,3 @@ ALTER TABLE "_Attendee" ADD CONSTRAINT "_Attendee_A_fkey" FOREIGN KEY ("A") REFE
 
 -- AddForeignKey
 ALTER TABLE "_Attendee" ADD CONSTRAINT "_Attendee_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
-INSERT INTO "Equipments" ("equipmentName", "short_description", "long_description", "image_path") 
-VALUES 
-  ('Treadmill', 'A cardio machine for running or walking indoors.', 'The treadmill is a versatile cardio machine that can be used for running or walking. To get started, set the speed and incline levels to match your fitness level. For safety, always use the attached safety clip, maintain an upright posture, and avoid leaning on the handrails. This machine is perfect for improving cardiovascular endurance and burning calories. Keep a steady pace and gradually increase the intensity as you progress on your fitness journey.', './treadmill.jpg'), 
-  ('Elliptical Trainer', 'Low-impact machine for full-body workouts.', 'The elliptical trainer is an excellent low-impact machine that offers a full-body workout. Adjust the resistance level to challenge yourself. For the best results, maintain proper form by keeping your back straight and your core engaged. Avoid leaning on the handrails, as this reduces the effectiveness of the workout. This equipment is perfect for those looking to improve cardiovascular fitness without excessive impact on the joints.', './elliptical_trainer.jpg'), 
-  ('Stationary Bike', 'Great for cardiovascular workouts and leg strength.', 'The stationary bike is a fantastic choice for cardiovascular workouts and strengthening leg muscles. Adjust the resistance level and pedal at a comfortable pace. Ensure proper form by keeping your back straight, and consider using pedal straps to secure your feet for added stability. This machine is ideal for those seeking to improve endurance and leg strength in a joint-friendly way.', './stationary_bike.jpg'), 
-  ('Leg Press Machine', 'Strengthens leg muscles and glutes.', 'The leg press machine is perfect for strengthening your leg muscles, including quadriceps, hamstrings, and glutes. Adjust the weight to your preference, and ensure that your feet are shoulder-width apart on the footplate. Push the weight while maintaining your back against the backrest. This machine is essential for developing lower body strength and muscle tone.', './leg_press_machine.jpg'), 
-  ('Chest Press Machine', 'Targets chest and triceps muscles.', 'The chest press machine focuses on working your chest and triceps. Customize your settings by adjusting the seat and grip handles to your comfort. When using the machine, keep your back against the backrest, exhale while pushing, and maintain control during the entire motion. This equipment is excellent for building chest and triceps strength.', './chest_press_machine.jpg'), 
-  ('Lat Pulldown Machine', 'Works the upper back and biceps.', 'The lat pulldown machine is highly effective for targeting the upper back and biceps. Customize your workout by adjusting the seat and selecting an appropriate weight. Maintain proper form by keeping your back straight, pulling the bar down to your chest, and controlling the motion as you release it. This equipment is perfect for developing a strong and defined upper back.', './lat_pulldown_machine.jpg'), 
-  ('Rowing Machine', 'Full-body cardio and strength workout.', 'The rowing machine offers a full-body workout that combines cardiovascular exercise with strength training. Start by setting the resistance to your liking. To ensure safety and effectiveness, focus on maintaining proper rowing technique. This equipment is excellent for improving cardiovascular fitness, building strength, and toning multiple muscle groups simultaneously.', './rowing_machine.jpg'), 
-  ('Smith Machine', 'Versatile for various strength exercises.', 'The Smith machine is a versatile piece of equipment that allows for a wide range of strength exercises. It features a barbell attached to a guided track, providing stability and safety during exercises like squats, bench presses, and lunges. Customize your workouts by adjusting the weight and bar height. Proper form and control are crucial for effective and safe training on this machine.', './smith_machine.jpg'), 
-  ('Stair Climber', 'Cardio and lower body workout.', 'The stair climber is a great option for cardiovascular exercise and lower body strength. Start with a comfortable speed and gradually increase the intensity. Maintain an upright posture during your workout. Using this machine is a fantastic way to improve endurance and sculpt your legs. Always practice safety by using the handrails as needed.', './stair_climber.jpg'), 
-  ('Leg Extension Machine', 'Isolate quadriceps for strength and tone.', 'The leg extension machine is designed to isolate and strengthen the quadriceps muscles. Set the weight to your desired level', './stair_climber.jpg');
