@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import bcrypt from 'bcryptjs';
 import { USER_NOT_SIGNED_IN } from "@/lib/response";
+import { checkLoggedIn } from "@/lib/auth"
 
 export async function POST(request) {
   /**
