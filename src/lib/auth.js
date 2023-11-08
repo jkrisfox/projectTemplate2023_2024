@@ -4,7 +4,7 @@ import { authOptions } from "./authOptions";
 const checkLoggedIn = async function() {
   const session = await getServerSession(authOptions);
   return {
-    userId: session?.user,
+    user: session?.user,
     loggedIn: !!session
   };
 }

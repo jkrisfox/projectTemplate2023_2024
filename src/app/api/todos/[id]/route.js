@@ -7,11 +7,11 @@ export async function PUT(request, { params }) {
    const id = parseInt(params.id);
    if (loggedInData.loggedIn && id) {
     const { value, done } = await request.json();
-    console.log("finding", {id, done, value, userId: loggedInData.user.id});
+    console.log("finding", {id, done, value, ownerId: loggedInData.user.id});
     try {
       const todo = await prisma.toDo.update({
         where: {
-          id, userId: loggedInData.user.id
+          id, ownerId: loggedInData.user.id
         }, 
         data: {
           value, 
@@ -33,7 +33,7 @@ export async function DELETE(request, { params }) {
     const todo = await prisma.toDo.delete({
       where: {
         id,
-        userId: loggedInData.user?.id
+        ownerId: loggedInData.user?.id
       }
     });
     return NextResponse.json({ deleted: todo });

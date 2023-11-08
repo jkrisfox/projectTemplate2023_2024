@@ -8,7 +8,7 @@ export async function GET(request) {
   if (loggedInData.loggedIn) {
     const todos = await prisma.toDo.findMany({
       where: {
-        userId: {
+        ownerId: {
           equals: loggedInData.user?.id
         }
       }
@@ -25,7 +25,7 @@ export async function POST(request) {
     const { done, value } = await request.json();
     const todo = await prisma.toDo.create({
       data: {
-        userId: loggedInData.user?.id,
+        ownerId: loggedInData.user?.id,
         done,
         value
       }
