@@ -1,17 +1,16 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import { signIn } from 'next-auth/react';
-import { Box } from '@mui/material';
+import { useState } from "react";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
+import { signIn } from "next-auth/react";
+import { Box } from "@mui/material";
 
 export default function Login() {
-
-  const [ open, setOpen ] = useState(false);
-  const [ formValues, setFormValues ] = useState({email: '', password: ''});
-  const [ error, setError ] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [formValues, setFormValues] = useState({ email: "", password: "" });
+  const [error, setError] = useState(false);
 
   function handleLoginButton() {
     setOpen(true);
@@ -24,39 +23,39 @@ export default function Login() {
 
   function reset() {
     setError(false);
-    setFormValues({email: '', password: ''});
+    setFormValues({ email: "", password: "" });
   }
 
   function handleSignin() {
-    signIn("normal", {...formValues, redirect: false}).then((result) => {
+    signIn("normal", { ...formValues, redirect: false }).then((result) => {
       if (!result.error) {
         setOpen(false);
         reset();
       } else {
         setError(true);
       }
-    })
+    });
   }
 
-  function handleChange({field, value}) {
-    setFormValues({...formValues, [field]: value});
+  function handleChange({ field, value }) {
+    setFormValues({ ...formValues, [field]: value });
   }
-  
+
   return (
     <>
-      <Box sx={{width: 0.5, margin: 'auto', textAlign: 'center'}}>
-      <Box
-        component="img"
-        alt="SLO Marketplace Logo"
-        src="/logo-192x192.png"
-      />
+      <Box sx={{ width: 0.5, margin: "auto", textAlign: "center" }}>
+        <Box
+          component="img"
+          alt="SLO Marketplace Logo"
+          src="/logo-192x192.png"
+        />
         <h1>Log In</h1>
-        <form onSubmit={handleSignin}>
-          { error ? (
+        <form onSubmit={handleSignin()}>
+          {error ? (
             <Alert severity="error">
               There was an issue signing in! Check email and password.
             </Alert>
-          ) : null }
+          ) : null}
 
           <TextField
             autoFocus
@@ -66,8 +65,11 @@ export default function Login() {
             type="email"
             fullWidth
             value={formValues.email}
-            onChange={(e) => handleChange({field: 'email', value: e.target.value })}
+            onChange={(e) =>
+              handleChange({ field: "email", value: e.target.value })
+            }
             variant="standard"
+            error={formValues.email?.error}
           />
           <br></br>
           <TextField
@@ -77,8 +79,10 @@ export default function Login() {
             type="password"
             fullWidth
             value={formValues.password}
-            onChange={(e) => handleChange({field: 'password', value: e.target.value })}
-            variant='standard'
+            onChange={(e) =>
+              handleChange({ field: "password", value: e.target.value })
+            }
+            variant="standard"
           />
           <br></br>
           <br></br>
