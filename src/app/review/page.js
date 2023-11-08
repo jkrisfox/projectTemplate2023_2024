@@ -12,6 +12,7 @@ export default function Review() {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(null);
   const [markerAddress, setMarkerAddress] = useState(null);
+  const [markerPlaceId, setMarkerPlaceId] = useState(null);
   const pathname = usePathname();
 
   const handleRatingChange = (event) => {
@@ -21,8 +22,9 @@ export default function Review() {
   const handleMarkerPlacement = (position) => {
     setMarkerPosition(position);
     // Use the geocoder to get the address from LatLng
-    getAddressFromLatLng(position).then((address) => {
-      setMarkerAddress(address);
+    getPlaceFromLatLng(position).then((result) => {
+      setMarkerAddress(result.formatted_address);
+      setMarkerPlaceId(result.place_id);
     });
   };
 
@@ -35,23 +37,31 @@ export default function Review() {
     } else if (!markerPosition) {
       alert('Please select a location on the map.');
     } else {
-      // Handle the form submission logic here, including markerPosition and markerAddress
+      // TODO: Handle the form submission logic here, including markerPosition and markerAddress
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
+
+      const seasonName = "Thanksgiving 2023";  // TODO: get actual season instead of hardcoding
+      const placeId = markerPlaceId;
+      fetch("api/reviews", { method: "post", body: JSON.stringify({placeId: placeId, seasonName: seasonName, score: rating}) } ).then((response) => {
+        console.log("Sent POST request for review of", placeId);
+        console.log("post response:", response);
+      });
       
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);
     }
   };
 
-  const getAddressFromLatLng = (latLng) => {
+  // returns a GeocoderResult, including formatted_address and place_id fields
+  const getPlaceFromLatLng = (latLng) => {
     return new Promise((resolve, reject) => {
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ location: latLng }, (results, status) => {
         if (status === 'OK') {
           if (results[0]) {
-            resolve(results[0].formatted_address);
+            resolve(results[0]);
           } else {
             reject('No results found');
           }
