@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  userId Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
   username String @unique
   email String @unique
   password String
@@ -23,7 +23,7 @@ model User {
 }
 
 model Listing {
-  addressId Int @id
+  id Int @id
   placeId String @unique
   blacklisted Boolean
   users User[]
@@ -32,29 +32,29 @@ model Listing {
 }
 
 model Review {
-  reviewId Int @id
-  uId User @relation(fields: [userId], references: [userId])
+  id Int @id
+  user User @relation(fields: [userId], references: [id])
   userId Int
-  aId Listing @relation(fields: [addressId], references: [addressId])
+  listing Listing @relation(fields: [addressId], references: [id])
   addressId Int
-  sId Season @relation(fields: [seasonId], references: [seasonId])
+  season Season @relation(fields: [seasonId], references: [id])
   seasonId Int
   score Int
 }
 
 model Image {
-  imageId Int @id
-  uId User @relation(fields: [userId], references: [userId])
+  id Int @id
+  uId User @relation(fields: [userId], references: [id])
   userId Int
-  aId Listing @relation(fields: [addressId], references: [addressId])
+  aId Listing @relation(fields: [addressId], references: [id])
   addressId Int
-  sId Season @relation(fields: [seasonId], references: [seasonId])
+  sId Season @relation(fields: [seasonId], references: [id])
   seasonId Int
   image Bytes
 }
 
 model Season {
-  seasonId Int @id @default(autoincrement())
+  id Int @id @default(autoincrement())
   name String
   start DateTime
   end DateTime
@@ -66,6 +66,6 @@ model ToDo {
   id Int @id @default(autoincrement())
   value String
   done Boolean
-  uId User @relation(fields: [userId], references: [userId])
+  user User @relation(fields: [userId], references: [id])
   userId Int
 }
