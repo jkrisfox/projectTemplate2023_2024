@@ -12,15 +12,6 @@ export default function Signup() {
   const [ formState, setFormState ] = useState({});
   const [ error, setError ] = useState(false);
 
-  function handleSignupButton() {
-    setOpen(true);
-    setFormState({});
-  }
-
-  function handleClose() {
-    setOpen(false);
-  }
-
   function handleSignup(event) {
     event.preventDefault();
     let valid  = event.currentTarget.reportValidity();
@@ -40,6 +31,7 @@ export default function Signup() {
             if (!result.error) {
               setOpen(false);
               setError(false);
+              window.location.href = "../"    // Reroute to home page
             } else {
               setError(true);
             }
