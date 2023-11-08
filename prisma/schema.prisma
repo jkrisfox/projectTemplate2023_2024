@@ -44,11 +44,11 @@ model Review {
 
 model Image {
   id Int @id
-  uId User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
   userId Int
-  aId Listing @relation(fields: [addressId], references: [id])
+  listing Listing @relation(fields: [addressId], references: [id])
   addressId Int
-  sId Season @relation(fields: [seasonId], references: [id])
+  season Season @relation(fields: [seasonId], references: [id])
   seasonId Int
   image Bytes
 }
