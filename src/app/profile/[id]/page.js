@@ -9,7 +9,7 @@ import {
 import { useDropzone } from 'react-dropzone';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SettingsIcon from '@mui/icons-material/Settings';
-import MyListings from '../../components/MyListings';
+import MyListings from '../../../components/MyListings';
 
 export default function Profile() {
   const [currentTab, setCurrentTab] = useState(0);
