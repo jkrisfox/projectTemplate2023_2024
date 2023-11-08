@@ -12,7 +12,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import EventIcon from '@mui/icons-material/Event';
-import { Card, CardContent, Box } from "@mui/material";
+import { Card, CardContent, Container, Paper, Typography } from "@mui/material";
+import '../globals.css';
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -137,9 +138,19 @@ const Events = () => {
         setEvents(updatedEvents);
     };
 
+    const centerDiv = {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "stretch"
+    }
+
+
     return (
+        <Container className="events-container">
+        <Paper>
+        <div style={centerDiv}>
         <div>
-            <h2>Events</h2>
+            <h2 style={{textAlign: "center"}}>Events</h2>
             <List>
                 {events.map((event, index) => (
                     <ListItem key={index}>
@@ -149,9 +160,9 @@ const Events = () => {
                                     primary={event.title}
                                     secondary={
                                         <>
-                                            <p>Creator: {event.creator}</p>
-                                            <p>Time: {event.startTime} - {event.endTime}</p>
-                                            <p>Location: {event.location}</p>
+                                            <div>Creator: {event.creator}</div>
+                                            <div>Time: {event.startTime} - {event.endTime}</div>
+                                            <div>Location: {event.location}</div>
                                             <Button startIcon={<ThumbUpIcon />} onClick={() => handleInterested(index)}>
                                                 Interested ({event.interestedCount})
                                             </Button>
@@ -170,19 +181,23 @@ const Events = () => {
                                             )}
                                         </>
                                     }
+                                    secondaryTypographyProps={{component : "div"}}
                                 />
                             </CardContent>
                         </Card>
+
                     </ListItem>
                 ))}
             </List>
 
-            <Button
-                variant="contained"
-                onClick={handleClickOpen}
-            >
-                Add Event
-            </Button>
+            <div style={{textAlign: "center"}}>
+                <Button
+                    variant="contained"
+                    onClick={handleClickOpen}
+                >
+                    Add Event
+                </Button>
+            </div>
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Add New Event</DialogTitle>
@@ -235,6 +250,9 @@ const Events = () => {
                 </DialogActions>
             </Dialog>
         </div>
+        </div>
+        </Paper>
+        </Container>
     );
 };
 

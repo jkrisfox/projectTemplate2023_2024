@@ -183,6 +183,13 @@ body {
   background-color: var(--white);
 }
 
+.events-container {
+  background-color: var(--white);
+  margin-top: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
 /* Root Equipment Page Styles */
 .equipment-container {
   background-color: var(--white);
