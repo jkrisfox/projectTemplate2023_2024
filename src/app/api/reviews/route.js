@@ -78,17 +78,17 @@ export async function POST(request) {
   }
   catch(error) {
     console.error(error);
-    return NextResponse.json({error: error}, {status: 501}, {data: request});
+    return NextResponse.json({error: error}, {status: 500}, {data: request});
   }
   const {placeId, seasonName, score} = data;
 
   const listingId = await getListingId(placeId);
   const seasonId = await getSeasonId(seasonName);
   if (seasonId === null) {
-    return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 502});
+    return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 500});
   }
   if (!Number.isInteger(score)) {
-    return NextResponse.json({error: `score ${score} is not an Integer`}, {status: 503});
+    return NextResponse.json({error: `score ${score} is not an Integer`}, {status: 500});
   }
 
   const review = await prisma.review.create({
