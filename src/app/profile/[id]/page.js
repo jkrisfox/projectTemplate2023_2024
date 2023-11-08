@@ -42,13 +42,13 @@ export default function Profile() {
   };
 
   return (
-    <Box sx={{ padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Hero Section */}
       <Paper 
-        elevation={3}
+        elevation={1}
         sx={{ 
           width: '100%', 
-          height: 250, 
+          height: 300, 
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
