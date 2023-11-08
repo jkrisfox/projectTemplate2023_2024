@@ -16,6 +16,7 @@ import {
 const RESEND_INTERVAL = 30;
 
 export default function LoginPage() {
+  const [name, setName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -73,7 +74,7 @@ export default function LoginPage() {
         const response = await fetch("/api/users", {
           method: "POST",
           body: JSON.stringify({
-            name: "John Doe",
+            name: name,
             email: userEmail,
             password: password,
           }),
@@ -150,6 +151,17 @@ export default function LoginPage() {
               >
                 {isRegistering ? "Register Account" : "Welcome back!"}
               </Typography>
+              {isRegistering && (
+                <TextField
+                  label="Name"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: 2 }}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={verificationSent}
+                />
+              )}
               <TextField
                 label="Cal Poly email"
                 variant="outlined"
