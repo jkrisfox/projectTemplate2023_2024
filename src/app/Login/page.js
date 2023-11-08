@@ -12,15 +12,6 @@ export default function Login() {
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const [error, setError] = useState(false);
 
-  function handleLoginButton() {
-    setOpen(true);
-  }
-
-  function handleClose() {
-    reset();
-    setOpen(false);
-  }
-
   function reset() {
     setError(false);
     setFormValues({ email: "", password: "" });
@@ -29,8 +20,10 @@ export default function Login() {
   function handleSignin() {
     signIn("normal", { ...formValues, redirect: false }).then((result) => {
       if (!result.error) {
+        // Successful login
         setOpen(false);
         reset();
+        window.location.href = "../"    // Reroute to home page
       } else {
         setError(true);
       }
@@ -50,7 +43,7 @@ export default function Login() {
           src="/logo-192x192.png"
         />
         <h1>Log In</h1>
-        <form onSubmit={handleSignin()}>
+        <form>
           {error ? (
             <Alert severity="error">
               There was an issue signing in! Check email and password.
@@ -86,8 +79,8 @@ export default function Login() {
           />
           <br></br>
           <br></br>
-          <Button type="submit">Log In</Button>
         </form>
+        <Button onClick={() => handleSignin()}>Log In</Button>
       </Box>
     </>
   );
