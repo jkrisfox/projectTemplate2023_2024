@@ -55,7 +55,7 @@ model Image {
 
 model Season {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   start DateTime
   end DateTime
   reviews Review[]
