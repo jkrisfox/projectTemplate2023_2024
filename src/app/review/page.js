@@ -11,6 +11,7 @@ export default function Review() {
   const [rating, setRating] = useState(0);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(null);
+  const [markerAddress, setMarkerAddress] = useState(null);
   const pathname = usePathname();
 
   const handleRatingChange = (event) => {
@@ -19,6 +20,10 @@ export default function Review() {
 
   const handleMarkerPlacement = (position) => {
     setMarkerPosition(position);
+    // Use the geocoder to get the address from LatLng
+    getAddressFromLatLng(position).then((address) => {
+      setMarkerAddress(address);
+    });
   };
 
   const handleSubmit = (event) => {
@@ -30,39 +35,56 @@ export default function Review() {
     } else if (!markerPosition) {
       alert('Please select a location on the map.');
     } else {
-      // Handle the form submission logic here, including markerPosition
+      // Handle the form submission logic here, including markerPosition and markerAddress
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
+      console.log('Marker address:', markerAddress);
       
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);
     }
   };
 
+  const getAddressFromLatLng = (latLng) => {
+    return new Promise((resolve, reject) => {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location: latLng }, (results, status) => {
+        if (status === 'OK') {
+          if (results[0]) {
+            resolve(results[0].formatted_address);
+          } else {
+            reject('No results found');
+          }
+        } else {
+          reject('Geocoder failed due to: ' + status);
+        }
+      });
+    });
+  };
+
   return (
     <>
       <h1>Leave a Review</h1>
       <div>
-      <Link href="/">
-        Back to Home
-        </Link>
+        <Link href="/">Back to Home</Link>
         <MapWithMarker onMarkerPlaced={handleMarkerPlacement} />
         {reviewSubmitted ? (
           <p>Your review has been submitted!</p>
         ) : (
-        <form onSubmit={handleSubmit}>
-          <label>
-            Rating (1-10):
-            <input
-              type="number"
-              value={rating}
-              onChange={handleRatingChange}
-              min="1"
-              max="10"
-            />
-          </label>
-          <button type="submit">Submit Review</button>
-        </form>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Rating (1-10):
+              <input
+                type="number"
+                value={rating}
+                onChange={handleRatingChange}
+                min="1"
+                max="10"
+              />
+            </label>
+            {markerAddress && <p>Selected Address: {markerAddress}</p>}
+            <button type="submit">Submit Review</button>
+          </form>
         )}
       </div>
     </>
