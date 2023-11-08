@@ -16,6 +16,7 @@ model User {
   username String @unique
   email String @unique
   password String
+  admin Boolean @default(false)
   savedListings Listing[]
   reviews Review[]
   images Image[]
