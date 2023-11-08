@@ -12,38 +12,60 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  userId Int @id @default(autoincrement())
   username String @unique
   email String @unique
   password String
   savedListings Listing[]
-  pins Pin[]
+  reviews Review[]
+  images Image[]
   toDos ToDo[]
 }
 
-model Pin {
-    id Int @id @default(autoincrement())
-    owner User @relation(fields: [ownerId], references: [id])
-    ownerId Int
-    address Listing @relation(fields: [placeId], references: [placeId])
-    placeId String
-    score Int
-    image Bytes
-    season String
-    year Int
+model Listing {
+  addressId Int @id
+  placeId String @unique
+  blacklisted Boolean
+  users User[]
+  reviews Review[]
+  images Image[]
 }
 
-model Listing {
-  placeId String @id
-  blacklisted Boolean
-  pins Pin[]
-  users User[]
+model Review {
+  reviewId Int @id
+  uId User @relation(fields: [userId], references: [userId])
+  userId Int
+  aId Listing @relation(fields: [addressId], references: [addressId])
+  addressId Int
+  sId Season @relation(fields: [seasonId], references: [seasonId])
+  seasonId Int
+  score Int
+}
+
+model Image {
+  imageId Int @id
+  uId User @relation(fields: [userId], references: [userId])
+  userId Int
+  aId Listing @relation(fields: [addressId], references: [addressId])
+  addressId Int
+  sId Season @relation(fields: [seasonId], references: [seasonId])
+  seasonId Int
+  image Bytes
+}
+
+model Season {
+  seasonId Int @id @default(autoincrement())
+  name String
+  start DateTime
+  end DateTime
+  reviews Review[]
+  images Image[]
 }
 
 model ToDo {
   id Int @id @default(autoincrement())
   value String
   done Boolean
-  owner User @relation(fields: [ownerId], references: [id])
-  ownerId Int 
+  uId User @relation(fields: [userId], references: [userId])
+  userId Int
 }
