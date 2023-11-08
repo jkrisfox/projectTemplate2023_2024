@@ -30,6 +30,22 @@ export default function LoginPage() {
   const [countdown, setCountdown] = useState(0);
   const [canResend, setCanResend] = useState(true);
 
+  const isEmailValid = (email) => {
+    //regex checks for a valid email format
+    // and that it ends with @calpoly.edu
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.endsWith('@calpoly.edu');
+  };
+
+  const validateEmail = () => {
+    if (!isEmailValid(userEmail)) {
+      setErrorMessage("Please enter a valid Cal Poly email.");
+      return false;
+    }
+
+    setErrorMessage("");
+    return true;
+  };
+
   const validatePassword = () => {
     const isValid = password.length >= 8;
     setIsPasswordValid(isValid);
@@ -239,8 +255,12 @@ export default function LoginPage() {
                 sx={{ borderRadius: 2 }}
                 onClick={async () => {
                   if (isRegistering) {
+                    if (!validateEmail()) {
+                      // stops if email is invalid
+                      return;
+                    }
+                    
                     if (!verificationSent) {
-                      // email not yet verified
                       if (validatePassword()) {
                         const code = generateCode();
                         setVerificationCode(code);
@@ -287,7 +307,19 @@ export default function LoginPage() {
                 color="primary"
                 fullWidth
                 sx={{ borderRadius: 2, marginTop: 2 }}
-                onClick={() => setIsRegistering(!isRegistering)}
+                onClick={() => {
+                  // switch between registering and login state
+                  setIsRegistering(!isRegistering);
+                  // Reset states as if just started logging in process
+                  if (isRegistering) {
+                    setVerificationSent(false);
+                    setPassword('');
+                    setConfirmPassword('');
+                    setEnteredCode('');
+                    setIsPasswordValid(false);
+                    setErrorMessage('');
+                  }
+                }}
               >
                 {isRegistering ? "Back to Login" : "Register"}
               </Button>
