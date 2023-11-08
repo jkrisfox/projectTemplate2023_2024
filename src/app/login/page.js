@@ -63,12 +63,31 @@ export default function LoginPage() {
   };
 
   const generateCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit code
+    return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
-  const verifyCode = () => {
+  const verifyCode = async () => {
     if (enteredCode === verificationCode) {
       console.log("Code verified!");
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          body: JSON.stringify({
+            name: "John Doe",
+            email: userEmail,
+            password: password,
+          }),
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          console.log("Account created!", data);
+        } else {
+          setErrorMessage(data.message || "Failed to create account.");
+        }
+      } catch (error) {
+        setErrorMessage("Network error, please try again.");
+      }
     } else {
       setErrorMessage("Incorrect verification code.");
     }
