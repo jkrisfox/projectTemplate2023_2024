@@ -25,7 +25,7 @@ model User {
 model Listing {
   id Int @id @default(autoincrement())
   placeId String @unique
-  blacklisted Boolean
+  blacklisted Boolean @default(false)
   users User[]
   reviews Review[]
   images Image[]
