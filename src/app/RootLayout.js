@@ -19,10 +19,13 @@ import { signOut } from "next-auth/react";
 import { Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 const theme = createTheme({
   palette: {
+    nav: {
+      main: "#FFFFFF",
+    },
     primary: {
       main: "#4FB18C",
     },
@@ -39,8 +42,8 @@ const theme = createTheme({
 });
 
 export default function RootLayout({ children, title }) {
-  const pathname = usePathname();  // Use the hook here
-  
+  const pathname = usePathname(); // Use the hook here
+
   const { data: session, status } = useSession();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -59,7 +62,7 @@ export default function RootLayout({ children, title }) {
     loginSection = (
       <Button
         variant="outlined"
-        color="white"
+        color="nav"
         sx={{ color: "white" }}
         onClick={() => signOut()}
       >
