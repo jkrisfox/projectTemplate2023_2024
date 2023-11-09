@@ -32,9 +32,12 @@ export default function Signup() {
     valid = valid && data.get('password') == data.get('passwordConfirmation');
     if (valid) {
       const signUpData = {};
+      signUpData['name'] = data.get('name')
+      signUpData['username'] = data.get('username')
       signUpData['email'] = data.get('email');
       signUpData['password'] = data.get('password');
       // submit form
+      console.log(signUpData)
       fetch("/api/users", {
         method: 'post',
         body: JSON.stringify(signUpData)
@@ -73,11 +76,32 @@ export default function Signup() {
         <form onSubmit={handleSignup}>
         <DialogContent>
           <DialogContentText>
-            To signup, please fill in your email and create a password.
+            To signup, please fill in your Name, username, email, and password.
           </DialogContentText>
           { error ? (
             <Alert severity="error">There was an issue signing up, please adjust email and password and try again.</Alert>
           ) : null }
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            name="name"
+            label="Name"
+            fullWidth
+            variant="standard"
+            required
+            error={formState.name?.error}
+          />
+          <TextField
+            margin="dense"
+            id="username"
+            name="username"
+            label="Username"
+            fullWidth
+            variant="standard"
+            required
+            error={formState.username?.error}
+          />
           <TextField
             autoFocus
             margin="dense"

@@ -17,6 +17,8 @@ import { Button } from '@mui/material';
 import { signOut } from "next-auth/react"
 import { useState } from 'react';
 import Link from 'next/link';
+// import Profile from './demo_profile'
+import { useRouter } from 'next/navigation';
 
 const theme = createTheme({});
 
@@ -27,7 +29,7 @@ export default function RootLayout({ children, title }) {
   let loginSection;
 
   if (status === 'authenticated') {
-    loginSection = <Button component = {Link} variant="outlined" color="inherit" href = '/todos'>Profile</Button>;
+    loginSection = <Button component = {Link} variant="outlined" color="inherit" href = '/demo_profile'>Profile</Button>;
   } else {
     loginSection = <>
       <Login/>
@@ -46,6 +48,12 @@ export default function RootLayout({ children, title }) {
   {
     setOp(true);
   }
+  const router = useRouter();
+
+  function handleSignOut() {
+    signOut({redirect: false});
+    router.push('/');
+  }
 
   let navB;
 
@@ -57,7 +65,7 @@ export default function RootLayout({ children, title }) {
       navB = <>
         <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick= {()=> opOpen()}>Close</Button>
         <NavBar/>
-        <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick={() => signOut()}>SignOut</Button>
+        <Button sx = {{my: 2, mr: 1 ,color: 'white', display: 'block'}}variant="outlined" color="inherit" onClick={handleSignOut}>SignOut</Button>
       </>
     }
     else{

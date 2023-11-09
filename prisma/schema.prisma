@@ -11,23 +11,27 @@ datasource db {
 }
 
 model User {
-  id         Int         @id @default(autoincrement())
-  userName   String      @unique
-  email      String      @unique
-  password   String
-  petprofile PetProfile?
+  id           Int           @id @default(autoincrement())
+  name         String
+  username     String        @unique
+  email        String        @unique
+  password     String
+  petprofile   PetProfile?
+  locationinfo LocationInfo?
 }
 
 model PetProfile {
-  petId           Int     @id @default(autoincrement())
+  petId           Int    @id @default(autoincrement())
   petName         String
   species         String
   breed           String
   age             Int
-  vaxxed          Boolean
-  sprayedNeutered Boolean
-  userId          Int     @unique
-  user            User    @relation(fields: [userId], references: [id])
+  vaxxed          String
+  sprayedNeutered String
+  bio             String
+  profileImage    String
+  userId          Int    @unique
+  user            User   @relation(fields: [userId], references: [id])
   //need to connect owner ID
   //profilePhoto
   //all other photos
@@ -38,22 +42,6 @@ model LocationInfo {
   cityName   String
   state      String
   country    String
-  //need to connect owner ID
+  userId     Int    @unique
+  user       User   @relation(fields: [userId], references: [id])
 }
-
-// model User {
-//   id  Int @id @default(autoincrement())
-//   email String @unique
-//   password String 
-//   toDos ToDo[]
-// }
-
-// model ToDo {
-//   id Int @id @default(autoincrement())
-//   value String
-//   done Boolean
-//   owner User @relation(fields: [ownerId], references: [id])
-//   ownerId Int 
-// }
-
-// for pet place
