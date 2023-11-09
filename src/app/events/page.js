@@ -21,6 +21,7 @@ const Events = () => {
     const [newEvent, setNewEvent] = useState({
         title: '',
         creator: '',
+        date: '',
         startTime: '',
         endTime: '',
         location: '',
@@ -32,6 +33,9 @@ const Events = () => {
     const userId = '123'; // simulated current userID
 
     const [editIndex, setEditIndex] = useState(null);
+
+    // track user interactions
+    const [userInteractions, setUserInteractions] = useState({});
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -48,6 +52,18 @@ const Events = () => {
     };
 
     const handleAddEvent = () => {
+        if (
+            !newEvent.title ||
+            !newEvent.creator ||
+            !newEvent.date ||
+            !newEvent.startTime ||
+            !newEvent.endTime ||
+            !newEvent.location
+        ) {
+            alert('Missing required fields'); // Show an alert if any required field is empty
+            return; // Don't proceed further
+        }
+
         if (editIndex !== null) {
             const updatedEvents = [...events];
             updatedEvents[editIndex] = newEvent;
@@ -60,6 +76,7 @@ const Events = () => {
         setNewEvent({
             title: '',
             creator: '',
+            date: '',
             startTime: '',
             endTime: '',
             location: '',
@@ -91,9 +108,6 @@ const Events = () => {
         }
     };
 
-    // track user interactions
-    const [userInteractions, setUserInteractions] = useState({});
-
     // Function to handle "Interested" click
     const handleInterested = (index) => {
         const updatedEvents = [...events];
@@ -123,135 +137,141 @@ const Events = () => {
 
         if (!userInteracted) {
             updatedEvents[index].goingCount++;
-            setUserInteractions({
-                ...userInteractions,
-                [index]: { ...userInteractions[index], going: true }
-            });
         } else {
             updatedEvents[index].goingCount--;
-            setUserInteractions({
-                ...userInteractions,
-                [index]: { ...userInteractions[index], going: false }
-            });
         }
+
+        setUserInteractions({
+            ...userInteractions,
+            [index]: { ...userInteractions[index], going: !userInteracted }
+        });
 
         setEvents(updatedEvents);
     };
 
-    const centerDiv = {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "stretch"
-    }
-
-
     return (
         <Container className="events-container">
-        <Paper>
-        <div style={centerDiv}>
-        <div>
-            <h2 style={{textAlign: "center"}}>Events</h2>
-            <List>
-                {events.map((event, index) => (
-                    <ListItem key={index}>
-                        <Card>
-                            <CardContent>
-                                <ListItemText
-                                    primary={event.title}
-                                    secondary={
-                                        <>
-                                            <div>Creator: {event.creator}</div>
-                                            <div>Time: {event.startTime} - {event.endTime}</div>
-                                            <div>Location: {event.location}</div>
-                                            <Button startIcon={<ThumbUpIcon />} onClick={() => handleInterested(index)}>
-                                                Interested ({event.interestedCount})
-                                            </Button>
-                                            <Button startIcon={<EventIcon />} onClick={() => handleGoing(index)}>
-                                                Going ({event.goingCount})
-                                            </Button>
-                                            {event.creatorId === userId && (
-                                                <>
-                                                    <Button onClick={() => handleRemoveEvent(index)}>
-                                                        Delete
+            <Paper>
+            <Typography variant="h5" className="events-title">Events</Typography>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "stretch" }}>
+                    <div>
+                        <List>
+                            {events.map((event, index) => (
+                                <ListItem key={index}>
+                                    <Card>
+                                        <CardContent>
+                                            <div style={{ marginBottom: 10}}>
+                                                <Typography variant="h6" className="events-name">{event.title}</Typography>
+                                                <Typography variant="body2" className="events-description">
+                                                    Date: {event.date}
+                                                </Typography>
+                                                <Typography variant="body2" className="events-description">
+                                                    Time: {event.startTime} - {event.endTime}
+                                                </Typography>
+                                                <Typography variant="body2" className="events-description">
+                                                    Location: {event.location}
+                                                </Typography>
+                                                <Typography variant="body2" className="events-description">
+                                                    Creator: {event.creator}
+                                                </Typography>
+                                                <div>
+                                                    <Button className="events-info-button" startIcon={<ThumbUpIcon />} onClick={() => handleInterested(index)}>
+                                                        Interested ({event.interestedCount})
                                                     </Button>
-                                                    <Button onClick={() => handleEditEvent(index)}>
-                                                        Edit
+                                                    <Button className="events-info-button" startIcon={<EventIcon />} onClick={() => handleGoing(index)}>
+                                                        Going ({event.goingCount})
                                                     </Button>
-                                                </>
-                                            )}
-                                        </>
-                                    }
-                                    secondaryTypographyProps={{component : "div"}}
+                                                    {event.creatorId === userId && (
+                                                        <>
+                                                            <Button className="events-info-button" onClick={() => handleRemoveEvent(index)}>
+                                                                Delete
+                                                            </Button>
+                                                            <Button className="events-info-button" onClick={() => handleEditEvent(index)}>
+                                                                Edit
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </ListItem>
+                            ))}
+                        </List>
+                        <div style={{textAlign: "center"}}>
+                            <Button
+                                variant="contained"
+                                className="events-button"
+                                onClick={handleClickOpen}
+                            >
+                                Add Event
+                            </Button>
+                        </div>
+                        <Dialog open={open} onClose={handleClose}>
+                            <DialogTitle className="events-title">Add New Event</DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    margin="normal"
+                                    label="Title"
+                                    name="title"
+                                    value={newEvent.title}
+                                    onChange={handleInputChange}
+                                    fullWidth
                                 />
-                            </CardContent>
-                        </Card>
-
-                    </ListItem>
-                ))}
-            </List>
-
-            <div style={{textAlign: "center"}}>
-                <Button
-                    variant="contained"
-                    onClick={handleClickOpen}
-                >
-                    Add Event
-                </Button>
-            </div>
-
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Add New Event</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        margin="normal"
-                        label="Title"
-                        name="title"
-                        value={newEvent.title}
-                        onChange={handleInputChange}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="normal"
-                        label="Creator"
-                        name="creator"
-                        value={newEvent.creator}
-                        onChange={handleInputChange}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="normal"
-                        label="Start Time"
-                        name="startTime"
-                        value={newEvent.startTime}
-                        onChange={handleInputChange}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="normal"
-                        label="End Time"
-                        name="endTime"
-                        value={newEvent.endTime}
-                        onChange={handleInputChange}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="normal"
-                        label="Location"
-                        name="location"
-                        value={newEvent.location}
-                        onChange={handleInputChange}
-                        fullWidth
-                    />
-                    {/* Rest of form fields if need more */}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button onClick={handleAddEvent} color="primary">Add</Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-        </div>
-        </Paper>
+                                <TextField
+                                    margin="normal"
+                                    label="Date"
+                                    name="date"
+                                    type="date"
+                                    value={newEvent.date}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                    placeholder="MM/DD/YYYY"
+                                />
+                                <TextField
+                                    margin="normal"
+                                    label="Start Time"
+                                    name="startTime"
+                                    type="time"
+                                    value={newEvent.startTime}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                />
+                                <TextField
+                                    margin="normal"
+                                    label="End Time"
+                                    name="endTime"
+                                    type="time"
+                                    value={newEvent.endTime}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                />
+                                <TextField
+                                    margin="normal"
+                                    label="Location"
+                                    name="location"
+                                    value={newEvent.location}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                />
+                                <TextField
+                                    margin="normal"
+                                    label="Creator"
+                                    name="creator"
+                                    value={newEvent.creator}
+                                    onChange={handleInputChange}
+                                    fullWidth
+                                />
+                                {/* Rest of form fields if need more */}
+                            </DialogContent>
+                            <DialogActions>
+                                <Button className="events-info-button" onClick={handleClose} color="primary">Cancel</Button>
+                                <Button className="events-info-button" onClick={handleAddEvent} color="primary">Add</Button>
+                            </DialogActions>
+                        </Dialog>
+                    </div>
+                </div>
+            </Paper>
         </Container>
     );
 };

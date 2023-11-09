@@ -183,11 +183,61 @@ body {
   background-color: var(--white);
 }
 
+/* Events Styles */
 .events-container {
   background-color: var(--white);
   margin-top: 5px;
   padding: 10px;
+}
+
+.events-title {
+  text-align: center;
+  background-color: var(--green);
+  color: white;
+  padding: 25px;
+  padding-bottom: 25px;
+}
+
+.events-button {
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px; /* Adjust padding to increase button size */
+  font-size: 16px;
+  margin-top: 10px;
   margin-bottom: 20px;
+}
+
+.events-button:hover {
+  background: var(--green); 
+  transform: scale(1.02); 
+  color: white;
+}
+
+.events-info-button {
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 0 10px;
+}
+
+.events-info-button:hover {
+  background: var(--green); /* Darken the background color on hover */
+  transform: scale(1.02); /* Slightly scale up the button on hover */
+  color: white;
+}
+
+.events-description {
+  color: black;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.events-name {
+  font-size: 1.25rem;
+  color: var(--black);
 }
 
 /* Root Equipment Page Styles */
