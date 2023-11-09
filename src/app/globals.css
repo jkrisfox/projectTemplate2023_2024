@@ -4,6 +4,7 @@
   --green: #003831;
   --gold: #A89968;
   --black: #000000;
+  --hover-green: #004e45;
   --font-family: "Abolition Regular", sans-serif;
 }
 
@@ -193,9 +194,11 @@ body {
 .equipment-title {
   text-align: center;
   background-color: var(--green);
-  color: var(--gold);
-  padding: 10px;
+  color: var(--white);
+  padding: 20px;
   padding-bottom: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
 }
 
 .equipment-tab {
@@ -312,6 +315,177 @@ body {
 }
 
 
+/* Forum.css */
+/* Apply the following CSS to your Forum component */
+
+.forum-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.forum-title {
+  background-color: var(--green); /* Change the color to your preference */
+  width: 90%;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: var(--white); /* Text color for the banner */
+  font-size: 24px; /* Adjust font size as needed */
+}
 
 
+.forum-body {
+  display: flex;
+  width: 90%;
+  align-items: left;
+  justify-content: center; /* Adjust as needed */ 
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .forum-body {
+    flex-direction: column; /* Stack elements vertically on smaller screens */
+  }
+  .forum-side-boxes {
+    width: 100%; /* Make side boxes take full width on smaller screens */
+  }
+}
+
+
+.forum-side-boxes {
+  flex: 1; 
+  margin-right: 20px;
+  text-align: left;
+  min-width: 140px;
+}
+
+
+.new-post-box {
+  width: 100%;
+  box-shadow: 0 8px 12px rgba(0.4, 0.4, 0.4, 0.4); /* Adjust shadow properties as needed */
+  transition: transform 0.2s; /* Add a transition for smooth scaling */
+}
+
+.new-post-box:hover {
+  transform: scale(1.04); /* Scale up by 5% on hover */
+  background-color: var(--hover-green);
+}
+
+
+.filters-box, .my-options-box, .new-post-box {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: var(--green); 
+  border: 5px;
+  border-radius: 10px;
+  text-align: center;
+  color: var(--white);
+}
+
+.filters-box h2, .my-options-box h2, .new-post-box h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.my-options-box {
+  margin: 5px 0;
+  font-size: 16px; 
+  align-items: center;
+}
+
+.option-buttons {
+  background-color: var(--green);
+  display: flex;
+  flex-direction: column; /* Align items in a vertical column */
+}
+
+.forum-post-container {
+  display: grid;
+  flex-wrap: wrap;
+  gap: 20px;
+  min-width: 86%;
+}
+
+.forum-post {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
+  text-align: left;
+  margin-bottom: 20px;
+  display: flex; 
+  flex-wrap: wrap;
+}
+
+.post-details{
+  width: 60%;
+  margin-left: 20px;
+  min-width: 320px;
+}
+.post-title {
+  font-size: 20px;
+}
+
+.post-author-tags { 
+  display: flex;
+  flex-direction: column;
+}
+
+
+.post-actions {
+  display: flex;
+  width: 35%;
+  align-items: center;
+  min-width: 150px;
+  justify-content: right;
+}
+
+.like-button, .dislike-button, .comment-button, .flag-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin: 5px;
+  height: 40%;
+  min-height: 40px;
+  min-width: 55px;
+  width: 60px;
+  border: 1px solid black;
+  border-radius: 10px;
+  transition: transform 0.1s;
+}
+
+.like-button:hover, .dislike-button:hover, .comment-button:hover, .flag-button:hover {
+  transform: scale(1.02);
+  background-color: rgb(219, 219, 219);
+}
+
+
+.my-posts-button,
+.my-saved-button,
+.my-drafts-button {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  transition: all 0.2s;
+  justify-content: center;
+  color: white;
+}
+
+.my-posts-button:hover,
+.my-saved-button:hover,
+.my-drafts-button:hover {
+  background-color: var(--hover-green); /* Add a background color on hover */
+  border-radius: 5px; /* Add rounded corners on hover */
+}
+
+.action-count {
+  margin-left: 5px;
+  font-weight: bold;
+}
 
