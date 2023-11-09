@@ -1,0 +1,66 @@
+- users
+  - {userId}
+    - email: string
+    - password: string (hashed, although Firebase Authentication handles this)
+    - isVerified: boolean
+    - isAdmin: boolean
+    - name: string
+    - phoneNumber: string
+    - location: string
+    - profileImageName: string
+    - heroImageName: string
+    - isStudent: boolean
+    - contactInfoVisibility: boolean
+    - favoriteListings: array of listingId
+    - favoriteUsers: array of userId
+
+- listings
+  - {listingId}
+    - title: string
+    - description: string
+    - price: number
+    - isFree: boolean
+    - category: string (Furniture, Appliances, etc.)
+    - images: array of image URLs
+    - videos: array of video URLs
+    - location: geopoint
+    - sellerId: userId
+    - createdAt: timestamp
+    - updatedAt: timestamp
+    - priceHistory: array of { price: number, date: timestamp }
+    - paymentOptions: string (like "cash, venmo")
+    - studentVerification: boolean
+
+- messages
+  - {messageThreadId}
+    - participants: array of userId
+    - messages: array of
+      - {messageId}
+        - senderId: userId
+        - content: string
+        - timestamp: timestamp
+
+- adminActions
+  - {actionId}
+    - type: string (banUser, deletePost, contactUser)
+    - targetUserId: userId
+    - details: string
+    - performedBy: userId
+    - timestamp: timestamp
+
+- notifications
+  - {notificationId}
+    - type: string (message, listingUpdate, systemUpdate)
+    - targetUserId: userId
+    - content: string
+    - relatedId: userId or listingId (depending on type)
+    - timestamp: timestamp
+
+- reviews
+  - {reviewId}
+    - reviewerId: userId
+    - targetUserId: userId
+    - listingId: listingId
+    - rating: number
+    - content: string
+    - timestamp: timestamp
