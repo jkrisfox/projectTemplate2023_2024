@@ -11,6 +11,7 @@ export default function NavBar() {
     { path: '/events', name: 'Events' },
     { path: '/equipment', name: 'Equipment' },
     { path: '/forum', name: 'Forum' },
+    { path: '/login', name: 'Login'}
   ];
 
   return (
