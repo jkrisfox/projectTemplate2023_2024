@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box'
@@ -11,6 +12,8 @@ export default function Signup() {
   const [ open, setOpen ] = useState(false);
   const [ formState, setFormState ] = useState({});
   const [ error, setError ] = useState(false);
+
+  const router = useRouter();
 
   function handleSignup(event) {
     event.preventDefault();
@@ -25,13 +28,16 @@ export default function Signup() {
       fetch("/api/users", {
         method: 'post',
         body: JSON.stringify(signUpData)
-      }).then((res) => {
+      }).then(async (res) => {
         if (res.ok) {
+          let resData = await res.json();
+          let userId = resData.id;
           signIn("normal", {...signUpData, redirect: false}).then((result) => {
             if (!result.error) {
               setOpen(false);
               setError(false);
-              window.location.href = "../"    // Reroute to home page
+              // Send to profile setup page
+              router.push(`/profile/${userId}/setup`);
             } else {
               setError(true);
             }
