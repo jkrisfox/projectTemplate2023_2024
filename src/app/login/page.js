@@ -12,6 +12,7 @@ import {
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
+import { useRouter } from 'next/navigation';
 
 const RESEND_INTERVAL = 30;
 
@@ -30,6 +31,8 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [countdown, setCountdown] = useState(0);
   const [canResend, setCanResend] = useState(true);
+
+  const router = useRouter();
 
   const isEmailValid = (email) => {
     //regex checks for a valid email format
@@ -83,6 +86,7 @@ export default function LoginPage() {
         const data = await response.json();
         if (response.ok) {
           console.log("Account created!", data);
+          router.push("/");
         } else {
           setErrorMessage(data.message || "Failed to create account.");
         }
