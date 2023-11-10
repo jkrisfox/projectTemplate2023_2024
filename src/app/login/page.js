@@ -12,10 +12,12 @@ import {
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
+import { useRouter } from 'next/navigation';
 
 const RESEND_INTERVAL = 30;
 
 export default function LoginPage() {
+  const [name, setName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,6 +31,8 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [countdown, setCountdown] = useState(0);
   const [canResend, setCanResend] = useState(true);
+
+  const router = useRouter();
 
   const isEmailValid = (email) => {
     //regex checks for a valid email format
@@ -63,12 +67,32 @@ export default function LoginPage() {
   };
 
   const generateCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit code
+    return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
-  const verifyCode = () => {
+  const verifyCode = async () => {
     if (enteredCode === verificationCode) {
       console.log("Code verified!");
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          body: JSON.stringify({
+            name: name,
+            email: userEmail,
+            password: password,
+          }),
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          console.log("Account created!", data);
+          router.push("/");
+        } else {
+          setErrorMessage(data.message || "Failed to create account.");
+        }
+      } catch (error) {
+        setErrorMessage("Network error, please try again.");
+      }
     } else {
       setErrorMessage("Incorrect verification code.");
     }
@@ -131,6 +155,17 @@ export default function LoginPage() {
               >
                 {isRegistering ? "Register Account" : "Welcome back!"}
               </Typography>
+              {isRegistering && (
+                <TextField
+                  label="Name"
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: 2 }}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={verificationSent}
+                />
+              )}
               <TextField
                 label="Cal Poly email"
                 variant="outlined"
