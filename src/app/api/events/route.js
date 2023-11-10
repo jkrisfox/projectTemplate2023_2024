@@ -74,6 +74,7 @@ export async function GET(request) {
           },
           orderBy: {
             startTime: "desc",
+            endTime: "desc"
           },
         });
       } else {
@@ -85,6 +86,7 @@ export async function GET(request) {
       return NextResponse.json({ error: e.message }, { status: 500 });
     }
     console.log(JSON.stringify(allEvents, null, 2)); // simple logger that logs out all the events and the filters
+    return NextResponse.json(allEvents);
   }
   return USER_NOT_SIGNED_IN;
 }

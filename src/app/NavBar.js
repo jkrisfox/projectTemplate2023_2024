@@ -19,14 +19,14 @@ export default function NavBar() {
       {links.map((l) => {
         const isActive = l.path === pathname;
         return (
-          <Button
+          <Link
             component={Link}
             href={l.path}
             className={`navbar-button ${isActive ? 'active' : ''}`}
             key={l.path}
           >
             {l.name}
-          </Button>
+          </Link>
         );
       })}
     </Box>
