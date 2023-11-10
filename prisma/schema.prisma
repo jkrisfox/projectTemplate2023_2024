@@ -70,6 +70,7 @@ model Post {
   postDescription String
   authorId        Int
   author          User          @relation(fields: [authorId], references: [id])
+  createdAt       DateTime      @default(now()) // creation time
   Votes           Votes[]
   Comment         Comment[]
   PostFilters     PostFilters[]
