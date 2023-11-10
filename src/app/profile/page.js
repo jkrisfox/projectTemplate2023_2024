@@ -1,10 +1,16 @@
 'use client'
 
 import { useState } from 'react';
-import './profile.css'; // Import the CSS from the local file
-import { Button, TextField, TextareaAutosize, Avatar } from '@mui/material';
+import './profile.css';
+//import '../globals.css';
+
+
+import { Card, CardContent, Button, TextField, FormControl, Avatar, InputLabel, NativeSelect } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import { Padding } from '@mui/icons-material';
+
+
+
+
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,8 +18,14 @@ export default function Profile() {
   const [name, setName] = useState('John Doe');
   const [bio, setBio] = useState('');
   const [photo, setPhoto] = useState(null);
-  const theme = { spacing: 50 }
+  const [experience, setExperience] = useState('No experience set');
+  // TODO: add useState for interested in, upcoming events, forum activities
+  //const theme = { spacing: 50 }
 
+  const customButtonStyle = {
+    backgroundColor: '#003831',
+    color: 'white',
+  };
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -36,7 +48,12 @@ export default function Profile() {
     setPrivate(!isPrivate)
   };
 
+  const handleExperienceChange = (e) => {
+    setExperience(e.target.value)
+  };
+
   return (
+    <div className='background'>
     <div className="profile-container">
       <div className="profile-form">
         <div className="profile-photo">
@@ -58,8 +75,10 @@ export default function Profile() {
                 <Button
                   className="spacing"
                   variant="contained"
+                  color='primary'
                   component="span"
                   size='small'
+                  style={customButtonStyle}
                   startIcon={<PhotoCamera />}
                 >
                   Upload Photo
@@ -106,36 +125,81 @@ export default function Profile() {
               bio
             )}
           </div>
-          <div className = "profile-status">
-          <Button
+          <div className="profile-status">
+            <Button
               className="spacing"
               variant="contained"
               onClick={toggleStatus}
               size='small'
+              style={customButtonStyle}
             >
               {isPrivate ? 'Private' : 'Public'}
             </Button>
           </div>
         </div>
         <div className='middle'>
-          <div className='experience-in'>
-            <b><p>Experience in:</p></b>
-            <TextField/>
+          <div className='gym-frequency'>
+            <b><p>Gym frequency:</p></b>
+            {isEditing ? (
+              <FormControl
+                variant="filled">
+                <InputLabel variant="standard" htmlFor="uncontrolled-native">
+                </InputLabel>
+                <div className="select-wrapper">
+                  <NativeSelect
+                    defaultValue={''}
+                    onChange={handleExperienceChange}
+                    inputProps={{
+                      name: 'Frequency',
+                      id: 'uncontrolled-native',
+                    }}
+                  >
+                    <option className='option-frequency'>1 time a week</option>
+                    <option className='option-frequency'>2-3 times a week</option>
+                    <option className='option-frequency'>4-5 times a week</option>
+                    <option className='option-frequency'>EVERY DAY</option>
+                  </NativeSelect>
+                </div>
+
+              </FormControl>
+            ) : (
+              experience
+            )}
           </div>
-          <div className='interested-in'>
-            <b><p>Interested in:</p></b>
-            <TextField/>
-          </div>
-          <div className='upcoming-event'>
-            <b><p>Upcoming Events:</p></b>
-            <TextField/>
-          </div>
-          <div className='forum-activity'>
-            <b><p>Forum Activity:</p></b>
-            <TextField/>
+          <div className="bottom-cards-container">
+            <Card>
+              <CardContent>
+                <div className='interested-in'>
+                  <center><b><p>Interested in</p></b></center>
+
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent>
+                <div className='upcoming-event'>
+                  <center><b><p>Upcoming Events</p></b></center>
+                  <div class="eventContent">
+                    <div class="title">Basketball</div>
+                    <div class="body">Location: Rec-Center courts</div>
+                    <div class="body">Date: 11/9/2023</div>
+                    <div class="body">Time: 3pm </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent>
+                <div className='forum-activity'>
+                  <center><b><p>Forum Activity</p></b></center>
+
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
