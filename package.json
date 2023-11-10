@@ -16,7 +16,7 @@
     "@googlemaps/react-wrapper": "^1.1.35",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.6",
-    "@prisma/client": "^5.4.1",
+    "@prisma/client": "^5.5.2",
     "@react-google-maps/api": "^2.19.2",
     "bcryptjs": "^2.4.3",
     "eslint": "^7.32.0",
@@ -27,6 +27,6 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "prisma": "^5.4.1"
+    "prisma": "^5.5.2"
   }
 }
