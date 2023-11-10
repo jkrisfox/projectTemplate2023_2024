@@ -10,7 +10,7 @@ export default function NavBar() {
     { path: '/profile', name: 'Profile' },
     { path: '/events', name: 'Events' },
     { path: '/equipment', name: 'Equipment' },
-    { path: '/forums', name: 'Forums' },
+    { path: '/forum', name: 'Forum' },
     { path: '/login', name: 'Login'}
   ];
 

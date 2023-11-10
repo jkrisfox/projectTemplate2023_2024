@@ -68,12 +68,13 @@ export default function Equipment() {
     setExpandedEquipment(null);
   };
 
+  
   return (
     <Container className="equipment-container">
+      <Typography variant="h3" className="equipment-title">
+      Equipment
+      </Typography>
       <Paper>
-        <Typography variant="h3" className="equipment-title">
-          Equipment
-        </Typography>
         <Box className="grid-container">
           <Grid container spacing={2}>
             {displayedEquipment.map((equipment) => (
