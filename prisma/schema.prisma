@@ -26,6 +26,8 @@ model User {
 model Listing {
   id Int @id @default(autoincrement())
   placeId String @unique
+  latitude Decimal
+  longitude Decimal
   blacklisted Boolean @default(false)
   users User[]
   reviews Review[]
