@@ -179,11 +179,11 @@ export default function Profile() {
               <CardContent>
                 <div className='upcoming-event'>
                   <center><b><p>Upcoming Events</p></b></center>
-                  <div class="eventContent">
-                    <div class="title">Basketball</div>
-                    <div class="body">Location: Rec-Center courts</div>
-                    <div class="body">Date: 11/9/2023</div>
-                    <div class="body">Time: 3pm </div>
+                  <div className="eventContent">
+                    <div className="title">Basketball</div>
+                    <div className="body">Location: Rec-Center courts</div>
+                    <div className="body">Date: 11/9/2023</div>
+                    <div className="body">Time: 3pm </div>
                   </div>
                 </div>
               </CardContent>
