@@ -27,21 +27,22 @@ datasource db {
 
 model User {
   // model the user and the profiles
-  id                   Int          @id @default(autoincrement())
+  id                   Int             @id @default(autoincrement())
   name                 String
   password             String
-  email                String       @unique
+  email                String          @unique
   experience           String?
   verified             Boolean?
   ProfileImage         Bytes?
-  initiatedFriendships Friendship[] @relation("FriendshipInitiator")
-  receivedFriendships  Friendship[] @relation("FriendshipRecipient")
+  initiatedFriendships Friendship[]    @relation("FriendshipInitiator")
+  receivedFriendships  Friendship[]    @relation("FriendshipRecipient")
   Interest             Interest[]
   Post                 Post[]
   Votes                Votes[]
   Comment              Comment[]
-  HostEvents           Event[]      @relation("Host")
-  AttendingEvents      Event[]      @relation("Attendee") // many to many implicit relationship
+  HostEvents           Event[]        
+  // AttendingEvents      Event[]         @relation("Attendee") // many to many implicit relationship
+  EventAttendee        EventAttendee[]
 }
 
 model Friendship {
@@ -118,22 +119,34 @@ model PossibleFilters {
 }
 
 model Event {
-  id            Int           @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   eventName     String
   location      String
   startTime     DateTime
   endTime       DateTime
   maxAttendee   Int
-  hostId        Int           @unique
-  host          User          @relation("Host", fields: [hostId], references: [id])
+  hostId        Int             @unique
+  host          User            @relation(fields: [hostId], references: [id], onDelete: Cascade)
   EventFilter   EventFilter[]
-  EventAttendee User[]        @relation("Attendee") // many to many implicit relationship
+  // EventAttendee User[]          @relation("Attendee") // many to many implicit relationship
+  EventAttendee EventAttendee[]
+}
+
+model EventAttendee {
+  // explicit event attendee table
+  id      Int   @id @default(autoincrement())
+  eventId Int
+  userId  Int
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId]) // can't have same user be interested in the same event
 }
 
 model EventFilter {
   id               Int             @id @default(autoincrement())
   eventId          Int
-  Event            Event           @relation(fields: [eventId], references: [id])
+  Event            Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   possibleFilterId Int
   possibleFilter   PossibleFilters @relation(fields: [possibleFilterId], references: [id])
 

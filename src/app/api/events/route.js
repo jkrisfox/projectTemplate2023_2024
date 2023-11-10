@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { checkLoggedIn } from "@/lib/auth";
 import { USER_NOT_SIGNED_IN } from "@/lib/response";
-import { useSearchParams } from 'next/navigation'
-
+import { useSearchParams } from "next/navigation";
 
 export async function POST(request) {
   // const loggedInData = await checkLoggedIn();
@@ -52,8 +51,8 @@ export async function GET(request) {
   if (true) {
     const searchParams = request.nextUrl.searchParams;
     // Get all 'filters' query parameters as an array
-    let filters = searchParams.getAll('filters');
-    filters = filters.map((value) => parseInt(value))
+    let filters = searchParams.getAll("filters");
+    filters = filters.map((value) => parseInt(value));
     let allEvents;
     try {
       if (filters.length > 0) {
@@ -69,20 +68,26 @@ export async function GET(request) {
               },
             },
           },
+          // include all the filters
           include: {
-            EventFilter: true,
+            EventFilter: {
+              select: {
+                possibleFilter: {
+                  select: {
+                    filterType: true,
+                  },
+                },
+              },
+            },
           },
-          orderBy: {
-            startTime: "desc",
-            endTime: "desc"
-          },
+          orderBy: [{ startTime: "desc" }, { endTime: "desc" }],
         });
       } else {
         // if no filter, return everything
         allEvents = await prisma.Event.findMany();
       }
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
       return NextResponse.json({ error: e.message }, { status: 500 });
     }
     console.log(JSON.stringify(allEvents, null, 2)); // simple logger that logs out all the events and the filters
@@ -90,3 +95,22 @@ export async function GET(request) {
   }
   return USER_NOT_SIGNED_IN;
 }
+
+// export async function DELETE() {
+//   const responseData = await request.json();
+//   const { id } = responseData;
+//     let eventDeleted;
+//     try {
+//       user = await prisma.user.delete({
+//         where: {
+//           id
+//         }
+//       });
+//     } catch (e) {
+//       console.log(e.message);
+//       return NextResponse.json({error: e.message}, {status: 500 })
+//     }
+//     return NextResponse.json(user);
+//   }
+//   return USER_NOT_SIGNED_IN;
+// }
