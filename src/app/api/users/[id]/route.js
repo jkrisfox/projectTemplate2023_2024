@@ -58,7 +58,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({error: 'Profile image is more than 1 MB large'}, {status: 413});
     }
 
-    if (!profileImage.name.match(/^[\w-]+.(jpeg|jpg|png)$/)) {
+    if (!profileImage.name.match(/^[\w -]+.(jpeg|jpg|png)$/)) {
       return NextResponse.json({error: 'Profile image has an invalid extension. Allowed: jpeg, jpg, png'}, {status: 400});
     }
 
@@ -70,7 +70,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({error: 'Banner image is more than 1 MB large'}, {status: 413});
     }
 
-    if (!heroImage.name.match(/^[\w-]+.(jpeg|jpg|png)$/)) {
+    if (!heroImage.name.match(/^[\w -]+.(jpeg|jpg|png)$/)) {
       return NextResponse.json({error: 'Banner image has an invalid extension. Allowed: jpeg, jpg, png'}, {status: 400});
     }
 
