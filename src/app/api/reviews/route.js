@@ -47,7 +47,7 @@ export async function GET(request) {
 
 // returns the listingId of a placeId, 
 // or null if there is no listingId for that placeId and createNewListing is false
-async function getListingId(placeId, createNewListing = false) {
+async function getListingId(placeId, createNewListing = false, lat = null, lng = null) {
   if (placeId === null) {
     return null;
   }
@@ -74,6 +74,8 @@ async function getListingId(placeId, createNewListing = false) {
   const newListingId = await prisma.listing.create({
     data: {
       placeId: placeId, 
+      latitude: lat, 
+      longitude: lng, 
     }, 
     select: {
       id: true, 
@@ -104,7 +106,7 @@ async function getSeasonId(seasonName) {
 }
 
 
-// request should have placeId, seasonName, and score
+// request should have placeId, latitude, longitude, seasonName, and score
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
@@ -121,15 +123,18 @@ export async function POST(request) {
   }
 
   // check for required fields
-  if (!Object.hasOwn(data, "placeId") || !Object.hasOwn(data, "seasonName") || !Object.hasOwn(data, "score")) {
+  if (!Object.hasOwn(data, "placeId") || !Object.hasOwn(data, "latitude") || !Object.hasOwn(data, "longitude") 
+      || !Object.hasOwn(data, "seasonName") || !Object.hasOwn(data, "score")) {
     return NextResponse.json({status: 400}, {data: request});
   }
+  const lat = data.latitude;
+  const lng = data.longitude;
   const placeId = data.placeId;
   const seasonName = data.seasonName;
   const score = data.score;
 
   // specify true to create new listing if there is no listing with this placeId
-  const listingId = await getListingId(placeId, true);
+  const listingId = await getListingId(placeId, true, lat, lng);
 
   const seasonId = await getSeasonId(seasonName);
   // make sure season and score are valid
