@@ -79,6 +79,7 @@ export async function GET(request) {
               },
             },
           },
+          // order by the startTime and endTime in descending order 
           orderBy: [{ startTime: "desc" }, { endTime: "desc" }],
         });
       } else {

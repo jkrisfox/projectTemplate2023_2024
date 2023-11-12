@@ -45,7 +45,7 @@ export async function POST(request) {
     const { voteType, postId } = responseData;
     // create data layout for post creation
     const checkVoteData = {
-      userId: 2, // make this dynamic
+      userId: 1, // make this dynamic
       postId: postId,
     };
 
@@ -54,7 +54,7 @@ export async function POST(request) {
     const newVoteData = {
       type: voteType,
       post: { connect: { id: postId } },
-      user: { connect: { id: 2 } },
+      user: { connect: { id: checkVoteData["userId"] } },
     };
     let votes;
     try {

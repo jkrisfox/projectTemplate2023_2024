@@ -31,8 +31,10 @@ model User {
   name                 String
   password             String
   email                String          @unique
-  experience           String?
+  status               Status          @default(PUBLIC)
+  gymFrequency         String?
   verified             Boolean?
+  shortBio             String?
   ProfileImage         Bytes?
   initiatedFriendships Friendship[]    @relation("FriendshipInitiator")
   receivedFriendships  Friendship[]    @relation("FriendshipRecipient")
@@ -40,7 +42,7 @@ model User {
   Post                 Post[]
   Votes                Votes[]
   Comment              Comment[]
-  HostEvents           Event[]        
+  HostEvents           Event[]
   // AttendingEvents      Event[]         @relation("Attendee") // many to many implicit relationship
   EventAttendee        EventAttendee[]
 }
@@ -91,12 +93,13 @@ model Votes {
 
 model Comment {
   // comments on forum post
-  id      Int    @id @default(autoincrement())
-  comment String
-  postId  Int
-  post    Post   @relation(fields: [postId], references: [id])
-  userId  Int
-  user    User   @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  comment   String
+  postId    Int
+  createdAt DateTime @default(now()) // creation time
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model PostFilters {
@@ -137,8 +140,8 @@ model EventAttendee {
   id      Int   @id @default(autoincrement())
   eventId Int
   userId  Int
-  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade) // event will be deleted if connected event is deleted
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) // event will be deleted if connected user is deleted
 
   @@unique([eventId, userId]) // can't have same user be interested in the same event
 }
@@ -172,4 +175,9 @@ enum FriendshipStatus {
 enum VoteType {
   UPVOTE
   DOWNVOTE
+}
+
+enum Status {
+  PUBLIC
+  PRIVATE
 }
