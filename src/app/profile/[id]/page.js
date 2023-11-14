@@ -10,6 +10,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/MyListings';
+import Settings from '../../../components/Settings';
 
 export default function Profile({ params }) {
   const [user, setUser] = useState();
@@ -132,6 +133,10 @@ export default function Profile({ params }) {
 
       {/* My Listings Section - Only display if the My Listings tab is active */}
       {currentTab === 1 && <MyListings />}
+
+      {/* Settings Section - Only display if the Settings tab is active */}
+      {currentTab === 2 && <Settings />}
+
 
       <Dialog
         open={isDialogOpen}
