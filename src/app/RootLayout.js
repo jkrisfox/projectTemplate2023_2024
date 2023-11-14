@@ -59,6 +59,7 @@ export default function RootLayout({ children, title }) {
     loginSection = (
       <Button
         variant="outlined"
+        color="nav"
         sx={{ color: "white" }}
         onClick={() => signOut()}
       >
