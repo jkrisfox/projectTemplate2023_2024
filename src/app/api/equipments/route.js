@@ -32,21 +32,3 @@ export async function POST(request) {
   console.log(newEquipment)
   return NextResponse.json(newEquipment)
 }
-
-export async function DELETE(request) {
-  const responseData = await request.json();
-  const { id } = responseData;
-  let deletedEquipment;
-  try {
-    deletedEquipment = prisma.Equipments.delete({
-      where: {
-        id,
-      },
-    });
-  } catch (e) {
-    console.log(e.message)
-    return NextResponse.json({error: e.message}, {status: 500})
-  }
-  console.log(deletedEquipment);
-  return NextResponse.json(deletedEquipment);
-}
