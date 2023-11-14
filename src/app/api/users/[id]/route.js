@@ -2,6 +2,22 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { checkLoggedIn } from "@/lib/auth";
 
+export async function GET(request, { params }) {
+  const userId = parseInt(params.id);
+  
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId
+    }
+  });
+
+  if (user) {
+    return NextResponse.json(user);
+  }
+
+  return NextResponse.json({error: 'user not found'}, {status: 404});
+}
+
 export async function PUT(request, { params }) {
   const loggedInData = await checkLoggedIn();
   const userId = parseInt(params.id);
