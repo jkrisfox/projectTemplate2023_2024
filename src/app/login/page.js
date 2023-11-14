@@ -13,6 +13,8 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+
 
 const RESEND_INTERVAL = 30;
 
@@ -327,7 +329,17 @@ export default function LoginPage() {
                     }
                   } else {
                     // If logging in
-                    // Add login logic here
+                    signIn("normal", {
+                      email: userEmail,
+                      password: password,
+                      redirect: false,
+                    }).then((response) => {
+                      if (!response.error) {
+                        router.push("/");
+                      } else {
+                        setErrorMessage(response.error);
+                      }
+                    });
                   }
                 }}
               >
