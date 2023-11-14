@@ -1,16 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
-import { checkLoggedIn } from "@/lib/auth";
-import { USER_NOT_SIGNED_IN } from "@/lib/response";
 
-// model Equipments {
-//   id                Int    @id @default(autoincrement())
-//   equipmentName     String
-//   short_description String
-//   long_description  String
-// }
-
-export async function GET(request) {
+export async function GET() {
   try {
     // get all equipments
     const equipments = await prisma.Equipments.findMany();
@@ -33,9 +24,9 @@ export async function POST(request) {
         long_description,
         image_path
       }
-    })
+    });
   } catch (e) {
-    console.log(e.message)
+    console.log(e.message);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
   console.log(newEquipment)
