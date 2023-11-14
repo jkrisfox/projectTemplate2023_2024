@@ -10,6 +10,7 @@ import { useDropzone } from 'react-dropzone';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/MyListings';
+import Settings from '../../../components/Settings';
 
 export default function Profile() {
   const [currentTab, setCurrentTab] = useState(0);
@@ -99,6 +100,10 @@ export default function Profile() {
 
       {/* My Listings Section - Only display if the My Listings tab is active */}
       {currentTab === 1 && <MyListings />}
+
+      {/* Settings Section - Only display if the Settings tab is active */}
+      {currentTab === 2 && <Settings />}
+
 
       <Dialog
         open={isDialogOpen}
