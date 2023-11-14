@@ -1,20 +1,24 @@
 'use client'
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { 
-  Avatar, Button, Divider, List, ListItem, ListItemText, 
-  ListItemAvatar, ListItemSecondaryAction, IconButton, Typography,
-  Box, Grid, Tabs, Tab, Paper, Dialog, DialogTitle, DialogContent, DialogActions 
+  Avatar, Button, Divider, IconButton, Typography,
+  Box, Grid, Tabs, Tab, Paper, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress 
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
+import PersonIcon from '@mui/icons-material/Person';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/MyListings';
 
-export default function Profile() {
+export default function Profile({ params }) {
+  const [user, setUser] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
-  const [heroImage, setHeroImage] = useState('/path/to/default-hero-image.jpg'); // Use default image for now
+  const [heroImage, setHeroImage] = useState('https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg');
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog's visibility
+
+  const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
@@ -41,15 +45,42 @@ export default function Profile() {
     setIsDialogOpen(false);
   };
 
+  const userId = parseInt(params.id);
+
+  // Get user data
+  useEffect(() => {
+    fetch(`/api/users/${userId}`, { method: "get" }).then((response) => response.ok && response.json()).then(
+      userData => {
+        setUser(userData);
+        setIsLoading(false);
+      }
+    );
+  }, []);
+
+  if (!isLoading) {
+    if (!user) {
+      return (
+        <Typography>User not found!</Typography>
+      )
+    }
+
+    if (!user.name) {
+      return (
+        <Typography>User has not set up their page yet!</Typography>
+      )
+    }
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Hero Section */}
-      <Paper 
+      {!isLoading &&
+      <Paper
         elevation={1}
         sx={{ 
           width: '100%', 
           height: 300, 
-          backgroundImage: `url(${heroImage})`,
+          backgroundImage: user.heroImageName ? `url(http://slomarket.shnibl.com:5000/${user.heroImageName})` : `url(${defaultHeroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           position: 'relative'
@@ -66,17 +97,19 @@ export default function Profile() {
         >
           <SettingsIcon />
         </IconButton>
-      </Paper>
-
+      </Paper>}
 
       {/* Profile Info */}
+      {isLoading ? <CircularProgress /> :
       <Grid container spacing={2} alignItems="center" justifyContent="center" mt={3}>
         <Grid item>
-          <Avatar alt="John Doe" src="/path/to/johndoe.jpg" sx={{ width: 80, height: 80 }} />
+          <Avatar alt="Profile Picture" src={user.profileImageName && `http://slomarket.shnibl.com:5000/${user.profileImageName}`} sx={{ width: 80, height: 80 }}>
+            <PersonIcon />
+          </Avatar>
         </Grid>
         <Grid item>
           <Typography variant="h4" gutterBottom>
-            John Doe <VerifiedIcon color="primary" />
+            {user.name} {user.isVerified && <VerifiedIcon color="primary" />}
           </Typography>
           <Typography variant="subtitle1">
             Seller
@@ -85,7 +118,7 @@ export default function Profile() {
         <Grid item xs={12} sm={'auto'}>
           {/* Other buttons/actions for profile can be added here */}
         </Grid>
-      </Grid>
+      </Grid>}
       <Divider sx={{ my: 2, width: '100%' }} />
 
       {/* Tabs */}
