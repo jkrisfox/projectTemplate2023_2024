@@ -12,14 +12,26 @@ async function insertSeasons(data) {
     for (const line of data) {
         [name, start, end] = line.split(", ");
         if (name && start && end) {
-            console.log("inserting", line);
-            await prisma.season.create({
-                data: {
-                    name: name, 
-                    start: start, 
-                    end: end,
+            const nameExists = await prisma.season.findMany({
+                where: {
+                    name: {
+                        equals: name
+                    }
                 }
             });
+            if (nameExists.length > 0) {
+                console.log("skipping", name, "because the name is already in the database");
+            }
+            else {
+                await prisma.season.create({
+                    data: {
+                        name: name, 
+                        start: start, 
+                        end: end,
+                    }
+                });
+                console.log("inserted", line);
+            }
         }
     }
     console.log("finished inserting seasons\n");
@@ -36,15 +48,34 @@ async function seedSeasons() {
 async function insertUsers(usernames, emails, passwords) {
     console.log("inserting users...");
     for (let i = 0; i < usernames.length; i++) {
-        console.log("inserting", [usernames[i], emails[i], passwords[i]].join(", "));
-        await prisma.user.create({
-            data: {
-                username: usernames[i], 
-                email: emails[i], 
-                // the hash that this project uses
-                password: await bcrypt.hash(passwords[i], 10)
+        const usernameExists = await prisma.user.findMany({
+            where: {
+                username: {
+                    equals: usernames[i]
+                }
             }
         });
+        const emailExists = await prisma.user.findMany({
+            where: {
+                email: {
+                    equals: emails[i]
+                }
+            }
+        });
+        if (usernameExists.length > 0 || emailExists.length > 0) {
+            console.log("skipping", usernames[i], "with email", emails[i], "because the username or email is already in the database");
+        }
+        else {
+            await prisma.user.create({
+                data: {
+                    username: usernames[i], 
+                    email: emails[i], 
+                    // the hash that this project uses
+                    password: await bcrypt.hash(passwords[i], 10)
+                }
+            });
+            console.log("inserted", [usernames[i], emails[i], passwords[i]].join(", "));
+        }
     }
     console.log("finished inserting users\n");
 }
