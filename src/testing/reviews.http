@@ -1,5 +1,6 @@
 # these tests are meant to be run in order for "EXPECTED" comments to be useful.
 # the database must already be seeded with seasons and users.
+# NOTE: AT THE END, GO INTO PRISMA STUDIO AND DELETE THE TWO LISTINGS CREATED BY THESE TESTS
 
 
 
@@ -9,7 +10,7 @@ GET http://localhost:3000/api/auth/csrf HTTP/1.1
 
 
 
-######  LOGIN
+######  LOG IN AS ALICE
 @token = {{csrf.response.body.csrfToken}}
 @email_alice = alice@gmail.com
 @password_alice = password
@@ -79,7 +80,7 @@ csrfToken={{token}}
 
 
 
-####  LOG IN TO ANOTHER ACCOUNT
+####  LOG IN AS BOB
 @email_bob = bob@gmail.com
 @password_bob = password
 POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
@@ -153,3 +154,47 @@ Content-Type: application/json
 # EXPECTED: has first review with this account, but not the deleted one, 
 # doesn't show the review from the other account
 GET http://localhost:3000/api/reviews HTTP/1.1
+
+
+
+####  CLEANUP
+#### delete bob's other review with placeId_1
+DELETE http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "seasonName": {{seasonName}}
+}
+
+#### log out
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/signout
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}
+
+#### log in as alice
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/callback/normal HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}&email={{email_alice}}&password={{password_alice}}&redirect=false&json=true
+
+#### delete alice's review with placeId_1
+DELETE http://localhost:3000/api/reviews HTTP/1.1
+Content-Type: application/json
+
+{
+  "placeId": {{placeId_1}}, 
+  "seasonName": {{seasonName}}
+}
+
+#### log out
+@token = {{csrf.response.body.csrfToken}}
+POST http://localhost:3000/api/auth/signout
+Content-Type: application/x-www-form-urlencoded
+
+csrfToken={{token}}
+
+# GO INTO PRISMA STUDIO AND DELETE THE TWO LISTINGS CREATED BY THESE TESTS
