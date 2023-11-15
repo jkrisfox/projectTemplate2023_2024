@@ -1,116 +1,61 @@
-"use client";
+"use client"
+
 // pages/search.js
-import { useRouter } from "next/navigation"; // Corrected import
-import { useEffect, useState } from "react";
-import { Typography, Box, Pagination, Grid } from '@mui/material';
-import HomeCard from '../../components/HomeCard';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'; // Include necessary Firestore functions
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../../../firebase/firebaseConfig'; // Import db from your firebase config
 
-const categories = [
-    "Furniture",
-    "Electronics",
-    "School Supplies",
-    "Home Decor",
-    "Clothing and Accessories",
-    "Appliances",
-    "Bicycles and Transportation",
-    "Textbooks",
-    "Sports and Fitness Equipment",
-    "Home Office",
-    "Miscellaneous",
-  ];
+const SearchPage = () => {
+  const router = useRouter();
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const Search = () => {
-    const router = useRouter(); // Corrected usage of useRouter
-    const queryParam = router.query.query; // Get the search query from the URL
-    const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const itemsPerPage = 16;
-    const [page, setPage] = useState(1);
-  
-    useEffect(() => {
-      if (queryParam) {
-        setLoading(true);
-        const db = getFirestore(); // Initialize Firestore
-        const listingsRef = collection(db, "listings"); // Reference to the listings collection
-        // Create a Firestore query
-        const q = query(listingsRef, where("description", "==", queryParam)); // Adjust the field and condition as needed
-  
-        getDocs(q).then(querySnapshot => {
-          const items = querySnapshot.docs.map(doc => doc.data());
-          setResults(items);
-          setLoading(false);
-          console.log("Fetched Items: ", items); // Log the fetched items
-        }).catch(error => {
-          console.error("Error fetching search results:", error);
-          setLoading(false);
-        });
+  useEffect(() => {
+      // Only perform search when the router is ready
+      if (router.isReady) {
+          // Access the query parameter directly, now that we know it is defined
+          const searchQuery = router.query.query; // Assuming your query parameter is named 'query'
+
+          if (searchQuery) {
+              performSearch(searchQuery);
+          }
       }
-    }, [queryParam]);
-  
-  
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const paginatedResults = results.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-  
-    if (loading) return <Typography>Loading...</Typography>;
-  
-  
-    return (
-      <Box p={3}>
-        <Typography variant="h4" gutterBottom>
-          Search Results for "{query}"
-        </Typography>
-  
-        {/* Render pagination control */}
-        {results.length > 0 && (
-          <Pagination
-            count={Math.ceil(results.length / itemsPerPage)}
-            page={page}
-            onChange={handleChangePage}
-            sx={{ marginY: 3 }}
-          />
-        )}
-  
-        {results.length > 0 ? (
-          <Grid container spacing={2}>
-            {paginatedResults.map((item, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <HomeCard
-                  title={item.title}
-                  location={item.location}
-                  price={item.price}
-                  imageUrl={item.imageUrl}
-                  status={item.status}
-                  address={item.address}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Typography>No results found.</Typography>
-        )}
-  
-        <Box mt={4}>
-          <Typography variant="h5" gutterBottom>
-            See Recommended Items
-          </Typography>
-          {/* Here you would probably have a list or grid of recommended items */}  
-        </Box>
-  
-        {/* Render pagination control again if needed */}
-        {results.length > 0 && (
-          <Pagination
-            count={Math.ceil(results.length / itemsPerPage)}
-            page={page}
-            onChange={handleChangePage}
-            sx={{ marginY: 3 }}
-          />
-        )}
-      </Box>
-    );
-  };
-  
-  export default Search;
+  }, [router.isReady, router.query]);
+
+  const performSearch = async (searchTerm) => {
+    setLoading(true);
+    try {
+        const listingsRef = collection(db, "listings");
+        const q = query(listingsRef, where("title", "==", searchTerm));
+        const querySnapshot = await getDocs(q);
+        const results = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(results); // This will log the fetched data to the console
+        setSearchResults(results);
+    } catch (error) {
+        console.error("Error fetching search results: ", error);
+    }
+    setLoading(false);
+};
+
+
+  return (
+      <div>
+          {loading ? (
+              <p>Loading...</p>
+          ) : (
+              <div>
+                  <h1>Search Results</h1>
+                  {searchResults.map((result) => (
+                      <div key={result.id}>
+                          <h2>{result.title}</h2>
+                          {/* Render other fields from result as needed */}
+                      </div>
+                  ))}
+              </div>
+          )}
+      </div>
+  );
+};
+
+export default SearchPage;
