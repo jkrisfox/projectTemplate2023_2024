@@ -7,6 +7,8 @@ import './profile.css';
 
 import { Card, CardContent, Button, TextField, FormControl, Avatar, InputLabel, NativeSelect } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 
 
 
@@ -20,7 +22,30 @@ export default function Profile() {
   const [photo, setPhoto] = useState(null);
   const [experience, setExperience] = useState('No experience set');
   // TODO: add useState for interested in, upcoming events, forum activities
-  //const theme = { spacing: 50 }
+  const { data : session, status} = useSession();
+
+  useEffect(() => {
+    let userId = session?.user?.id;
+    async function getId(){
+      // let userId = session?.user?.id;
+      // consolelog(userId)
+      const response = await fetch("/api/users", {
+        method: "GET"
+      })
+      return response;
+    }
+    getId().then(
+      (response) => response.json()
+    ).then((user) => {
+      const {id, name, email, status, ProfileImage} = user;
+      console.log(ProfileImage)
+      setName(name);
+      setPrivate((check) => status === 'PRIVATE' ? true : false);
+      setPhoto(ProfileImage)
+    });
+    
+
+  }, []);
 
   const customButtonStyle = {
     backgroundColor: '#003831',
