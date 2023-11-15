@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 export default function Profile({ params }) {
   const [ formState, setFormState ] = useState({});
-  const [ error, setError ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState();
   const [profileImage, setProfileImage] = useState([]); // Stored as [file, objectUrl]
   const [heroImage, setHeroImage] = useState([]); // Stored as [file, objectUrl]
   const [isProfileImageDialogOpen, setIsProfileImageDialogOpen] = useState(false);
@@ -102,8 +102,9 @@ export default function Profile({ params }) {
         // Send to profile page
         router.push(`/profile/${userId}`);
       } else {
-        setError(true);
-        res.json().then((err) => console.error(err));
+        res.json().then(err => {
+          setErrorMessage(err.error);
+        });
       }
     });
 
@@ -114,9 +115,9 @@ export default function Profile({ params }) {
     <div>
       <h1 style={{textAlign: 'center'}}>Set Up Profile</h1>
         <form onSubmit={handleSetupSubmit} style={{padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          { error ? (
+          { errorMessage ? (
           <Alert severity="error">
-              There was an issue setting up your account, please try again.
+              {errorMessage}
           </Alert>
           ) : null }
 
