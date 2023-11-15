@@ -11,23 +11,23 @@ export async function GET(request) {
     return NextResponse.json({error: 'not signed in'}, {status: 403});
   }
 
-  let data;
+  let data, placeId, seasonName;
   try {
     data = await request.json();
+    [placeId, seasonName] = data;
   }
   catch(error) {
-    console.error(error);
-    return NextResponse.json({error: error}, {status: 500}, {data: request});
+    placeId = null;
+    seasonName = null;
   }
 
-  const {placeId, seasonName} = data;
   // convert to ids
   const listingId = await getListingId(placeId);
   const seasonId = await getSeasonId(seasonName);
 
   const reviews = await prisma.review.findMany({
     where: {
-      ownerId: {
+      userId: {
         equals: loggedInData.user?.id
       }, 
       // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
@@ -97,10 +97,10 @@ async function getSeasonId(seasonName) {
       id: true, 
     }
   });
-  if ("id" in seasonId) {
-    return seasonId["id"];
+  if (seasonId === null || !("id" in seasonId)) {
+    return null;
   }
-  return null;
+  return seasonId["id"];
 }
 
 
@@ -159,23 +159,23 @@ export async function DELETE(request) {
     return NextResponse.json({error: 'not signed in'}, {status: 403});
   }
 
-  let data;
+  let data, placeId, seasonName;
   try {
     data = await request.json();
+    [placeId, seasonName] = data;
   }
   catch(error) {
-    console.error(error);
-    return NextResponse.json({error: error}, {status: 500}, {data: request});
+    placeId = null;
+    seasonName = null;
   }
 
-  const {placeId, seasonName} = data;
   // convert to ids
   const listingId = await getListingId(placeId);
   const seasonId = await getSeasonId(seasonName);
 
   const reviews = await prisma.review.deleteMany({
     where: {
-      ownerId: {
+      userId: {
         equals: loggedInData.user?.id
       }, 
       // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
@@ -225,7 +225,7 @@ export async function PATCH(request) {
 
   const reviews = await prisma.review.updateMany({
     where: {
-      ownerId: {
+      userId: {
         equals: loggedInData.user?.id
       }, 
       listingId: {
