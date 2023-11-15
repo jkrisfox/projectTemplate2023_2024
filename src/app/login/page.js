@@ -13,8 +13,9 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
-const RESEND_INTERVAL = 30;
+const RESEND_INTERVAL = 30; // in seconds
 
 export default function LoginPage() {
   const [name, setName] = useState("");
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const [isRegistering, setIsRegistering] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
@@ -267,7 +269,11 @@ export default function LoginPage() {
                   }}
                 >
                   <FormControlLabel
-                    control={<Checkbox color="primary" />}
+                    control={
+                      <Checkbox
+                        color="primary"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}  />}
                     label={
                       <Typography variant="body2" sx={{ fontSize: "0.8rem" }}>
                         Remember 30 days
@@ -327,7 +333,18 @@ export default function LoginPage() {
                     }
                   } else {
                     // If logging in
-                    // Add login logic here
+                    signIn("normal", {
+                      email: userEmail,
+                      password: password,
+                      redirect: false,
+                      rememberMe: rememberMe,
+                    }).then((response) => {
+                      if (!response.error) {
+                        router.push("/");
+                      } else {
+                        setErrorMessage(response.error);
+                      }
+                    });
                   }
                 }}
               >

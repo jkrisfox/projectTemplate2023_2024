@@ -8,8 +8,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import NavBar from './NavBar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useSession } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { useSession, getSession, signOut} from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import './globals.css';
 
 const theme = createTheme({});
@@ -18,8 +19,21 @@ export default function RootLayout({ children, title }) {
   const { data: session, status }  = useSession();
   const isLoggedIn = status === 'authenticated';
   const isLoginPage = usePathname() === '/login';
-  console.log("isLoginPage: ", isLoginPage);
-  console.log("Pathname: ", usePathname());
+  const router = useRouter();
+
+  if (session && session.isExpired) {
+    signOut({ redirect: false });
+  }
+
+  useEffect(() => {
+    if (status === 'loading') return; // loading
+
+    if (!isLoggedIn && !isLoginPage) {
+      router.push("/login");
+    } else if (isLoggedIn && isLoginPage) {
+      router.push("/");
+    }
+  }, [status, isLoginPage]);
 
   if (isLoginPage) {
     return (
