@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Link, IconButton, Grid } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import HomeCard from "./HomeCard";
+import HomeCard from "./HomeCardDemo";
 
 function Catalog() {
   const categories = [

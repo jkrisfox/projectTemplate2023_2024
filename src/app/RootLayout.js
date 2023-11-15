@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
 import Login from "./Login";
+import Searchbar from "../components/Searchbar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Signup from "./Signup";
 import { useSession } from "next-auth/react";
@@ -108,6 +109,9 @@ export default function RootLayout({ children, title }) {
               >
                 {title}
               </Typography>
+              <Box width='400px'>
+              <Searchbar />
+              </Box>
               <NavBar />
               <Box pr={6}>
                 <IconButton color="inherit">

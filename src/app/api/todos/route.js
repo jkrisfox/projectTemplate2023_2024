@@ -1,35 +1,38 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/db";
-import { checkLoggedIn } from "@/lib/auth";
+// src/app/api/search.js
+
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/db';
+import { checkLoggedIn } from '@/lib/auth';
 
 export async function GET(request) {
   const loggedInData = await checkLoggedIn();
   if (loggedInData.loggedIn) {
-    const todos = await prisma.toDo.findMany({
+    // Retrieve the search query from the request URL
+    const url = new URL(request.url);
+    const searchQuery = url.searchParams.get('query');
+
+    if (!searchQuery) {
+      return NextResponse.json({ error: 'No search query provided' }, { status: 400 });
+    }
+
+    // Use Prisma to search the listings
+    const listings = await prisma.listing.findMany({
       where: {
-        ownerId: {
-          equals: loggedInData.user?.id
-        }
+        OR: [
+          { title: { contains: searchQuery, mode: 'insensitive' } },
+          { description: { contains: searchQuery, mode: 'insensitive' } }
+        ],
+      },
+      include: {
+        user: true, // Include user information if needed
+        category: true,
       }
     });
-    return NextResponse.json(todos);
+
+    return NextResponse.json(listings);
   }
-  return NextResponse.json({error: 'not signed in'}, {status: 403});
+
+  return NextResponse.json({ error: 'Not signed in' }, { status: 403 });
 }
 
-export async function POST(request) {
-  const loggedInData = await checkLoggedIn();
-  if (loggedInData.loggedIn) {
-    const { done, value } = await request.json();
-    const todo = await prisma.toDo.create({
-      data: {
-        ownerId: loggedInData.user?.id,
-        done,
-        value
-      }
-    });
-    return NextResponse.json(todo);
-  }
-  return NextResponse.json({error: 'not signed in'}, {status: 403});
-}
-
+// Note: No POST method is needed for search functionality unless you are storing search queries
