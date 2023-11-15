@@ -11,10 +11,11 @@ export async function GET(request) {
     return NextResponse.json({error: 'not signed in'}, {status: 403});
   }
 
-  let data, placeId, seasonName;
+  let data;
+  var placeId, seasonName;
   try {
     data = await request.json();
-    [placeId, seasonName] = data;
+    var {placeId, seasonName} = data;
   }
   catch(error) {
     placeId = null;
@@ -159,10 +160,11 @@ export async function DELETE(request) {
     return NextResponse.json({error: 'not signed in'}, {status: 403});
   }
 
-  let data, placeId, seasonName;
+  let data;
+  var placeId, seasonName;
   try {
     data = await request.json();
-    [placeId, seasonName] = data;
+    var {placeId, seasonName} = data;
   }
   catch(error) {
     placeId = null;
