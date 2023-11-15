@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState, useCallback } from 'react';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '400px',
@@ -34,15 +34,40 @@ export default function Map() {
     setMap(null)
   }, [])
 
+  const markers = [
+    { 
+      id: 1,
+      name: "Cal Poly",
+      position: { 
+        lat: 35.299878,
+        lng: -120.662337,
+        //place_id: 'ChIJGcFSXYLx7IAReGNxHAG19tU' 
+      }
+    }
+  ]
+
   return isLoaded ? (
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
-        zoom={10}
+        zoom={14}
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        { /* Child components, such as markers, info windows, etc. */ }
+        { 
+          markers.map(({ id, name, position }) => (
+            <MarkerF
+              key={id}
+              position={position}
+              //onClick={() => handleActiveMarker(id)}
+              // icon={{
+              //   url: "",
+              //   scaledSize: { width: 50, height: 50 }
+              // }}
+            >
+            </MarkerF>
+          ))
+        }
         <></>
       </GoogleMap>
   ) : <>Loading...</>
