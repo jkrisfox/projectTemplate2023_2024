@@ -2,6 +2,11 @@ import { usePathname } from 'next/navigation';
 import { Box, Button } from '@mui/material';
 import Link from 'next/link';
 import React from 'react';
+import { signOut } from 'next-auth/react';
+
+const handleLogout = () => {
+  signOut({ redirect: false });
+};
  
 export default function NavBar() {
   const pathname = usePathname();
@@ -10,8 +15,7 @@ export default function NavBar() {
     { path: '/profile', name: 'Profile' },
     { path: '/events', name: 'Events' },
     { path: '/equipment', name: 'Equipment' },
-    { path: '/forum', name: 'Forum' },
-    { path: '/login', name: 'Login'}
+    { path: '/forum', name: 'Forum' }
   ];
 
   return (
@@ -29,6 +33,9 @@ export default function NavBar() {
           </Link>
         );
       })}
+      <Button onClick={handleLogout} className="navbar-button">
+        Logout
+      </Button>
     </Box>
   );
 }
