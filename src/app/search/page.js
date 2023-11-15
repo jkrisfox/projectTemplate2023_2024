@@ -1,9 +1,10 @@
 "use client";
 // pages/search.js
-import { useRouter, useSearchParams  } from "next/navigation"; // correct the import for useRouter
+import { useRouter } from "next/navigation"; // Corrected import
 import { useEffect, useState } from "react";
 import { Typography, Box, Pagination, Grid } from '@mui/material';
 import HomeCard from '../../components/HomeCard';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'; // Include necessary Firestore functions
 
 const categories = [
     "Furniture",
@@ -19,36 +20,34 @@ const categories = [
     "Miscellaneous",
   ];
 
-// A hook to simulate search results
-const useSearchResults = (query) => {
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (query) {
-      setLoading(true);
-      fetch(`/api/search?query=${query}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setResults(data); // Assuming your API returns the data in the format that your component expects
+  const Search = () => {
+    const router = useRouter(); // Corrected usage of useRouter
+    const queryParam = router.query.query; // Get the search query from the URL
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const itemsPerPage = 16;
+    const [page, setPage] = useState(1);
+  
+    useEffect(() => {
+      if (queryParam) {
+        setLoading(true);
+        const db = getFirestore(); // Initialize Firestore
+        const listingsRef = collection(db, "listings"); // Reference to the listings collection
+        // Create a Firestore query
+        const q = query(listingsRef, where("description", "==", queryParam)); // Adjust the field and condition as needed
+  
+        getDocs(q).then(querySnapshot => {
+          const items = querySnapshot.docs.map(doc => doc.data());
+          setResults(items);
           setLoading(false);
-        })
-        .catch((error) => {
+          console.log("Fetched Items: ", items); // Log the fetched items
+        }).catch(error => {
           console.error("Error fetching search results:", error);
           setLoading(false);
         });
-    }
-  }, [query]);
-
-  return { results, loading };
-};
-
-const Search = () => {
-    const searchParams = useSearchParams()
-    const query = searchParams.get('query'); // get the search query from the URL
-    const { results, loading } = useSearchResults(query);
-    const itemsPerPage = 16;
-    const [page, setPage] = useState(1);
+      }
+    }, [queryParam]);
+  
   
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
