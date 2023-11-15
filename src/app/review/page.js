@@ -35,10 +35,19 @@ export default function Review() {
     } else if (!markerPosition) {
       alert('Please select a location on the map.');
     } else {
-      // Handle the form submission logic here, including markerPosition and markerAddress
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
+
+      const seasonName = "Thanksgiving 2023";  // TODO: get actual season instead of hardcoding
+      const placeId = markerPlaceId;
+
+      fetch("api/reviews", { method: "post", body: JSON.stringify(
+        {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasonName, score: rating}) } )
+          .then((response) => {
+            console.log("Sent POST request for review of", placeId);
+            console.log("post response:", response);
+          });
       
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);

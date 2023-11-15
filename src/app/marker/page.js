@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function MapWithMarker({ onMarkerPlaced }) {
   const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
-  const [markerPlaced, setMarkerPlaced] = useState(false);
+  const markerRef = useRef(null);
 
   useEffect(() => {
     if (!map) {
@@ -14,13 +13,9 @@ export default function MapWithMarker({ onMarkerPlaced }) {
 
       // Add click event listener to the map
       mapInstance.addListener('click', (event) => {
-        // If a marker is already placed, do nothing
-        if (markerPlaced) {
-          return;
-        }
-        // Remove the previous marker if exists
-        if (marker) {
-          marker.setMap(null);
+        // Remove the previous marker if it exists
+        if (markerRef.current) {
+          markerRef.current.setMap(null);
         }
         // Place a new marker
         placeMarker(event.latLng, mapInstance);
@@ -28,7 +23,7 @@ export default function MapWithMarker({ onMarkerPlaced }) {
 
       setMap(mapInstance);
     }
-  }, [map, marker, markerPlaced]);
+  }, [map]);
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -50,9 +45,8 @@ export default function MapWithMarker({ onMarkerPlaced }) {
 
     // Invoke the callback with marker position
     onMarkerPlaced(newMarker.getPosition().toJSON());
-    // Set the new marker to state
-    setMarker(newMarker);
-    setMarkerPlaced(true); // Mark the flag as true after placing the marker
+    // Update the marker ref
+    markerRef.current = newMarker;
   };
 
   // Function to get address from LatLng
