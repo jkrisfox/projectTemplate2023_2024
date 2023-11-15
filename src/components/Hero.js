@@ -106,7 +106,7 @@ function Hero() {
               Get started now
             </Button>
             <Button variant="outlined" color="primary">
-              Discover our origins
+              See benefits
             </Button>
           </Box>
         </CardContent>
