@@ -5,18 +5,22 @@ const prisma = new PrismaClient();
 
 
 
-async function insertSeasons(name, start, end) {
-    await prisma.season.create({
+// creates a record in the Season table
+async function insertSeason(name, start, end) {
+    const season = await prisma.season.create({
         data: {
             name: name, 
             start: start, 
             end: end,
         }
     });
-    console.log(`inserted '${[name, start, end].join(", ")}'`);
+
+    console.log(`inserted '${[name, start, end].join(", ")}' into Season table`);
+    return season;
 }
 
 
+// seeds Seasons based on data in a csv file
 async function seedSeasons() {
     console.log("seeding seasons...");
 
@@ -39,7 +43,7 @@ async function seedSeasons() {
                 console.log(`skipping '${name}' because it already exists`);
             }
             else {
-                await insertSeasons(name, start, end);
+                await insertSeason(name, start, end);
             }
         }
     }
@@ -49,8 +53,9 @@ async function seedSeasons() {
 
 
 
+// creates a record in the User table
 async function insertUser(username, email, password) {
-    await prisma.user.create({
+    const user = await prisma.user.create({
         data: {
             username: username, 
             email: email, 
@@ -58,10 +63,13 @@ async function insertUser(username, email, password) {
             password: await bcrypt.hash(password, 10)
         }
     });
-    console.log(`inserted '${[username, email, password].join(", ")}'`);
+
+    console.log(`inserted '${[username, email, password].join(", ")}' into User table`);
+    return user;
 }
 
 
+// seeds Users based on three same-length arrays of usernames, emails, and passwords
 async function seedUsers(usernames, emails, passwords) {
     console.log("seeding users...");
 
@@ -94,12 +102,44 @@ async function seedUsers(usernames, emails, passwords) {
 
 
 
-async function insertReview(userId, placeId, latitude, longitude, seasonId, score) {
-    // TODO: implement this function using prisma.review.create()
-    console.log("INSERTREVIEW", userId, placeId, latitude, longitude, seasonId, score, "\n");
+// creates a record in the Listing table
+async function insertListing(placeId, lat, lng) {
+    const listing = await prisma.listing.create({
+        data: {
+          placeId: placeId, 
+          latitude: lat, 
+          longitude: lng, 
+        }, 
+        select: {
+          id: true, 
+        }
+      });
+
+    console.log(`inserted '${[placeId, lat, lng].join(", ")}' into Listing table`);
+    return listing;
 }
 
 
+// creates a record in the Review table
+async function insertReview(userId, placeId, latitude, longitude, seasonId, score) {
+    // TODO: don't insert if listing already exists
+    let listing = await insertListing(placeId, latitude, longitude);
+    let listingId = listing.id;
+    const review = await prisma.review.create({
+        data: {
+            userId: userId, 
+            listingId: listingId, 
+            seasonId: seasonId, 
+            score: score
+        }
+    });
+
+    console.log(`inserted '${[placeId, score].join(", ")}' into Review table`);
+    return review;
+}
+
+
+// seeds Reviews
 async function seedReviews(reviewThreshold, testUsername, seasonName) {
     console.log("seeding reviews...");
 
@@ -137,6 +177,7 @@ async function seedReviews(reviewThreshold, testUsername, seasonName) {
     let placeId, latitude, longitude, score;
     // TODO: 
     // should insert some of these reviewThreshold times, some reviewThreshold-1, some reviewThreshold-2
+    // (currently, this does one review for each listing)
     for (const line of data) {
         [placeId, latitude, longitude] = line.split(", ");
         if (!(placeId && latitude && longitude)) {
