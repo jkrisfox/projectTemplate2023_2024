@@ -3,20 +3,6 @@ import prisma from "@/lib/db";
 import { USER_NOT_SIGNED_IN } from "@/lib/response";
 import { checkLoggedIn } from "@/lib/auth";
 
-/* 
-model Votes {
-  // All the votes for forum post. Use this to aggregate total on a single post
-  id     Int      @id @default(autoincrement())
-  type   VoteType
-  postId Int
-  post   Post     @relation(fields: [postId], references: [id])
-  userId Int
-  user   User     @relation(fields: [userId], references: [id])
-
-  @@unique([postId, userId]) // user cannot vote multiple times on the same post
-}
-*/
-
 async function createOrDeleteVotes(model, where, data) {
   // Step 1: Check if the record exists
   const record = await prisma[model].findUnique({
@@ -34,17 +20,13 @@ async function createOrDeleteVotes(model, where, data) {
         where: { postId_userId: where },
       });
     }
-    // if they clicked on a different vote, delete current vote and create a new one.
+    // if they clicked on a different vote, update their vote on the post
     else {
-      const deletedData = await prisma[model].delete({
+      const updateData = await prisma[model].update({
         where: { postId_userId: where },
-      });
-      console.log({ DeletedData: deletedData });
-      const createdData = await prisma[model].create({
         data: data,
       });
-      console.log("Created New Data");
-      return createdData;
+      return updateData;
     }
   } else {
     // The record doesn't exist, so create it
@@ -63,7 +45,7 @@ export async function POST(request) {
     const { voteType, postId } = responseData;
     // create data layout for post creation
     const checkVoteData = {
-      userId: 2, // make this dynamic
+      userId: 1, // make this dynamic
       postId: postId,
     };
 
@@ -72,7 +54,7 @@ export async function POST(request) {
     const newVoteData = {
       type: voteType,
       post: { connect: { id: postId } },
-      user: { connect: { id: 2 } },
+      user: { connect: { id: checkVoteData["userId"] } },
     };
     let votes;
     try {
