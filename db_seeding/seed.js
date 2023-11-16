@@ -20,7 +20,7 @@ async function insertSeasons(data) {
                 }
             });
             if (nameExists.length > 0) {
-                console.log("skipping", name, "because the name is already in the database");
+                console.log(`skipping '${name}' because it already exists`);
             }
             else {
                 await prisma.season.create({
@@ -30,12 +30,13 @@ async function insertSeasons(data) {
                         end: end,
                     }
                 });
-                console.log("inserted", line);
+                console.log(`inserted '${line}'`);
             }
         }
     }
     console.log("finished inserting seasons\n");
 }
+
 
 async function seedSeasons() {
     const filepath = "db_seeding/seasons.csv";
@@ -63,7 +64,7 @@ async function insertUsers(usernames, emails, passwords) {
             }
         });
         if (usernameExists.length > 0 || emailExists.length > 0) {
-            console.log("skipping", usernames[i], "with email", emails[i], "because the username or email is already in the database");
+            console.log(`skipping '${usernames[i]}' with email '${emails[i]}' because the username or email already exists`);
         }
         else {
             await prisma.user.create({
@@ -74,19 +75,14 @@ async function insertUsers(usernames, emails, passwords) {
                     password: await bcrypt.hash(passwords[i], 10)
                 }
             });
-            console.log("inserted", [usernames[i], emails[i], passwords[i]].join(", "));
+            console.log(`inserted '${[usernames[i], emails[i], passwords[i]].join(", ")}'`);
         }
     }
     console.log("finished inserting users\n");
 }
 
 
-async function seedUsers() {
-    let usernames = ["AliceAndVerdict", "BobOrVegana"];
-    let emails = ["alice@gmail.com", "bob@gmail.com"];
-    // plaintext passwords
-    let passwords = ["password", "password"];
-
+async function seedUsers(usernames, emails, passwords) {
     await insertUsers(usernames, emails, passwords);
 }
 
@@ -100,13 +96,18 @@ async function main() {
         images: true
     };
 
+    var usernames = ["AliceAndVerdict", "BobOrVegana"];
+    var emails = ["alice@gmail.com", "bob@gmail.com"];
+    // plaintext passwords
+    var passwords = ["password", "password"];
+
     console.log("sowing seeds...\n");
 
     if (options.seasons) {
         await seedSeasons();
     }
     if (options.users) {
-        await seedUsers();
+        await seedUsers(usernames, emails, passwords);
     }
     // if (options.listings) {
     //     await seedListings();
