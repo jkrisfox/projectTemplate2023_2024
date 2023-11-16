@@ -7,8 +7,8 @@
     - name: string
     - phoneNumber: string
     - location: string
-    - profileImageName: string
-    - heroImageName: string
+    - profileImage: string (image URL)
+    - heroImage: string (image URL)
     - isStudent: boolean
     - contactInfoVisibility: boolean
     - favoriteListings: array of listingId
