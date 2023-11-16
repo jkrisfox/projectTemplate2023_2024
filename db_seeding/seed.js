@@ -4,12 +4,26 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 
-// creates records for seasons based on a list of strings.
-// each element in the list is comma-separated: name, start, end
-async function insertSeasons(data) {
-    let name, start, end;
-    console.log("inserting seasons...");
 
+async function insertSeasons(name, start, end) {
+    await prisma.season.create({
+        data: {
+            name: name, 
+            start: start, 
+            end: end,
+        }
+    });
+    console.log(`inserted '${[name, start, end].join(", ")}'`);
+}
+
+
+async function seedSeasons() {
+    console.log("seeding seasons...");
+
+    const filepath = "db_seeding/seasons.csv";
+    let data = fs.readFileSync(filepath, "utf8").split("\n");
+
+    let name, start, end;
     for (const line of data) {
         [name, start, end] = line.split(", ");
         if (name && start && end) {
@@ -25,35 +39,31 @@ async function insertSeasons(data) {
                 console.log(`skipping '${name}' because it already exists`);
             }
             else {
-                await prisma.season.create({
-                    data: {
-                        name: name, 
-                        start: start, 
-                        end: end,
-                    }
-                });
-                console.log(`inserted '${line}'`);
+                await insertSeasons(name, start, end);
             }
         }
     }
 
-    console.log("finished inserting seasons\n");
-}
-
-
-async function seedSeasons() {
-    const filepath = "db_seeding/seasons.csv";
-    let data = fs.readFileSync(filepath, "utf8").split("\n");
-    await insertSeasons(data);
+    console.log("finished seeding seasons\n");
 }
 
 
 
+async function insertUser(username, email, password) {
+    await prisma.user.create({
+        data: {
+            username: username, 
+            email: email, 
+            // the hash that this project uses
+            password: await bcrypt.hash(password, 10)
+        }
+    });
+    console.log(`inserted '${[username, email, password].join(", ")}'`);
+}
 
 
-// creates records for users based on three arrays of the same length
-async function insertUsers(usernames, emails, passwords) {
-    console.log("inserting users...");
+async function seedUsers(usernames, emails, passwords) {
+    console.log("seeding users...");
 
     for (let i = 0; i < usernames.length; i++) {
         const usernameData = await prisma.user.findMany({
@@ -75,28 +85,12 @@ async function insertUsers(usernames, emails, passwords) {
             console.log(`skipping '${usernames[i]}' with email '${emails[i]}' because the username or email already exists`);
         }
         else {
-            await prisma.user.create({
-                data: {
-                    username: usernames[i], 
-                    email: emails[i], 
-                    // the hash that this project uses
-                    password: await bcrypt.hash(passwords[i], 10)
-                }
-            });
-            console.log(`inserted '${[usernames[i], emails[i], passwords[i]].join(", ")}'`);
+            await insertUser(usernames[i], emails[i], passwords[i]);
         }
     }
 
-    console.log("finished inserting users\n");
+    console.log("finished seeding users\n");
 }
-
-
-// TODO: move most of insertUsers() into here, change to insertUser() and make it do prisma create
-async function seedUsers(usernames, emails, passwords) {
-    await insertUsers(usernames, emails, passwords);
-}
-
-
 
 
 
@@ -107,6 +101,8 @@ async function insertReview(userId, placeId, latitude, longitude, seasonId, scor
 
 
 async function seedReviews(reviewThreshold, testUsername, seasonName) {
+    console.log("seeding reviews...");
+
     const minScore = 1;
     const maxScore = 10;
 
@@ -149,9 +145,9 @@ async function seedReviews(reviewThreshold, testUsername, seasonName) {
         score = Math.floor(Math.random() * (maxScore - minScore + 1) + minScore);  // random score
         await insertReview(userId, placeId, latitude, longitude, seasonId, score);
     }
+
+    console.log("finished seeding reviews\n");
 }
-
-
 
 
 
@@ -199,8 +195,6 @@ async function main() {
 
     console.log("finished seeding database!");
 }
-
-
 
 
 
