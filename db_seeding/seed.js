@@ -13,7 +13,7 @@ async function insertSeasons(data) {
     for (const line of data) {
         [name, start, end] = line.split(", ");
         if (name && start && end) {
-            const nameExists = await prisma.season.findMany({
+            const nameData = await prisma.season.findMany({
                 where: {
                     name: {
                         equals: name
@@ -21,7 +21,7 @@ async function insertSeasons(data) {
                 }
             });
 
-            if (nameExists.length > 0) {
+            if (nameData.length > 0) {
                 console.log(`skipping '${name}' because it already exists`);
             }
             else {
@@ -56,14 +56,14 @@ async function insertUsers(usernames, emails, passwords) {
     console.log("inserting users...");
 
     for (let i = 0; i < usernames.length; i++) {
-        const usernameExists = await prisma.user.findMany({
+        const usernameData = await prisma.user.findMany({
             where: {
                 username: {
                     equals: usernames[i]
                 }
             }
         });
-        const emailExists = await prisma.user.findMany({
+        const emailData = await prisma.user.findMany({
             where: {
                 email: {
                     equals: emails[i]
@@ -71,7 +71,7 @@ async function insertUsers(usernames, emails, passwords) {
             }
         });
 
-        if (usernameExists.length > 0 || emailExists.length > 0) {
+        if (usernameData.length > 0 || emailData.length > 0) {
             console.log(`skipping '${usernames[i]}' with email '${emails[i]}' because the username or email already exists`);
         }
         else {
@@ -91,6 +91,7 @@ async function insertUsers(usernames, emails, passwords) {
 }
 
 
+// TODO: move most of insertUsers() into here, change to insertUser() and make it do prisma create
 async function seedUsers(usernames, emails, passwords) {
     await insertUsers(usernames, emails, passwords);
 }
@@ -99,22 +100,55 @@ async function seedUsers(usernames, emails, passwords) {
 
 
 
-async function insertReviews(usernames, emails, passwords) {
-
+async function insertReview(userId, placeId, latitude, longitude, seasonId, score) {
+    // TODO: implement this function using prisma.review.create()
+    console.log("INSERTREVIEW", userId, placeId, latitude, longitude, seasonId, score, "\n");
 }
 
 
-async function seedReviews(reviewThreshold, usernames, emails, passwords) {
-    let placesAtThresh = [];
-    let placesBelowThresh = [];
+async function seedReviews(reviewThreshold, testUsername, seasonName) {
+    const minScore = 1;
+    const maxScore = 10;
 
-    // TODO: finish implementing this function
-    console.log("seedReviews() is not implemented yet\n");
+    // look up test user's id to use in all the reviews
+    const userData = await prisma.user.findUnique({
+        where: {
+            username: testUsername
+        }
+    });
+    if (userData === null) {
+        console.log(`ERROR: could not seed Reviews because the test user '${testUsername}' is not in the database`);
+        return;
+    }
+    const userId = userData.id;
 
-    // for each place to show, reviewThreshold test users have to create a review
-    
-    // for each place to be 1 below threshold, reviewThreshold-1 test users have to create a review
+    // look up season id to use in all the reviews
+    const seasonData = await prisma.season.findUnique({
+        where: {
+            name: seasonName
+        }
+    });
+    if (seasonData === null) {
+        console.log(`ERROR: could not seed Reviews because the season '${seasonName}' is not in the database`);
+        return;
+    }
+    const seasonId = seasonData.id;
 
+    // read data for listings
+    const filepath = "db_seeding/listings.csv";
+    let data = fs.readFileSync(filepath, "utf8").split("\n");
+
+    let placeId, latitude, longitude, score;
+    // TODO: 
+    // should insert some of these reviewThreshold times, some reviewThreshold-1, some reviewThreshold-2
+    for (const line of data) {
+        [placeId, latitude, longitude] = line.split(", ");
+        if (!(placeId && latitude && longitude)) {
+            continue;
+        }
+        score = Math.floor(Math.random() * (maxScore - minScore + 1) + minScore);  // random score
+        await insertReview(userId, placeId, latitude, longitude, seasonId, score);
+    }
 }
 
 
@@ -124,6 +158,8 @@ async function seedReviews(reviewThreshold, usernames, emails, passwords) {
 async function main() {
     // number of reviews needed for a listing to show as a pin on the frontend
     let reviewThreshold = 5;
+    // the season name to use for all the seeded reviews (must be in seasons.csv so it can be seeded in the database)
+    let seasonName = "Christmas 2023";
     // default behavior is to seed seasons and users, but not reviews (reviews will also seed listings)
     let options = {
         seasons: true, 
@@ -139,24 +175,17 @@ async function main() {
     }
 
     // info for demo accounts that testers can use
-    let demoUsernames = ["AliceAndVerdict", "BobOrVegana"];
-    let demoEmails = ["alice@gmail.com", "bob@gmail.com"];
-    let demoPasswords = ["password", "password"];
-    // info for demo users that are only used for extra reviews
-    let testUsernames = [];
-    let testEmails = [];
-    let testPasswords = [];
-    for (let i = 0; i < reviewThreshold; i++) {
-        testUsernames.push("Test" + String(i));
-        testEmails.push("test" + String(i) + "@test.com");
-        testPasswords.push("password");
-    }
-    // combine
-    let usernames = demoUsernames.concat(testUsernames);
-    let emails = demoEmails.concat(testEmails);
-    let passwords = demoPasswords.concat(testPasswords);
-
-    console.log("sowing seeds...\n");
+    let usernames = ["AliceAndVerdict", "BobOrVegana"];
+    let emails = ["alice@gmail.com", "bob@gmail.com"];
+    let passwords = ["password", "password"];
+    // info for test user that is only used for seeding reviews
+    let testUsername = "Test"
+    let testEmail = "test@test.com";
+    let testPassword = "test";
+    // combine demo and test users so seedUsers() gets all of them
+    usernames.push(testUsername);
+    emails.push(testEmail);
+    passwords.push(testPassword);
 
     if (options.seasons) {
         await seedSeasons();
@@ -165,7 +194,7 @@ async function main() {
         await seedUsers(usernames, emails, passwords);
     }
     if (options.reviews) {
-        await seedReviews(reviewThreshold, testUsernames, testEmails, testPasswords);
+        await seedReviews(reviewThreshold, testUsername, seasonName);
     }
 
     console.log("finished seeding database!");
