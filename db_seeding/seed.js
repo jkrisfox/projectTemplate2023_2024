@@ -104,7 +104,16 @@ async function insertReviews(usernames, emails, passwords) {
 }
 
 
-async function seedReviews(usernames, emails, passwords) {
+async function seedReviews(reviewThreshold, usernames, emails, passwords) {
+    let placesAtThresh = [];
+    let placesBelowThresh = [];
+
+    // TODO: finish implementing this function
+    console.log("seedReviews() is not implemented yet\n");
+
+    // for each place to show, reviewThreshold test users have to create a review
+    
+    // for each place to be 1 below threshold, reviewThreshold-1 test users have to create a review
 
 }
 
@@ -113,6 +122,8 @@ async function seedReviews(usernames, emails, passwords) {
 
 
 async function main() {
+    // number of reviews needed for a listing to show as a pin on the frontend
+    let reviewThreshold = 5;
     // default behavior is to seed seasons and users, but not reviews (reviews will also seed listings)
     let options = {
         seasons: true, 
@@ -127,24 +138,23 @@ async function main() {
         }
     }
 
-    // info for demo users that people can sign in with
+    // info for demo accounts that testers can use
     let demoUsernames = ["AliceAndVerdict", "BobOrVegana"];
     let demoEmails = ["alice@gmail.com", "bob@gmail.com"];
-    // plaintext passwords
     let demoPasswords = ["password", "password"];
     // info for demo users that are only used for extra reviews
-    let extraUsernames = [];
-    let extraEmails = [];
-    let extraPasswords = [];
-    for (let i = 0; i < 5; i++) {
-        extraUsernames.push("Test" + String(i));
-        extraEmails.push("test" + String(i) + "@gmail.com");
-        extraPasswords.push("password");
+    let testUsernames = [];
+    let testEmails = [];
+    let testPasswords = [];
+    for (let i = 0; i < reviewThreshold; i++) {
+        testUsernames.push("Test" + String(i));
+        testEmails.push("test" + String(i) + "@test.com");
+        testPasswords.push("password");
     }
     // combine
-    let usernames = demoUsernames.concat(extraUsernames);
-    let emails = demoEmails.concat(extraEmails);
-    let passwords = demoPasswords.concat(extraPasswords);
+    let usernames = demoUsernames.concat(testUsernames);
+    let emails = demoEmails.concat(testEmails);
+    let passwords = demoPasswords.concat(testPasswords);
 
     console.log("sowing seeds...\n");
 
@@ -155,7 +165,7 @@ async function main() {
         await seedUsers(usernames, emails, passwords);
     }
     if (options.reviews) {
-        await seedReviews(extraUsernames, extraEmails, extraPasswords);
+        await seedReviews(reviewThreshold, testUsernames, testEmails, testPasswords);
     }
 
     console.log("finished seeding database!");
