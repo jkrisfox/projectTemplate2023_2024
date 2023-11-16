@@ -18,8 +18,8 @@ export default function RootLayout({ children, title }) {
   const { data: session, status }  = useSession();
   const isLoggedIn = status === 'authenticated';
   const isLoginPage = usePathname() === '/login';
-  console.log("isLoginPage: ", isLoginPage);
-  console.log("Pathname: ", usePathname());
+  //console.log("isLoginPage: ", isLoginPage);
+  //console.log("Pathname: ", usePathname());
 
   if (isLoginPage) {
     return (
