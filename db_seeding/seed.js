@@ -29,7 +29,7 @@ async function seedSeasons() {
 
     let name, start, end;
     for (const line of data) {
-        [name, start, end] = line.split(", ");
+        [name, start, end] = line.split(", ").map(s => s.trim());
         if (name && start && end) {
             const nameData = await prisma.season.findMany({
                 where: {
