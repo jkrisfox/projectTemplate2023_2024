@@ -143,7 +143,6 @@ function ListingCard({
             <Chip
               icon={<CheckCircleIcon />}
               label="Free"
-              color="success"
               size="large"
             />
           ) : (

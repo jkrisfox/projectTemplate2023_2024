@@ -8,6 +8,7 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
+import hero from "../../public/assets/hero.jpg";
 
 function Hero() {
   const [value, setValue] = React.useState(0);
@@ -42,6 +43,7 @@ function Hero() {
       sx={{
         height: "500px",
         width: "100%",
+        //  backgroundImage: `url(../../public/assets/hero.jpg)`,
         backgroundImage: `url('https://images.unsplash.com/photo-1560223716-0be2cdfa9b42?auto=format&fit=crop&q=60&w=800&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fG1hcmtldHBsYWNlfGVufDB8fDB8fHww')`,
         backgroundPosition: "center",
         backgroundSize: "cover",

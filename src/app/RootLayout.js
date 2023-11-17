@@ -13,7 +13,8 @@ import NavBar from "./NavBar";
 import Footer from "./Footer";
 import Login from "./Login";
 import Searchbar from "../components/Searchbar";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../styles/theme";
 import Signup from "./Signup";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
@@ -21,25 +22,13 @@ import { Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { usePathname } from "next/navigation";
+import localFont from "next/font/local";
 
-const theme = createTheme({
-  palette: {
-    nav: {
-      main: "#FFFFFF",
-    },
-    primary: {
-      main: "#4FB18C",
-    },
-    background: {
-      default: "#FFFFFF",
-    },
-    text: {
-      primary: "#black",
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
+// Configure sans font
+const sans = localFont({
+  src: "../../public/fonts/PTSans-Regular.ttf", // Adjust the path to where you've stored your font files
+  weight: "400",
+  style: "normal",
 });
 
 export default function RootLayout({ children, title }) {
@@ -81,86 +70,88 @@ export default function RootLayout({ children, title }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar position="static">
-          <Container maxWidth="xl">
-            <Toolbar disableGutters>
-              <AdbIcon
-                sx={{
-                  display: { xs: "none", md: "flex", color: "white" },
-                  mr: 1,
-                }}
-              />
-              <Typography
-                variant="h6"
-                noWrap
-                component="a"
-                href="/"
-                sx={{
-                  mr: 2,
-                  display: { xs: "none", md: "flex" },
-                  fontFamily: "monospace",
-                  fontWeight: 700,
-                  letterSpacing: ".3rem",
-                  color: "white",
-                  textDecoration: "none",
-                }}
-              >
-                {title}
-              </Typography>
-              <Box width='400px'>
-              <Searchbar />
-              </Box>
-              <NavBar />
-              <Box pr={6}>
-                <IconButton color="inherit">
-                  <FavoriteIcon sx={{ color: "white" }} />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  color="inherit"
-                  onClick={handleProfileMenuOpen}
+      <main className={sans.className}>
+        <Box sx={{ display: "flex" }}>
+          <CssBaseline />
+          <AppBar position="static">
+            <Container maxWidth="xl">
+              <Toolbar disableGutters>
+                <AdbIcon
+                  sx={{
+                    display: { xs: "none", md: "flex", color: "white" },
+                    mr: 1,
+                  }}
+                />
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="a"
+                  href="/"
+                  sx={{
+                    mr: 2,
+                    display: { xs: "none", md: "flex" },
+                    fontFamily: "monospace",
+                    fontWeight: 700,
+                    letterSpacing: ".3rem",
+                    color: "white",
+                    textDecoration: "none",
+                  }}
                 >
-                  <AccountCircleIcon sx={{ color: "white" }} />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={isMenuOpen}
-                  onClose={handleMenuClose}
-                >
-                  <Link
-                    href="/profile"
-                    style={{ textDecoration: "none", color: "inherit" }}
+                  {title}
+                </Typography>
+                <Box width="400px">
+                  <Searchbar />
+                </Box>
+                <NavBar />
+                <Box pr={6}>
+                  <IconButton color="inherit">
+                    <FavoriteIcon sx={{ color: "white" }} />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    color="inherit"
+                    onClick={handleProfileMenuOpen}
                   >
-                    <MenuItem component="a" onClick={handleMenuClose}>
-                      View Profile
+                    <AccountCircleIcon sx={{ color: "white" }} />
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={isMenuOpen}
+                    onClose={handleMenuClose}
+                  >
+                    <Link
+                      href="/profile"
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <MenuItem component="a" onClick={handleMenuClose}>
+                        View Profile
+                      </MenuItem>
+                    </Link>
+                    <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                        signOut();
+                      }}
+                    >
+                      Log Out
                     </MenuItem>
-                  </Link>
-                  <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleMenuClose();
-                      signOut();
-                    }}
-                  >
-                    Log Out
-                  </MenuItem>
-                </Menu>
-              </Box>
-              <Box sx={{ flexGrow: 0 }}>
-                <Stack direction="row" spacing={2}>
-                  {loginSection}
-                </Stack>
-              </Box>
-            </Toolbar>
-          </Container>
-        </AppBar>
-      </Box>
-      <Box component="main" sx={{ p: 0, height: "100vh" }}>
-        {children}
-      </Box>
-      {/* <Footer /> */}
+                  </Menu>
+                </Box>
+                <Box sx={{ flexGrow: 0 }}>
+                  <Stack direction="row" spacing={2}>
+                    {loginSection}
+                  </Stack>
+                </Box>
+              </Toolbar>
+            </Container>
+          </AppBar>
+        </Box>
+        <Box component="main" sx={{ p: 0, height: "100vh" }}>
+          {children}
+        </Box>
+        {/* <Footer /> */}
+      </main>
     </ThemeProvider>
   );
 }

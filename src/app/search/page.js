@@ -125,7 +125,7 @@ const SearchPage = () => {
       return (
         <Box textAlign="center" p={30}>
           <Typography variant="h5" gutterBottom>
-            No listings for "{searchParams.get("query")}". Make one from here!
+            No listings for {searchParams.get("query")}. Make one from here!
           </Typography>
           <Button
             variant="contained"
