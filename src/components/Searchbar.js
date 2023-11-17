@@ -4,6 +4,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import app from '../../firebase/firebaseConfig'
 
 // Styled components using MUI's styled utility for custom styles
 const Search = styled("div")(({ theme }) => ({

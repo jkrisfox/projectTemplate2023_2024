@@ -105,8 +105,8 @@ function Hero() {
             <Button variant="contained" color="primary" sx={{ color: "white" }}>
               Get started now
             </Button>
-            <Button variant="outlined" color="primary" href="about">
-              Discover our origins
+            <Button variant="outlined" color="primary">
+              See benefits
             </Button>
           </Box>
         </CardContent>
