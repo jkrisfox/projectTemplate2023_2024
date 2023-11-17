@@ -1,3 +1,5 @@
+// Todo: implement GET for listings
+
 // TODO: implement HTTP requests to get data from the database
 // currently copied from src/app/api/todos/route.js
 
