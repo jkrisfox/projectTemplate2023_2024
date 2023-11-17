@@ -121,7 +121,7 @@ export default function Review() {
               <select name="season" id="season" onChange={handleSeasonChange} value={selectedSeason}>
               <option value=""> </option>
                 {seasons.map(season => (
-                  <option key={season.id} value={season.id}>
+                  <option key={season.id} value={season.name}>
                     {season.name}
                   </option>
                 ))}
