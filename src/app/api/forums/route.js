@@ -21,7 +21,7 @@ export async function POST(request) {
       postTitle: postTitle,
       postDescription: postDescription,
       authorId: 1, // change this to something more dynamic
-      postFilters: {
+      PostFilters: {
         create: filterIds.map((id) => ({
           possibleFilter: {
             connect: {
