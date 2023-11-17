@@ -29,7 +29,7 @@ async function seedSeasons() {
 
     let name, start, end;
     for (const line of data) {
-        [name, start, end] = line.split(", ");
+        [name, start, end] = line.split(", ").map(s => s.trim());
         if (name && start && end) {
             const nameData = await prisma.season.findMany({
                 where: {
@@ -194,7 +194,7 @@ async function seedReviews(reviewThreshold, testUsername, seasonName) {
     let lastQuarter = lastHalf + Math.floor(lastHalf / 2);
 
     for (let i = 0; i < data.length; i++) {
-        [placeId, latitude, longitude] = data[i].split(", ");
+        [placeId, latitude, longitude] = data[i].split(", ").map(s => s.trim());
         // for half of the listings, make reviewThreshold reviews, 
         // reviewThreshold-1 for a quarter, and reviewThreshold-2 for the last quarter
         if (i < lastHalf) count = reviewThreshold;
