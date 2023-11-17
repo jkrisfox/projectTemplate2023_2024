@@ -121,6 +121,7 @@ async function insertListing(placeId, lat, lng) {
 
 
 // creates a record in the Review table
+// (a user is allowed to have any number of reviews for a listing, restrictions should be enforced on the frontend)
 async function insertReview(userId, placeId, latitude, longitude, seasonId, score) {
     // look up a Listing by the placeId, call insertListing() if there is no Listing with the placeId
     let listingId = await prisma.listing.findUnique({
