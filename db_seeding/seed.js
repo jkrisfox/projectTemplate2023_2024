@@ -122,9 +122,23 @@ async function insertListing(placeId, lat, lng) {
 
 // creates a record in the Review table
 async function insertReview(userId, placeId, latitude, longitude, seasonId, score) {
-    // TODO: don't insert if listing already exists
-    let listing = await insertListing(placeId, latitude, longitude);
-    let listingId = listing.id;
+    // look up a Listing by the placeId, call insertListing() if there is no Listing with the placeId
+    let listingId = await prisma.listing.findUnique({
+        where: {
+            placeId: placeId
+        }, 
+        select: {
+            id: true, 
+        }
+    });
+    if (listingId === null) {
+        let listing = await insertListing(placeId, latitude, longitude);
+        listingId = listing.id;
+    }
+    else {
+        listingId = listingId.id;
+    }
+
     const review = await prisma.review.create({
         data: {
             userId: userId, 
