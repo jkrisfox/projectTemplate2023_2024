@@ -1,24 +1,16 @@
 // components/FilterComponent.js
 
 import React, { useState } from "react";
-import { FormControl, FormControlLabel, Checkbox, InputLabel, Select, MenuItem, Box, Button, TextField } from "@mui/material";
+import { Stack, Box, Button, Snackbar, Alert } from "@mui/material";
+import SortFilter from './Filters/SortFilter';
+import RadiusFilter from './Filters/RadiusFilter';
+import VerifiedFilter from './Filters/VerifiedFilter';
 
 const FilterComponent = ({ onFilterChange }) => {
   const [selectedSort, setSelectedSort] = useState('');
   const [radius, setRadius] = useState(5);
   const [verified, setVerified] = useState(false);
-
-  const handleSortChange = (event) => {
-    setSelectedSort(event.target.value);
-  };
-
-  const handleRadiusChange = (event) => {
-    setRadius(event.target.value);
-  };
-
-  const handleVerifiedChange = (event) => {
-    setVerified(event.target.checked);
-  };
+  const [openAlert, setOpenAlert] = useState(false);
 
   const applyFilters = () => {
     onFilterChange({
@@ -26,44 +18,40 @@ const FilterComponent = ({ onFilterChange }) => {
       radius: radius,
       verified: verified,
     });
+    setOpenAlert(true);
+  };
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenAlert(false);
   };
 
   return (
-    <Box display="flex" flexDirection="column" p={2}>
-      <FormControl variant="outlined" sx={{ mb: 2 }}>
-        <InputLabel>Sort By</InputLabel>
-        <Select
-          value={selectedSort}
-          onChange={handleSortChange}
-          label="Sort By"
-        >
-          <MenuItem value="priceLowest">Price: Lowest First</MenuItem>
-          <MenuItem value="priceHighest">Price: Highest First</MenuItem>
-          <MenuItem value="newest">Newly Listed</MenuItem>
-        </Select>
-      </FormControl>
-      <TextField
-        type="number"
-        label="Radius (miles)"
-        value={radius}
-        onChange={handleRadiusChange}
-        variant="outlined"
-        sx={{ mb: 2 }}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={verified}
-            onChange={handleVerifiedChange}
-          />
-        }
-        label="Verified User Only"
-      />
-      <Button onClick={applyFilters} variant="contained" color="primary">
+    <Stack direction='row' spacing={3} display="flex" flexDirection="row" p={2} alignItems="center">
+      <SortFilter value={selectedSort} onChange={setSelectedSort} />
+      <RadiusFilter value={radius} onChange={setRadius} />
+      <VerifiedFilter checked={verified} onChange={setVerified} />
+      <Button onClick={applyFilters} variant="contained" color="primary" sx={{ mt: 2 }}>
         Apply Filters
       </Button>
-    </Box>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
+        <Alert onClose={handleCloseAlert} severity="success" sx={{ width: '100%' }}>
+          Filters applied successfully!
+        </Alert>
+      </Snackbar>
+    </Stack>
   );
 };
 
 export default FilterComponent;
+
+// components/SortFilter.js
+// components/RadiusFilter.js
+// components/VerifiedFilter.js

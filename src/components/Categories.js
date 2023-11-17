@@ -32,21 +32,6 @@ const Categories = () => {
             key={index}
             label={category}
             onClick={() => handleCategoryClick(category)}
-            sx={{
-              fontSize: '0.875rem',
-              fontWeight: 'bold',
-              backgroundColor: '#f5f5f5',
-              color: '#2B7257', // Use the color for text
-              // borderColor: '#2B7257', // Use the color for border
-              // '&:hover': {
-              //   backgroundColor: '#e0e0e0',
-              //   color: '#ffffff', // Change text color on hover if desired
-              // },
-              '&.MuiChip-root': {
-                marginRight: 0, // Reset the margin to fix alignment
-                marginBottom: '5px', // Add space below chips for wrapping
-              },
-            }}
             variant="outlined"
           />
         ))}

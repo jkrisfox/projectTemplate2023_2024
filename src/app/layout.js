@@ -3,7 +3,7 @@ import RootLayout from './RootLayout';
 import AuthProvider from './AuthProvider';
 
 const inter = Inter({ subsets: ['latin'] })
-const COMPANY_NAME = "SLOMARKETPLACE";
+const COMPANY_NAME = "slomarket";
 
 export const metadata = {
   title: COMPANY_NAME
@@ -14,7 +14,9 @@ export default function Layout({ children }) {
     <html lang="en">
       <body>
         <AuthProvider>
-          <RootLayout children={children} title={COMPANY_NAME}/>        
+          <RootLayout title={COMPANY_NAME}>
+            {children}
+          </RootLayout>
         </AuthProvider>
       </body>
     </html>
