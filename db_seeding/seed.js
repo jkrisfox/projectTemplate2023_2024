@@ -48,7 +48,7 @@ async function seedSeasons() {
         }
     }
 
-    console.log("finished seeding seasons\n");
+    console.log("finished seeding seasons");
 }
 
 
@@ -97,7 +97,7 @@ async function seedUsers(usernames, emails, passwords) {
         }
     }
 
-    console.log("finished seeding users\n");
+    console.log("finished seeding users");
 }
 
 
@@ -189,20 +189,26 @@ async function seedReviews(reviewThreshold, testUsername, seasonName) {
     const filepath = "db_seeding/listings.csv";
     let data = fs.readFileSync(filepath, "utf8").split("\n");
 
-    let placeId, latitude, longitude, score;
-    // TODO: 
-    // should insert some of these reviewThreshold times, some reviewThreshold-1, some reviewThreshold-2
-    // (currently, this does one review for each listing)
-    for (const line of data) {
-        [placeId, latitude, longitude] = line.split(", ");
-        if (!(placeId && latitude && longitude)) {
-            continue;
+    let placeId, latitude, longitude, score, count;
+    let lastHalf = data.length % 2 != 0 ? Math.floor(data.length / 2) + 1 : data.length / 2;
+    let lastQuarter = lastHalf + Math.floor(lastHalf / 2);
+
+    for (let i = 0; i < data.length; i++) {
+        [placeId, latitude, longitude] = data[i].split(", ");
+        // for half of the listings, make reviewThreshold reviews, 
+        // reviewThreshold-1 for a quarter, and reviewThreshold-2 for the last quarter
+        if (i < lastHalf) count = reviewThreshold;
+        else if (i < lastQuarter) count = reviewThreshold - 1;
+        else count = reviewThreshold - 2;
+
+        for (let j = 0; j < count; j++) {
+            score = Math.floor(Math.random() * (maxScore - minScore + 1) + minScore);  // random score
+            await insertReview(userId, placeId, latitude, longitude, seasonId, score);
         }
-        score = Math.floor(Math.random() * (maxScore - minScore + 1) + minScore);  // random score
-        await insertReview(userId, placeId, latitude, longitude, seasonId, score);
+        console.log();
     }
 
-    console.log("finished seeding reviews\n");
+    console.log("finished seeding reviews");
 }
 
 
@@ -241,12 +247,15 @@ async function main() {
 
     if (options.seasons) {
         await seedSeasons();
+        console.log();
     }
     if (options.users) {
         await seedUsers(usernames, emails, passwords);
+        console.log();
     }
     if (options.reviews) {
         await seedReviews(reviewThreshold, testUsername, seasonName);
+        console.log();
     }
 
     console.log("finished seeding database!");
