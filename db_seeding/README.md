@@ -3,7 +3,11 @@
 ## seed.js
     - the script that populates the database for the demo
     - everything is deterministic except the scores for each review
-### to run:
+### to seed everything (from the Team3/ directory):
+```bash
+node db_seeding/seed.js -a
+```
+### to seed only the User and Season tables:
 ```bash
 node db_seeding/seed.js
 ```
