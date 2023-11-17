@@ -82,8 +82,8 @@ export async function PUT(request, { params }) {
   }
 
   if (heroImage) {
-    if (heroImage.size > 4000000) {
-      return NextResponse.json({error: 'Banner image is more than 1 MB large'}, {status: 413});
+    if (heroImage.size > 5000000) {
+      return NextResponse.json({error: 'Banner image cannot be more than 5 MB large'}, {status: 413});
     }
 
     if (!heroImage.name.match(/^[\w -]+.(jpeg|jpg|png)$/)) {
