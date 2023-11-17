@@ -135,7 +135,7 @@ export default function Profile({ params }) {
       {currentTab === 1 && <MyListings />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
-      {currentTab === 2 && <Settings />}
+      {currentTab === 2 && !isLoading && <Settings user={user} />}
 
 
       <Dialog
