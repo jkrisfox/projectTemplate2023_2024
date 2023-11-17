@@ -106,6 +106,7 @@ async function getSeasonId(seasonName) {
 
 
 // request should have placeId, latitude, longitude, seasonName, and score
+// (seasonName can be the Season's name or id)
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
@@ -125,7 +126,16 @@ export async function POST(request) {
 
   // specify true to create new listing if there is no listing with this placeId
   const listingId = await getListingId(placeId, true, latitude, longitude);
-  const seasonId = await getSeasonId(seasonName);
+  // if seasonName is an integer, assume it is the seasonId
+  let seasonId;
+  if (Number.isInteger(seasonName) || Number.isInteger(parseInt(seasonName))) {
+    seasonId = parseInt(seasonName);
+  }
+  // otherwise, assume it is the string name and look up its id
+  else {
+    seasonId = await getSeasonId(seasonName);
+  }
+
   // make sure everything is valid
   if (latitude === null) {
     return NextResponse.json({error: `latitude is null`}, {status: 500});
