@@ -17,7 +17,7 @@ import { useEffect } from 'react';
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [isPrivate, setPrivate] = useState(false);
-  const [name, setName] = useState('John Doe');
+  const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [photo, setPhoto] = useState(null);
   const [experience, setExperience] = useState('No experience set');
@@ -37,11 +37,12 @@ export default function Profile() {
     getId().then(
       (response) => response.json()
     ).then((user) => {
-      const {id, name, email, status, ProfileImage} = user;
+      const {id, name, email, status, ProfileImage, shortBio} = user;
       console.log(ProfileImage)
       setName(name);
       setPrivate((check) => status === 'PRIVATE' ? true : false);
       setPhoto(ProfileImage)
+      setBio(shortBio)
     });
     
 
