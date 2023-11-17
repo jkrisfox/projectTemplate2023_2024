@@ -15,7 +15,7 @@ import {
 import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
 
-export default function Settings() {
+export default function Settings( {user} ) {
 
     const [ formState, setFormState ] = useState({});
     const [ error, setError ] = useState(false);
@@ -41,45 +41,85 @@ export default function Settings() {
 
 
     function handleSetupSubmit(event) {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const userId = parseInt(params.id);
-    
-        // Remove blank inputs
-        let toRemove = [];
-        data.forEach((val, key) => {
-          if (val == "") {
-            toRemove.push(key);
-          }
-        });
-        toRemove.forEach(key => {
-          data.delete(key);
-        });
-    
-        // Validate phone number with regex
-        if (data.get('phoneNumber') &&
-           (!event.currentTarget.reportValidity() ||
-            !data.get('phoneNumber').match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
+      if (event.nativeEvent.submitter.name == "saveSettings") {
+        handleSaveSettings(event);
+    } /*else if (event.nativeEvent.submitter.name == "resetPassword") {
+        handleResetPassword(event);
+    } else if (event.nativeEvent.submitter.name == "deleteAccount") {
+        handleDeleteAccount(event);
+    }*/
+  }
+
+
+    function handleSaveSettings(event) {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const userId = user.id;
+
+      // Validate phone number with regex
+      if (data.get('phoneNumber') &&
+          (!event.currentTarget.reportValidity() ||
+          !data.get('phoneNumber').match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
           setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
           return false;
-        }
-        
-        // Submit form
-        fetch(`/api/users/${userId}`, {
+      }
+      
+      // Submit form
+      fetch(`/api/users/${userId}`, {
           method: 'put',
           body: data
-        }).then((res) => {
+      }).then((res) => {
           if (res.ok) {
+          // Send to profile page
+          router.push(`/profile/${userId}`);
+          } else {
+          setError(true);
+          res.json().then((err) => console.error(err));
+          }
+      });
+
+      return false;
+    }
+
+    function handleResetPassword(event) {
+        event.preventDefault();
+        const userId = user.id;
+    
+        // Submit form
+        fetch(`/api/users/${userId}/resetPassword`, {
+            method: 'put',
+        }).then((res) => {
+            if (res.ok) {
             // Send to profile page
             router.push(`/profile/${userId}`);
-          } else {
+            } else {
             setError(true);
             res.json().then((err) => console.error(err));
-          }
+            }
         });
     
         return false;
-      }
+        }
+
+    function handleDeleteAccount(event) {
+        event.preventDefault();
+        const userId = user.id;
+    
+        // Submit form
+        fetch(`/api/users/${userId}`, {
+            method: 'delete',
+        }).then((res) => {
+            if (res.ok) {
+            // Send to profile page
+            router.push(`/profile/${userId}`);
+            } else {
+            setError(true);
+            res.json().then((err) => console.error(err));
+            }
+        });
+    
+        return false;
+        }
 
 return (
     <div style={{width: '100%', textAlign: 'left'}}>
@@ -99,23 +139,14 @@ return (
               variant="standard"
               id="fname"
               name="name"
-              label="First Name"
+              label="Name"
+              defaultValue={user.name}
               type="text"
               fullWidth
               inputProps={{ maxLength: 64 }}
             />
             <br></br>
-            <TextField
-              margin="dense"
-              variant="standard"
-              id="lname"
-              name="name"
-              label="Last Name"
-              type="text"
-              fullWidth
-              inputProps={{ maxLength: 64 }}
-            />
-            <br></br>
+
             <Box sx={{ ml: 2 }}>
                     <FormControlLabel
                         control={
@@ -151,6 +182,7 @@ return (
               name="location"
               label="Location"
               type="text"
+              defaultValue={user.location}
               fullWidth
               inputProps={{ maxLength: 64 }}
             />
@@ -187,6 +219,7 @@ return (
               name="phoneNumber"
               id="phoneNumber"
               label="Phone Number"
+              defaultValue={user.phoneNumber}
               type="tel"
               fullWidth
               error={formState.phoneNumber?.error}
@@ -221,23 +254,24 @@ return (
                 </Box>
             <br></br>
             <br></br>
-            <Button variant="contained" color="primary" sx={{color:'white'}} fullWidth>
+            <Button type="submit" name="saveSettings" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
             Save Settings
             </Button>
             
             {/* RED BUTTONS */}
             <Grid container spacing={3} justifyContent="center" pt={6}>
                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                    <Button type="submit" name="resetPassword" variant="contained" color="error" sx={{color:'white'}} fullWidth>
                         Reset Password
                     </Button>
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth>
                         Delete Account
                     </Button>
                 </Grid>
             </Grid>
+            <br></br>
           </div>
         </form>
     </div>
