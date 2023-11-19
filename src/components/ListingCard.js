@@ -9,6 +9,8 @@ import {
   DialogContentText,
   Stack,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SchoolIcon from "@mui/icons-material/School";
@@ -28,6 +30,8 @@ function ListingCard({
   priceHistory,
 }) {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const firstImage =
     Array.isArray(images) && images.length > 0
@@ -68,8 +72,8 @@ function ListingCard({
   return (
     <Box
       sx={{
-        width: 300, // Set a fixed width
-        height: 420, // Set a fixed height
+        width: isMobile ? '100%' : '300', // Responsive width
+        minHeight: '420px',
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between", // This will make the card contents spaced evenly
