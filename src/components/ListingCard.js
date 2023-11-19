@@ -16,6 +16,15 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SchoolIcon from "@mui/icons-material/School";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import moment from "moment"; // Import moment library
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ShareIcon from "@mui/icons-material/Share";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { red } from "@mui/material/colors";
+import FlagIcon from "@mui/icons-material/Flag"; // For reporting
+import VisibilityIcon from "@mui/icons-material/Visibility"; // For tracking
 
 function ListingCard({
   title,
@@ -31,7 +40,39 @@ function ListingCard({
 }) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // Additional state for the menu
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  // Handlers for menu
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  // Function to handle the track action
+  const handleTrackListing = () => {
+    // Implement the logic to track the listing
+    console.log("Listing tracked");
+    handleCloseMenu(); // Close the menu after the action
+  };
+
+  // Add a new function to handle the report action
+  const handleReportListing = () => {
+    // Implement the logic to report the listing
+    // For example, show a dialog or send a request to your server
+    console.log("Listing reported");
+    handleCloseMenu(); // Close the menu after the action
+  };
+
+
+  // Simulated authentication and role check (replace with your auth logic)
+  const isAuthenticated = true; // Replace with actual authentication check
+  const isAdmin = true; // Replace with actual admin role check
 
   const firstImage =
     Array.isArray(images) && images.length > 0
@@ -72,74 +113,131 @@ function ListingCard({
   return (
     <Box
       sx={{
-        width: isMobile ? '100%' : '300', // Responsive width
-        minHeight: '420px',
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between", // This will make the card contents spaced evenly
+        width: isMobile ? "100%" : 300,
+        minHeight: "420px",
         borderRadius: "8px",
         overflow: "hidden",
-        cursor: "pointer",
-        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+        boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+
         marginBottom: 2,
-      }}
-      onClick={() => {
-        /* navigate to main listings page */
+        flexDirection: "column",
+        display: "flex",
       }}
     >
+      {/* Row for the menu icon */}
       <Box
         sx={{
-          position: "relative",
-          height: 0,
-          paddingTop: "56.25%", // 16:9 aspect ratio
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          // p: 1,
+          // boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+          backgroundColor: "white", // Add background color if needed
         }}
       >
-        <img
-          src={firstImage}
-          alt={title}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+        <IconButton
+          aria-label="settings"
+          aria-controls="long-menu"
+          aria-haspopup="true"
+          onClick={handleClickMenu}
+          sx={{ margin: "0 8px" }} // Add some margin if needed
+        >
+          <MoreVertIcon />
+        </IconButton>
+        <Menu
+          id="long-menu"
+          anchorEl={anchorEl}
+          open={openMenu}
+          onClose={handleCloseMenu}
+        >
+          <MenuItem onClick={() => { /* handle share action */ }}>
+            <ShareIcon fontSize="small" sx={{ marginRight: 1 }} /> Share
+          </MenuItem>
+          {isAuthenticated && isAdmin && (
+            <MenuItem onClick={() => { /* handle delete action */ }} sx={{ color: red[500] }}>
+              <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} /> Delete Listing
+            </MenuItem>
+          )}
+          {/* Add the Report Listing menu item */}
+          <MenuItem onClick={handleReportListing}>
+            <FlagIcon fontSize="small" sx={{ marginRight: 1 }} /> Report Listing
+          </MenuItem>
+          {/* Add the Track Listing menu item */}
+          <MenuItem onClick={handleTrackListing}>
+            <VisibilityIcon fontSize="small" sx={{ marginRight: 1 }} /> Track Listing
+          </MenuItem>
+        </Menu>
       </Box>
 
-      <Box sx={{ padding: 2, flexGrow: 1 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          {title}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          color="textSecondary"
-          sx={{ marginBottom: 1 }}
-        >
-          {description}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          sx={{ fontStyle: "italic" }}
-        >
-          {`Created: ${formatDate(createdAt) || "Not available"}`}
-        </Typography>
-        {updatedAt && (
-          <Typography variant="caption" color="textSecondary">
-            {`Updated: ${formatDate(updatedAt) || "Not available"}`}
-          </Typography>
-        )}
-      </Box>
-
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ paddingLeft: 2 }}
+      {/* Clickable content container */}
+      <Box
+        sx={{
+          // p: 2,
+          flexGrow: 1,
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          /* navigate to main listings page */
+        }}
       >
-        <Typography
+        <Box
+          sx={{
+            width: "100%",
+            position: "relative",
+            paddingTop: "56.25%" /* 16:9 aspect ratio */,
+          }}
+        >
+          <img
+            src={firstImage}
+            alt={title}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              // boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+            }}
+          />
+        </Box>
+
+        <Box
+          sx={{ p: 2, flexGrow: 1 }}
+          style={{
+            backgroundColor: "white", // Add background color if needed
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {title}
+          </Typography>
+          <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>
+            {description}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ fontStyle: "italic" }}
+          >
+            {`Created: ${formatDate(createdAt) || "Not available"}`}
+          </Typography>
+          {updatedAt && (
+            <Typography variant="caption" color="textSecondary">
+              {`Updated: ${formatDate(updatedAt) || "Not available"}`}
+            </Typography>
+          )}
+        </Box>
+
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{
+            p: 2,
+            backgroundColor: "white", // Add background color if needed
+          }}
+        >
+          <Typography
           variant="h5"
           sx={{ fontWeight: "bold", display: "flex", alignItems: "center" }}
         >
@@ -153,31 +251,33 @@ function ListingCard({
             `$${Number(price).toFixed(2)}` // Coerce price to a number before calling toFixed
           )}
         </Typography>
+          {studentVerification && (
+            <Badge
+              badgeContent={<SchoolIcon color="primary" />}
+              sx={{ mr: 4 }}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <Box /> {/* Placeholder for badge */}
+            </Badge>
+          )}
+        </Stack>
 
-        {studentVerification && (
-          <Badge
-            badgeContent={<SchoolIcon color="primary" />}
-            sx={{ marginRight: 4 }}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-          >
-            {/* This empty Box acts as a placeholder for the badge to position the SchoolIcon */}
-            <Box />
-          </Badge>
-        )}
-      </Stack>
-
-      <Box sx={{ padding: 2, display: "flex", alignItems: "center" }}>
-        <LocationOnIcon fontSize="small" color="primary" />
-        <Typography
-          variant="caption"
-          color="textSecondary"
-          sx={{ marginLeft: 1 }}
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "white", // Add background color if needed
+          }}
         >
-          {formatLocation(location)}
-        </Typography>
+          <LocationOnIcon fontSize="small" color="primary" />
+          <Typography variant="caption" color="textSecondary" sx={{ ml: 1 }}>
+            {formatLocation(location)}
+          </Typography>
+        </Box>
       </Box>
 
       <Dialog open={open} onClose={handleClose}>
