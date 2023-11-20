@@ -32,7 +32,7 @@ const sans = localFont({
 });
 
 export default function RootLayout({ children, title }) {
-  const { isLoggedIn, signOut } = useAuth();
+  const { isLoggedIn, getUser, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
@@ -46,11 +46,17 @@ export default function RootLayout({ children, title }) {
     setAnchorEl(null);
   };
 
+  const handleViewProfileClick = () => {
+    handleMenuClose();
+    const userId = getUser().uid;
+    router.push(`/profile/${userId}`);
+  }
+
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
       {isLoggedIn() ? (
         <>
-          <MenuItem component={Link} href="/profile" onClick={handleMenuClose}>
+          <MenuItem onClick={handleViewProfileClick}>
             View Profile
           </MenuItem>
           <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
@@ -64,9 +70,14 @@ export default function RootLayout({ children, title }) {
           </MenuItem>
         </>
       ) : (
-        <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
-          Sign Up
-        </MenuItem>
+        <>
+          <MenuItem component={Link} href="/Login" onClick={handleMenuClose}>
+            Log In
+          </MenuItem>
+          <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
+            Sign Up
+          </MenuItem>
+        </>
       )}
     </Menu>
   );
