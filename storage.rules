@@ -5,9 +5,16 @@ service firebase.storage {
     match /images/{userId}/{imageName} {
       allow read: if true;
       // Only allow uploads of any image file that's less than 5MB
+      // with a file name less than 16 characters.
       allow write: if request.auth != null && request.auth.uid == userId
       						 && request.resource.size < 5 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+                   && request.resource.contentType.matches('image/.*')
+                   && imageName.size() < 16;
+      
+      // Default rule for other files to deny read/write
+      match /{allPaths=**} {
+      	allow read, write: if false;
+      }
     }
   }
 }
