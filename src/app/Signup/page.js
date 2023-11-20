@@ -5,58 +5,49 @@ import { useRouter } from 'next/navigation';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box'
-import { signIn } from 'next-auth/react';
 import Alert from '@mui/material/Alert';
+import { useAuth } from '../AuthProvider';
+import { createUser } from '@/lib/firebaseUtils';
 
 export default function Signup() {
-  const [ open, setOpen ] = useState(false);
   const [ formState, setFormState ] = useState({});
-  const [ error, setError ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState();
 
+  const { signUp } = useAuth();
   const router = useRouter();
 
-  function handleSignup(event) {
+  async function handleSignup(event) {
     event.preventDefault();
-    let valid  = event.currentTarget.reportValidity();
+    let validForm = event.currentTarget.reportValidity();
+    
     const data = new FormData(event.currentTarget);
-    valid = valid && data.get('password') == data.get('passwordConfirmation');
-    if (valid) {
-      const signUpData = {};
-      signUpData['email'] = data.get('email');
-      signUpData['password'] = data.get('password');
-      // submit form
-      fetch("/api/users", {
-        method: 'post',
-        body: JSON.stringify(signUpData)
-      }).then(async (res) => {
-        if (res.ok) {
-          let resData = await res.json();
-          let userId = resData.id;
-          signIn("normal", {...signUpData, redirect: false}).then((result) => {
-            if (!result.error) {
-              setOpen(false);
-              setError(false);
-              // Send to profile setup page
-              router.push(`/profile/${userId}/setup`);
-            } else {
-              setError(true);
-            }
-          });
-        } else {
-          setError(true);
-          res.json().then((j) => console.log('error:' + j));
-        }
-      })
+    const email = data.get('email');
+    const password = data.get('password');
+    const passwordConfirmation = data.get('passwordConfirmation');
+
+    if (password != passwordConfirmation) {
+      setErrorMessage();
+      setFormState({...formState, passwordConfirmation: { error: true, message: "You're passwords don't match." }});
+    } else if (!validForm || password.length < 6) {
+      setErrorMessage("Passwords must be at least 6 characters long");
+      setFormState({...formState, passwordConfirmation: { error: false, message: "" }});
     } else {
-      setFormState({...formState, passwordConfirmation: { error: true, message: "You're passwords don't match." }})
+      await signUp(email, password)
+      .then(async res => {
+        const user = res.user;
+        // Create user document
+        await createUser(user.uid, user.email).then(() => {
+          // Send to profile setup page
+          router.push(`/setup`);
+        }).catch(err => {
+          setErrorMessage(err.message);
+        });
+      })
+      .catch(err => {
+        setErrorMessage(err.message);
+      });
     }
     return false;
-  }
-
-  function validate(input) {
-    const name = input.name;
-    const valid = input.reportValidity();
-    setFormState({...formState, [name]: { error: valid }});
   }
 
   return (
@@ -69,9 +60,9 @@ export default function Signup() {
       />
         <h1>Sign Up</h1>
         <form onSubmit={handleSignup}>
-          { error ? (
+          { errorMessage ? (
             <Alert severity="error">
-              There was an issue signing up, please adjust email and password and try again.
+              {errorMessage}
             </Alert>
           ) : null }
 
