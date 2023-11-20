@@ -1,8 +1,8 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -18,14 +18,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // const analytics = app.name && typeof window !== 'undefined' ? getAnalytics(app) : null;
 
+// Initialize Auth
+const auth = getAuth(app);
+
 // Initialize Firestore
 const db = getFirestore(app);
 
 // Initialize Storage
 const storage = getStorage(app);
 
-// Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
-
 // Export the Firebase app and Firestore instance
-export { app, db, storage, auth };
+export { app, auth, db, storage };

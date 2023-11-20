@@ -6,6 +6,8 @@ import {
   Box, Grid, Tabs, Tab, Paper, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress 
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
+import { useAuth } from '../../AuthProvider';
+import { getUser } from '@/lib/firebaseUtils';
 import PersonIcon from '@mui/icons-material/Person';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -21,6 +23,8 @@ export default function Profile({ params }) {
 
   const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
+  const { getUser:getCurrentUser, isLoggedIn } = useAuth();
+
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
     const objectUrl = URL.createObjectURL(file);
@@ -31,7 +35,9 @@ export default function Profile({ params }) {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles: 1,
-    accept: 'image/*'
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png']
+    }
   });
 
   const handleTabChange = (event, newValue) => {
@@ -46,16 +52,27 @@ export default function Profile({ params }) {
     setIsDialogOpen(false);
   };
 
-  const userId = parseInt(params.id);
+  const userId = params.id;
 
   // Get user data
   useEffect(() => {
-    fetch(`/api/users/${userId}`, { method: "get" }).then((response) => response.ok && response.json()).then(
-      userData => {
-        setUser(userData);
-        setIsLoading(false);
+    getUser(userId).then(userData => {
+      if (userData) {
+        if (userData.profileImage == "") {
+          userData.profileImage = null;
+        }
+        if (userData.heroImage == "") {
+          userData.heroImage = null;
+        }
       }
-    );
+      if (userData) {
+        userData['uid'] = userId;
+      }
+      setUser(userData);
+      setIsLoading(false);
+    }).catch(err => {
+      console.error(err.message);
+    });
   }, []);
 
   if (!isLoading) {
@@ -65,7 +82,7 @@ export default function Profile({ params }) {
       )
     }
 
-    if (!user.name) {
+    if (user.name == "") {
       return (
         <Typography>User has not set up their page yet!</Typography>
       )
@@ -81,7 +98,7 @@ export default function Profile({ params }) {
         sx={{ 
           width: '100%', 
           height: 300, 
-          backgroundImage: user.heroImageName ? `url(http://slomarket.shnibl.com:5000/${user.heroImageName})` : `url(${defaultHeroImage})`,
+          backgroundImage: user.heroImage ? `url(${user.heroImage}` : `url(${defaultHeroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           position: 'relative'
@@ -104,7 +121,7 @@ export default function Profile({ params }) {
       {isLoading ? <CircularProgress /> :
       <Grid container spacing={2} alignItems="center" justifyContent="center" mt={3}>
         <Grid item>
-          <Avatar alt="Profile Picture" src={user.profileImageName && `http://slomarket.shnibl.com:5000/${user.profileImageName}`} sx={{ width: 80, height: 80 }}>
+          <Avatar alt="Profile Picture" src={user.profileImage} sx={{ width: 80, height: 80 }}>
             <PersonIcon />
           </Avatar>
         </Grid>

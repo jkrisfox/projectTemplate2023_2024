@@ -83,18 +83,18 @@ const SearchPage = () => {
   };
 
   const passesFilters = (data, searchTerm) => {
-    const searchMatch = data.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      data.category.toLowerCase().includes(searchTerm.toLowerCase());
-
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const searchMatch = data.description.toLowerCase().includes(lowerCaseSearchTerm) ||
+      data.category.toLowerCase().includes(lowerCaseSearchTerm) ||
+      data.title.toLowerCase().includes(lowerCaseSearchTerm); // Added title check
+  
     const verifiedMatch = !filters.verified || (filters.verified && data.studentVerification);
-
-    // We assume `data.location` is a string, you will need to implement your own logic
-    // to handle location based filtering if `data.location` is an object or another type
-    const locationMatch = true; // Implement location-based matching
-
+  
+    // Implement location-based matching if necessary
+    const locationMatch = true; 
+  
     return searchMatch && verifiedMatch && locationMatch;
   };
-
   const applyAdditionalFilters = (results) => {
     // Sort by price
     if (filters.sort === 'priceLowest') {
@@ -151,8 +151,8 @@ const SearchPage = () => {
                 const cityState = `${locationArray[1]}, ${locationArray[2]}`;
 
                 return (
-                  <Grid item xs={12} sm={6} md={4} lg={2.4} key={result.id}>
-                    <ListingCard
+                    <Grid item xs={12} sm={12} md={4} lg={3} xl={2.4} key={result.id}>
+                      <ListingCard
                       title={result.title}
                       createdAt={result.createdAt}
                       updatedAt={result.updatedAt}
