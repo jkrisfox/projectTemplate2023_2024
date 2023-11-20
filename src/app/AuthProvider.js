@@ -63,6 +63,8 @@ export default function AuthProvider({ children }) {
   const value = {
     currentUser,
     getUser,
+    isLoggedIn,
+    isAdmin,
     login,
     signOut,
     signUp
