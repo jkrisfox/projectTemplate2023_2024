@@ -8,6 +8,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import ImageIcon from '@mui/icons-material/Image';
 import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../AuthProvider';
+import { updateUser, uploadImage } from '../../lib/firebaseUtils';
 
 export default function Profile({ params }) {
   const [ formState, setFormState ] = useState({});
@@ -17,6 +19,7 @@ export default function Profile({ params }) {
   const [isProfileImageDialogOpen, setIsProfileImageDialogOpen] = useState(false);
   const [isHeroDialogOpen, setIsHeroDialogOpen] = useState(false);
 
+  const { getUser, isLoggedIn } = useAuth();
   const router = useRouter();
 
   const onProfileImageDrop = useCallback(acceptedFiles => {
@@ -36,13 +39,17 @@ export default function Profile({ params }) {
   const { getRootProps:getProfileImageRootProps, getInputProps:getProfileImageInputProps } = useDropzone({
     onDrop: onProfileImageDrop,
     maxFiles: 1,
-    accept: 'image/*'
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png']
+    }
   });
 
   const { getRootProps:getHeroRootProps, getInputProps:getHeroInputProps } = useDropzone({
     onDrop: onHeroDrop,
     maxFiles: 1,
-    accept: 'image/*'
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png']
+    }
   });
 
   const handleChangeProfileImage = () => {
@@ -61,54 +68,73 @@ export default function Profile({ params }) {
     setIsHeroDialogOpen(false);
   };
 
-  function handleSetupSubmit(event) {
+  async function handleSetupSubmit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const userId = parseInt(params.id);
 
-    // Add images to form
-    if (profileImage.length != 0) {
-      data.append('profileImage', profileImage[0])
-    }
-    if (heroImage.length != 0) {
-      data.append('heroImage', heroImage[0])
-    }
+    const name = data.get('name');
+    const phoneNumber = data.get('phoneNumber');
+    const location = data.get('location');
 
-    // Remove blank inputs
-    let toRemove = [];
-    data.forEach((val, key) => {
-      if (val == "") {
-        toRemove.push(key);
-      }
-    });
-    toRemove.forEach(key => {
-      data.delete(key);
-    });
+    const user = getUser();
+    const userId = user.uid;
+
+    if (!event.currentTarget.reportValidity()) {
+      setErrorMessage("Keep name and location under 64 characters, and phone number under 16 characters.");
+      return false;
+    }
 
     // Validate phone number with regex
-    if (data.get('phoneNumber') &&
-       (!event.currentTarget.reportValidity() ||
-        !data.get('phoneNumber').match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
+    if (phoneNumber && !phoneNumber.match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/)) {
+      setErrorMessage();
       setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
       return false;
     }
+
+    // Upload images
+    let profileImageURL = "";
+    let heroImageURL = "";
     
-    // Submit form
-    fetch(`/api/users/${userId}`, {
-      method: 'put',
-      body: data
-    }).then((res) => {
-      if (res.ok) {
-        // Send to profile page
-        router.push(`/profile/${userId}`);
-      } else {
-        res.json().then(err => {
-          setErrorMessage(err.error);
-        });
+    if (profileImage.length != 0) {
+      try {
+        profileImageURL = await uploadImage(userId, profileImage[0]);
+      } catch (err) {
+        console.error(err);
+        setErrorMessage(err.message);
+        return false;
       }
+    }
+
+    if (heroImage.length != 0) {
+      try {
+        heroImageURL = await uploadImage(userId, heroImage[0]);
+      } catch (err) {
+        console.error(err);
+        setErrorMessage(err.message);
+        return false;
+      }
+    }
+
+    await updateUser(userId, {
+      name,
+      phoneNumber,
+      location,
+      profileImage: profileImageURL,
+      heroImage: heroImageURL
+    }).then(() => {
+      // Send to profile page
+      router.push(`/profile/${userId}`);
+    }).catch(err => {
+      console.error(err);
+      setErrorMessage(err.message);
     });
 
     return false;
+  }
+
+  if (!isLoggedIn()) {
+    router.push('/Login');
+    return;
   }
 
   return (

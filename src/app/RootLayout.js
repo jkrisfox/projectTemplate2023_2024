@@ -19,7 +19,8 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import { useSession, signOut } from "next-auth/react";
+import { useAuth } from './AuthProvider';
+import { useRouter } from 'next/navigation';
 import AdbIcon from "@mui/icons-material/Adb";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
@@ -31,9 +32,11 @@ const sans = localFont({
 });
 
 export default function RootLayout({ children, title }) {
-  const { data: session } = useSession();
+  const { isLoggedIn, getUser, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
+
+  const router = useRouter();
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -43,11 +46,17 @@ export default function RootLayout({ children, title }) {
     setAnchorEl(null);
   };
 
+  const handleViewProfileClick = () => {
+    handleMenuClose();
+    const userId = getUser().uid;
+    router.push(`/profile/${userId}`);
+  }
+
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
-      {session ? (
+      {isLoggedIn() ? (
         <>
-          <MenuItem component={Link} href="/profile" onClick={handleMenuClose}>
+          <MenuItem onClick={handleViewProfileClick}>
             View Profile
           </MenuItem>
           <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
@@ -61,15 +70,20 @@ export default function RootLayout({ children, title }) {
           </MenuItem>
         </>
       ) : (
-        <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
-          Sign Up
-        </MenuItem>
+        <>
+          <MenuItem component={Link} href="/Login" onClick={handleMenuClose}>
+            Log In
+          </MenuItem>
+          <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
+            Sign Up
+          </MenuItem>
+        </>
       )}
     </Menu>
   );
 
   const handleCreateListingClick = () => {
-    if (session) {
+    if (isLoggedIn()) {
       router.push("/CreateListing");
     } else {
       router.push("/Signup");
@@ -121,8 +135,6 @@ export default function RootLayout({ children, title }) {
 
                   <Box sx={{ flexGrow: 0 }}>
                     <Button
-                      component={Link}
-                      href="/CreateListing"
                       variant="contained"
                       color="secondary"
                       sx={{ mx: 4 }}
