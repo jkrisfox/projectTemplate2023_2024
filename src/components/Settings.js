@@ -1,29 +1,16 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Button,
-  Dialog, 
-  DialogActions, 
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-  Grid,
-  FormControlLabel, 
-  Box,
-  Radio,
+  Alert, Button, TextField, Grid, FormControlLabel, Box, Radio,
 } from "@mui/material";
-import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
+import { updateUser } from '@/lib/firebaseUtils';
 
 export default function Settings( {user} ) {
 
     const [ formState, setFormState ] = useState({});
-    const [ error, setError ] = useState(false);
-    const [profileImage, setProfileImage] = useState([]); // Stored as [file, objectUrl]
-    const [heroImage, setHeroImage] = useState([]); // Stored as [file, objectUrl]
+    const [ errorMessage, setErrorMessage ] = useState();
     
     const router = useRouter();
-
 
     // RADIO HANDLERS
     const [selectedOption1, setSelectedOption1] = useState(null);
@@ -51,31 +38,32 @@ export default function Settings( {user} ) {
   }
 
 
-    function handleSaveSettings(event) {
+    async function handleSaveSettings(event) {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      const userId = user.id;
+      const userId = user.uid;
+      const name = data.get('name');
+      const location = data.get('location');
+      const phoneNumber = data.get('phoneNumber');
 
       // Validate phone number with regex
-      if (data.get('phoneNumber') &&
+      if (phoneNumber &&
           (!event.currentTarget.reportValidity() ||
-          !data.get('phoneNumber').match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
+          !phoneNumber.match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
           setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
           return false;
       }
       
-      // Submit form
-      fetch(`/api/users/${userId}`, {
-          method: 'put',
-          body: data
-      }).then((res) => {
-          if (res.ok) {
-          // Send to profile page
-          router.push(`/profile/${userId}`);
-          } else {
-          setError(true);
-          res.json().then((err) => console.error(err));
-          }
+      await updateUser(userId, {
+        name,
+        location,
+        phoneNumber
+      }).then(() => {
+        // Send to profile page
+        router.push(`/profile/${userId}`);
+      }).catch(err => {
+        console.error(err);
+        setErrorMessage(err.message);
       });
 
       return false;
@@ -83,7 +71,7 @@ export default function Settings( {user} ) {
 
     function handleResetPassword(event) {
         event.preventDefault();
-        const userId = user.id;
+        const userId = user.uid;
     
         // Submit form
         fetch(`/api/users/${userId}/resetPassword`, {
@@ -103,7 +91,7 @@ export default function Settings( {user} ) {
 
     function handleDeleteAccount(event) {
         event.preventDefault();
-        const userId = user.id;
+        const userId = user.uid;
     
         // Submit form
         fetch(`/api/users/${userId}`, {
@@ -124,9 +112,9 @@ export default function Settings( {user} ) {
 return (
     <div style={{width: '100%', textAlign: 'left'}}>
         <form onSubmit={handleSetupSubmit} style={{padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          { error ? (
+          { errorMessage ? (
           <Alert severity="error">
-              There was an issue setting up your account, please try again.
+            {errorMessage}
           </Alert>
           ) : null }
 
@@ -142,6 +130,7 @@ return (
               label="Name"
               defaultValue={user.name}
               type="text"
+              required
               fullWidth
               inputProps={{ maxLength: 64 }}
             />

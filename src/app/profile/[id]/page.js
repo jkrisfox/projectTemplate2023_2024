@@ -65,6 +65,9 @@ export default function Profile({ params }) {
           userData.heroImage = null;
         }
       }
+      if (userData) {
+        userData['uid'] = userId;
+      }
       setUser(userData);
       setIsLoading(false);
     }).catch(err => {
