@@ -4,11 +4,12 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
-import { signIn } from "next-auth/react";
 import { Box } from "@mui/material";
+import { auth } from "../../../firebase/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login() {
-  const [open, setOpen] = useState(false);
+  //   const [open, setOpen] = useState(false);
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const [error, setError] = useState(false);
 
@@ -17,17 +18,27 @@ export default function Login() {
     setFormValues({ email: "", password: "" });
   }
 
-  function handleSignin() {
-    signIn("normal", { ...formValues, redirect: false }).then((result) => {
-      if (!result.error) {
-        // Successful login
-        setOpen(false);
-        reset();
-        window.location.href = "../"    // Reroute to home page
-      } else {
-        setError(true);
-      }
-    });
+  function handleSignin(e) {
+    e.preventDefault();
+    signInWithEmailAndPassword(auth, formValues.email, formValues.password)
+      .then((userCredential) => {
+        console.log(userCredential);
+      })
+      .catch((error) => {
+        setError(true)
+        console.log(error);
+      });
+
+    // signIn("normal", { ...formValues, redirect: false }).then((result) => {
+    //   if (!result.error) {
+    //     // Successful login
+    //     setOpen(false);
+    //     reset();
+    //     window.location.href = "../"    // Reroute to home page
+    //   } else {
+    //     setError(true);
+    //   }
+    // });
   }
 
   function handleChange({ field, value }) {
@@ -80,7 +91,7 @@ export default function Login() {
           <br></br>
           <br></br>
         </form>
-        <Button onClick={() => handleSignin()}>Log In</Button>
+        <Button onClick={(e) => handleSignin(e)}>Log In</Button>
       </Box>
     </>
   );
