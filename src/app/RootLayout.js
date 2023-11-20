@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -16,11 +16,12 @@ import Searchbar from "../components/Searchbar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Signup from "./Signup";
 import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react";
 import { Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { usePathname } from "next/navigation";
+import { auth } from "../../firebase/firebaseConfig";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const theme = createTheme({
   palette: {
@@ -48,6 +49,7 @@ export default function RootLayout({ children, title }) {
   const { data: session, status } = useSession();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
+  const [authUser, setAuthUser] = useState(null);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -57,15 +59,37 @@ export default function RootLayout({ children, title }) {
     setAnchorEl(null);
   };
 
+  useEffect(() => {
+    const listen = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthUser(user);
+      } else {
+        setAuthUser(null);
+      }
+    });
+
+    return () => {
+      listen();
+    };
+  }, []);
+
+  const userSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("sign out successful");
+      })
+      .catch((error) => console.log(error));
+  };
+
   let loginSection;
 
-  if (status === "authenticated") {
+  if (authUser) {
     loginSection = (
       <Button
         variant="outlined"
         color="nav"
         sx={{ color: "white" }}
-        onClick={() => signOut()}
+        onClick={() => userSignOut()}
       >
         Sign Out
       </Button>
@@ -109,8 +133,8 @@ export default function RootLayout({ children, title }) {
               >
                 {title}
               </Typography>
-              <Box width='400px'>
-              <Searchbar />
+              <Box width="400px">
+                <Searchbar />
               </Box>
               <NavBar />
               <Box pr={6}>

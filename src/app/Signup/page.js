@@ -10,7 +10,6 @@ import Alert from "@mui/material/Alert";
 import { auth } from "../../../firebase/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FormatOverline } from "@mui/icons-material";
-import AuthDetails from "@/components/AuthDetails";
 
 export default function Signup() {
   //   const [ open, setOpen ] = useState(false);
@@ -25,14 +24,19 @@ export default function Signup() {
     const data = new FormData(event.currentTarget);
     valid = valid && data.get("password") == data.get("passwordConfirmation");
     if (valid) {
+      const signUpData = {};
+      signUpData["email"] = data.get("email");
+      signUpData["password"] = data.get("password");
+
       createUserWithEmailAndPassword(
         auth,
-        data.get("email"),
-        data.get("password")
+        signUpData["email"],
+        signUpData["password"]
       )
         .then((userCredential) => {
-          // Send to profile setup page
-          router.push(`/profile/${userId}/setup`);
+          // Successful login
+          window.location.href = "../"
+          // TODO: Implement profile setup
         })
         .catch((error) => {
           setFormState({
@@ -48,7 +52,7 @@ export default function Signup() {
         ...formState,
         passwordConfirmation: {
           error: true,
-          message: "You're passwords don't match.",
+          message: "Your passwords don't match.",
         },
       });
     }
@@ -95,7 +99,7 @@ export default function Signup() {
     //     },
     //   });
     // }
-    // return false;
+    return false;
   }
 
   return (
@@ -155,6 +159,7 @@ export default function Signup() {
           <br></br>
           <Button type="submit">Sign Up</Button>
         </form>
+        <AuthDetails />
       </Box>
     </>
   );

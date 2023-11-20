@@ -9,7 +9,6 @@ import { auth } from "../../../firebase/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login() {
-  //   const [open, setOpen] = useState(false);
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const [error, setError] = useState(false);
 
@@ -21,24 +20,16 @@ export default function Login() {
   function handleSignin(e) {
     e.preventDefault();
     signInWithEmailAndPassword(auth, formValues.email, formValues.password)
-      .then((userCredential) => {
-        console.log(userCredential);
+      .then((result) => {
+        // Successful login
+        reset();
+        // Reroute to home page
+        window.location.href = "../";
       })
       .catch((error) => {
-        setError(true)
+        setError(true);
         console.log(error);
       });
-
-    // signIn("normal", { ...formValues, redirect: false }).then((result) => {
-    //   if (!result.error) {
-    //     // Successful login
-    //     setOpen(false);
-    //     reset();
-    //     window.location.href = "../"    // Reroute to home page
-    //   } else {
-    //     setError(true);
-    //   }
-    // });
   }
 
   function handleChange({ field, value }) {
@@ -92,6 +83,7 @@ export default function Login() {
           <br></br>
         </form>
         <Button onClick={(e) => handleSignin(e)}>Log In</Button>
+        <AuthDetails />
       </Box>
     </>
   );
