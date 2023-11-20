@@ -19,7 +19,8 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import { useSession, signOut } from "next-auth/react";
+import { useAuth } from './AuthProvider';
+import { useRouter } from 'next/navigation';
 import AdbIcon from "@mui/icons-material/Adb";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
@@ -31,9 +32,11 @@ const sans = localFont({
 });
 
 export default function RootLayout({ children, title }) {
-  const { data: session } = useSession();
+  const { isLoggedIn, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
+
+  const router = useRouter();
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -45,7 +48,7 @@ export default function RootLayout({ children, title }) {
 
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
-      {session ? (
+      {isLoggedIn() ? (
         <>
           <MenuItem component={Link} href="/profile" onClick={handleMenuClose}>
             View Profile
@@ -69,7 +72,7 @@ export default function RootLayout({ children, title }) {
   );
 
   const handleCreateListingClick = () => {
-    if (session) {
+    if (isLoggedIn()) {
       router.push("/CreateListing");
     } else {
       router.push("/Signup");
@@ -121,8 +124,6 @@ export default function RootLayout({ children, title }) {
 
                   <Box sx={{ flexGrow: 0 }}>
                     <Button
-                      component={Link}
-                      href="/CreateListing"
                       variant="contained"
                       color="secondary"
                       sx={{ mx: 4 }}

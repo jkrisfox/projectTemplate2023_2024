@@ -1,7 +1,6 @@
 - users
   - {userId}
     - email: string
-    - password: string (hashed, although Firebase Authentication handles this)
     - isVerified: boolean
     - isAdmin: boolean
     - name: string
