@@ -40,10 +40,12 @@ export default function Signup() {
           // Send to profile setup page
           router.push(`/setup`);
         }).catch(err => {
+          console.error(err);
           setErrorMessage(err.message);
         });
       })
       .catch(err => {
+        console.log(err);
         setErrorMessage(err.message);
       });
     }
