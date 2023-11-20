@@ -19,7 +19,7 @@ export async function uploadImage(userId, image) {
   const imageName = Math.floor(100000000 + Math.random() * 900000000) + '.' + image.name.split('.').pop();
   const filePath = `images/${userId}/${imageName}`;
   const newImageRef = ref(storage, filePath);
-  let imageURL = "";
+  let imageURL;
 
   await uploadBytes(newImageRef, image).then(async () => {
     await getDownloadURL(newImageRef).then(res => {
@@ -54,13 +54,19 @@ export async function createUser(userId, email) {
 
 export async function getUser(userId) {
   const userRef = doc(db, "users", userId);
-  const userSnapshot = await getDoc(userRef);
+  let userData;
 
-  if (userSnapshot.exists()) {
-    return userSnapshot.data();
-  } else {
-    return null;
-  }
+  await getDoc(userRef).then(userSnapshot => {
+    if (userSnapshot.exists()) {
+      userData = userSnapshot.data();
+    } else {
+      userData = null;
+    }
+  }).catch(err => {
+    throw err;
+  });
+
+  return userData;
 }
 
 export async function updateUser(userId, userData) {
