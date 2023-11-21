@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 import { useAuth } from '../../AuthProvider';
+import { sendEmailVerification } from 'firebase/auth';
 import { getUser } from '@/lib/firebaseUtils';
 import PersonIcon from '@mui/icons-material/Person';
 import VerifiedIcon from '@mui/icons-material/Verified';
@@ -51,6 +52,13 @@ export default function Profile({ params }) {
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
+  };
+
+  const resendVerificationEmail = async () => {
+    const currentUser = getCurrentUser();
+    await sendEmailVerification(currentUser).catch(err => {
+      console.error(err);
+    });
   };
 
   const userId = params.id;
@@ -153,6 +161,8 @@ export default function Profile({ params }) {
         </Grid>
         <Grid item xs={12} sm={'auto'}>
           {/* Other buttons/actions for profile can be added here */}
+          {currentUserOwnsProfile && !user.isStudent && (getCurrentUser().email.split('@').pop() == "calpoly.edu")
+           && <Button onClick={resendVerificationEmail}>Resend Verification Email</Button>}
         </Grid>
       </Grid>}
       <Divider sx={{ my: 2, width: '100%' }} />
