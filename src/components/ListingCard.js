@@ -69,7 +69,6 @@ function ListingCard({
     handleCloseMenu(); // Close the menu after the action
   };
 
-
   // Simulated authentication and role check (replace with your auth logic)
   const isAuthenticated = true; // Replace with actual authentication check
   const isAdmin = true; // Replace with actual admin role check
@@ -79,12 +78,12 @@ function ListingCard({
       ? images[0]
       : "default-image-url";
 
-  // Explicitly parse the date string in ISO 8601 format
-  const formatDate = (dateString) => {
-    if (!dateString) return "Unknown"; // Handle null, undefined, or empty strings
-    const formattedDate = moment(dateString, moment.ISO_8601).format(
-      "MM/DD/YYYY"
-    ); // Use moment to format the date
+  // Modify the formatDate function to accept a timestamp object with seconds and nanoseconds
+  const formatDate = (timestamp) => {
+    if (!timestamp || !timestamp.seconds) return "Unknown"; // Check for null, undefined, or incomplete timestamp
+    // Convert seconds to milliseconds for moment (moment uses milliseconds)
+    const date = new Date(timestamp.seconds * 1000);
+    const formattedDate = moment(date).format("MM/DD/YYYY"); // Use moment to format the date
     return formattedDate !== "Invalid date" ? formattedDate : "Unknown"; // Check if the date is valid
   };
 
@@ -150,12 +149,22 @@ function ListingCard({
           open={openMenu}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={() => { /* handle share action */ }}>
+          <MenuItem
+            onClick={() => {
+              /* handle share action */
+            }}
+          >
             <ShareIcon fontSize="small" sx={{ marginRight: 1 }} /> Share
           </MenuItem>
           {isAuthenticated && isAdmin && (
-            <MenuItem onClick={() => { /* handle delete action */ }} sx={{ color: red[500] }}>
-              <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} /> Delete Listing
+            <MenuItem
+              onClick={() => {
+                /* handle delete action */
+              }}
+              sx={{ color: red[500] }}
+            >
+              <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} /> Delete
+              Listing
             </MenuItem>
           )}
           {/* Add the Report Listing menu item */}
@@ -164,7 +173,8 @@ function ListingCard({
           </MenuItem>
           {/* Add the Track Listing menu item */}
           <MenuItem onClick={handleTrackListing}>
-            <VisibilityIcon fontSize="small" sx={{ marginRight: 1 }} /> Track Listing
+            <VisibilityIcon fontSize="small" sx={{ marginRight: 1 }} /> Track
+            Listing
           </MenuItem>
         </Menu>
       </Box>
@@ -238,19 +248,15 @@ function ListingCard({
           }}
         >
           <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", display: "flex", alignItems: "center" }}
-        >
-          {price === 0 ? (
-            <Chip
-              icon={<CheckCircleIcon />}
-              label="Free"
-              size="large"
-            />
-          ) : (
-            `$${Number(price).toFixed(2)}` // Coerce price to a number before calling toFixed
-          )}
-        </Typography>
+            variant="h5"
+            sx={{ fontWeight: "bold", display: "flex", alignItems: "center" }}
+          >
+            {price === 0 ? (
+              <Chip icon={<CheckCircleIcon />} label="Free" size="large" />
+            ) : (
+              `$${Number(price).toFixed(2)}` // Coerce price to a number before calling toFixed
+            )}
+          </Typography>
           {studentVerification && (
             <Badge
               badgeContent={<SchoolIcon color="primary" />}

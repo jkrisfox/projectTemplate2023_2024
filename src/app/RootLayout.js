@@ -24,6 +24,7 @@ import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/navigation";
 import AdbIcon from "@mui/icons-material/Adb";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import logo from "../../public/logo.svg";
 
 // Configure sans font
 const sans = localFont({
@@ -96,34 +97,48 @@ export default function RootLayout({ children, title }) {
           <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
               <Container maxWidth="xl">
-              <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <AdbIcon
-                    sx={{
-                      display: { xs: "flex", md: "flex" },
-                      mr: 1,
-                      fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" }, // Adjust icon size
-                      color: "white",
-                    }}
-                  />
-
-                  <Typography
-                    variant="h6"
-                    noWrap
-                    component="a"
-                    href="/"
-                    sx={{
-                      mr: 2,
-                      display: { xs: "none", md: "flex" },
-                      fontFamily: "monospace",
-                      fontWeight: 700,
-                      letterSpacing: ".3rem",
-                      color: "white",
-                      textDecoration: "none",
-                      fontSize: { xs: "1rem", sm: "1.2rem", md: "1.5rem" },
-                    }}
-                  >
-                    {title}
-                  </Typography>
+                <Toolbar
+                  disableGutters
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Link
+                      href="/"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <img
+                        src={logo}
+                        alt="Logo"
+                        style={{ height: "40px", marginRight: "10px" }} // Adjust the height as needed
+                      />
+                      <Typography
+                        variant="h6"
+                        noWrap
+                        component="a"
+                        href="/"
+                        sx={{
+                          mr: 2,
+                          display: { xs: "flex", md: "flex" },
+                          fontFamily: "monospace",
+                          fontWeight: 700,
+                          letterSpacing: ".1rem",
+                          color: "white",
+                          textDecoration: "none",
+                          lineHeight: "inherit", // Adjust the line height to align with the logo
+                        }}
+                      >
+                        {title}
+                      </Typography>
+                    </Link>
+                  </Box>
 
                   <Box
                     sx={{
@@ -151,7 +166,7 @@ export default function RootLayout({ children, title }) {
                       sx={{
                         mx: 2, // Reduced margin
                         display: { xs: "none", sm: "inline-flex" }, // Hide on xs, show on sm and above
-                        maxWidth: { xs: '100px', sm: 'none' }
+                        maxWidth: { xs: "100px", sm: "none" },
                       }}
                       onClick={handleCreateListingClick}
                     >
@@ -181,7 +196,7 @@ export default function RootLayout({ children, title }) {
             {renderMenu()}
             <Box component="main">{children}</Box>
           </Box>
-          {/* <Footer /> */}
+          <Footer />
         </main>
       </CssBaseline>
     </ThemeProvider>
