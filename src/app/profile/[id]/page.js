@@ -10,7 +10,7 @@ import { useAuth } from '../../AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import { getUser } from '@/lib/firebaseUtils';
 import PersonIcon from '@mui/icons-material/Person';
-import VerifiedIcon from '@mui/icons-material/Verified';
+import SchoolIcon from "@mui/icons-material/School";
 import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/MyListings';
 import Settings from '../../../components/Settings';
@@ -163,7 +163,7 @@ export default function Profile({ params }) {
         </Grid>
         <Grid item>
           <Typography variant="h4" gutterBottom>
-            {user.name} {user.isVerified && <VerifiedIcon color="primary" />}
+            {user.name} {user.isStudent && <SchoolIcon color="primary" />}
           </Typography>
           <Typography variant="subtitle1">
             Seller
