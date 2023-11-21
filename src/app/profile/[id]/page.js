@@ -6,6 +6,7 @@ import {
   Box, Grid, Tabs, Tab, Paper, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress 
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import { getUser } from '@/lib/firebaseUtils';
@@ -26,6 +27,7 @@ export default function Profile({ params }) {
   const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
   const { getUser:getCurrentUser, isLoggedIn, isAdmin } = useAuth();
+  const router = useRouter();
 
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
@@ -119,6 +121,12 @@ export default function Profile({ params }) {
     }
 
     if (user.name == "") {
+      if (currentUserOwnsProfile) {
+        // Send to profile setup page
+        router.push(`/setup`);
+        return;
+      }
+      
       return (
         <Typography>User has not set up their page yet!</Typography>
       )
