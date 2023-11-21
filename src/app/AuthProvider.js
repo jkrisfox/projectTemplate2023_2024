@@ -40,14 +40,15 @@ export default function AuthProvider({ children }) {
     return auth.currentUser !== null;
   }
 
-  function isAdmin() {
-    return auth.currentUser.getIdTokenResult()
-    .then((idTokenResult) => {
+  async function isAdmin() {
+    return await auth.currentUser.getIdTokenResult().then((idTokenResult) => {
       if (!!idTokenResult.claims.admin) {
         return true;
       } else {
         return false;
       }
+    }).catch(err => {
+      throw err;
     });
   }
 

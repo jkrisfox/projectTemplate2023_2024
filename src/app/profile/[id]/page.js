@@ -6,16 +6,19 @@ import {
   Box, Grid, Tabs, Tab, Paper, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress 
 } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../AuthProvider';
+import { sendEmailVerification } from 'firebase/auth';
 import { getUser } from '@/lib/firebaseUtils';
 import PersonIcon from '@mui/icons-material/Person';
-import VerifiedIcon from '@mui/icons-material/Verified';
+import SchoolIcon from "@mui/icons-material/School";
 import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/MyListings';
 import Settings from '../../../components/Settings';
 
 export default function Profile({ params }) {
   const [user, setUser] = useState();
+  const [currentUserOwnsProfile, setCurrentUserOwnsProfile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
   const [heroImage, setHeroImage] = useState('https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg');
@@ -23,7 +26,8 @@ export default function Profile({ params }) {
 
   const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
-  const { getUser:getCurrentUser, isLoggedIn } = useAuth();
+  const { getUser:getCurrentUser, isLoggedIn, isAdmin } = useAuth();
+  const router = useRouter();
 
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
@@ -52,22 +56,56 @@ export default function Profile({ params }) {
     setIsDialogOpen(false);
   };
 
+  const resendVerificationEmail = async () => {
+    const currentUser = getCurrentUser();
+    await sendEmailVerification(currentUser).catch(err => {
+      console.error(err);
+    });
+  };
+
   const userId = params.id;
 
   // Get user data
   useEffect(() => {
     getUser(userId).then(userData => {
-      if (userData) {
-        if (userData.profileImage == "") {
-          userData.profileImage = null;
-        }
-        if (userData.heroImage == "") {
-          userData.heroImage = null;
+      if (!userData) {
+        setUser(userData);
+        setIsLoading(false);
+        return;
+      }
+
+      if (userData.profileImage == "") {
+        userData.profileImage = null;
+      }
+      if (userData.heroImage == "") {
+        userData.heroImage = null;
+      }
+      userData['uid'] = userId;
+      
+      if (isLoggedIn()) {
+        const currentUser = getCurrentUser();
+        if (currentUser.uid == userId) {
+          setCurrentUserOwnsProfile(true);
+          
+          if (currentUser.emailVerified
+            && (currentUser.email.split('@').pop() == "calpoly.edu")
+            && !userData.isStudent) {
+              // Tell server to set user as student
+              fetch(`/api/verify/${userId}`, {method: 'put'}).catch(err => {
+                console.error(err);
+              });
+            }
+        } else {
+          isAdmin().then(admin => {
+            if (admin) {
+              setCurrentUserOwnsProfile(true);
+            }
+          }).catch(err => {
+            console.error(err);
+          })
         }
       }
-      if (userData) {
-        userData['uid'] = userId;
-      }
+
       setUser(userData);
       setIsLoading(false);
     }).catch(err => {
@@ -83,6 +121,12 @@ export default function Profile({ params }) {
     }
 
     if (user.name == "") {
+      if (currentUserOwnsProfile) {
+        // Send to profile setup page
+        router.push(`/setup`);
+        return;
+      }
+      
       return (
         <Typography>User has not set up their page yet!</Typography>
       )
@@ -127,7 +171,7 @@ export default function Profile({ params }) {
         </Grid>
         <Grid item>
           <Typography variant="h4" gutterBottom>
-            {user.name} {user.isVerified && <VerifiedIcon color="primary" />}
+            {user.name} {user.isStudent && <SchoolIcon color="primary" />}
           </Typography>
           <Typography variant="subtitle1">
             Seller
@@ -135,6 +179,9 @@ export default function Profile({ params }) {
         </Grid>
         <Grid item xs={12} sm={'auto'}>
           {/* Other buttons/actions for profile can be added here */}
+          {isLoggedIn() && currentUserOwnsProfile && !user.isStudent
+           && (getCurrentUser().email.split('@').pop() == "calpoly.edu")
+           && <Button onClick={resendVerificationEmail}>Resend Verification Email</Button>}
         </Grid>
       </Grid>}
       <Divider sx={{ my: 2, width: '100%' }} />
@@ -143,13 +190,13 @@ export default function Profile({ params }) {
       <Tabs value={currentTab} onChange={handleTabChange} centered>
         <Tab label="Overview" />
         <Tab label="My Listings" />
-        <Tab label="Settings" />
-        <Tab label="Favorites" />
-        <Tab label="Purchase History" />
+        {currentUserOwnsProfile && <Tab label="Settings" />}
+        {currentUserOwnsProfile && <Tab label="Favorites" />}
+        {currentUserOwnsProfile && <Tab label="Purchase History" />}
       </Tabs>
 
       {/* My Listings Section - Only display if the My Listings tab is active */}
-      {currentTab === 1 && <MyListings />}
+      {currentTab === 1 && !isLoading && <MyListings />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
       {currentTab === 2 && !isLoading && <Settings user={user} />}
