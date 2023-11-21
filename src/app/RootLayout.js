@@ -14,13 +14,14 @@ import {
   Container,
   Toolbar,
   Typography,
+  Stack,
   IconButton,
   Menu,
   MenuItem,
   Button,
 } from "@mui/material";
-import { useAuth } from './AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useAuth } from "./AuthProvider";
+import { useRouter } from "next/navigation";
 import AdbIcon from "@mui/icons-material/Adb";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
@@ -50,15 +51,13 @@ export default function RootLayout({ children, title }) {
     handleMenuClose();
     const userId = getUser().uid;
     router.push(`/profile/${userId}`);
-  }
+  };
 
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
       {isLoggedIn() ? (
         <>
-          <MenuItem onClick={handleViewProfileClick}>
-            View Profile
-          </MenuItem>
+          <MenuItem onClick={handleViewProfileClick}>View Profile</MenuItem>
           <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
           <MenuItem
             onClick={() => {
@@ -97,14 +96,16 @@ export default function RootLayout({ children, title }) {
           <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
               <Container maxWidth="xl">
-                <Toolbar disableGutters>
+              <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <AdbIcon
                     sx={{
-                      display: { xs: "none", md: "flex" },
+                      display: { xs: "flex", md: "flex" },
                       mr: 1,
+                      fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" }, // Adjust icon size
                       color: "white",
                     }}
                   />
+
                   <Typography
                     variant="h6"
                     noWrap
@@ -118,6 +119,7 @@ export default function RootLayout({ children, title }) {
                       letterSpacing: ".3rem",
                       color: "white",
                       textDecoration: "none",
+                      fontSize: { xs: "1rem", sm: "1.2rem", md: "1.5rem" },
                     }}
                   >
                     {title}
@@ -126,23 +128,43 @@ export default function RootLayout({ children, title }) {
                   <Box
                     sx={{
                       flexGrow: 1,
-                      display: { xs: "none", md: "flex" },
-                      justifyContent: "center",
+                      display: "flex",
+                      justifyContent: { md: "center" },
                     }}
                   >
-                    <Searchbar />
+                    <Searchbar
+                      sx={{
+                        width: {
+                          xs: "calc(100% - 120px)",
+                          sm: "60%",
+                          md: "40%",
+                        }, // Adjust the width calculation to prevent overlap
+                        // mx: { xs: 1, sm: 2 },
+                      }}
+                    />
                   </Box>
 
                   <Box sx={{ flexGrow: 0 }}>
                     <Button
                       variant="contained"
                       color="secondary"
-                      sx={{ mx: 4 }}
+                      sx={{
+                        mx: 2, // Reduced margin
+                        display: { xs: "none", sm: "inline-flex" }, // Hide on xs, show on sm and above
+                        maxWidth: { xs: '100px', sm: 'none' }
+                      }}
                       onClick={handleCreateListingClick}
                     >
                       <strong>Create Listing</strong>
                     </Button>
-                    <IconButton color="inherit" onClick={handleProfileMenuOpen}>
+
+                    <IconButton
+                      color="inherit"
+                      onClick={handleProfileMenuOpen}
+                      sx={{
+                        p: { xs: 0, sm: 1 }, // Adjust padding
+                      }}
+                    >
                       <AccountCircleIcon
                         fontSize="large"
                         sx={{ color: "white" }}
