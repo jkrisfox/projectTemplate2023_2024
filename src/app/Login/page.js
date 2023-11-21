@@ -7,28 +7,33 @@ import Alert from "@mui/material/Alert";
 import { Box } from "@mui/material";
 import { auth } from "../../../firebase/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
-export default function Login() {
+export default function Signin() {
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const [error, setError] = useState(false);
+
+  const router = useRouter();
 
   function reset() {
     setError(false);
     setFormValues({ email: "", password: "" });
   }
 
-  function handleSignin(e) {
-    e.preventDefault();
-    signInWithEmailAndPassword(auth, formValues.email, formValues.password)
-      .then((result) => {
-        // Successful login
-        reset();
-        // Reroute to home page
-        window.location.href = "../";
+  async function handleSignin(event) {
+    event.preventDefault();
+    const email = formValues.email;
+    const password = formValues.password;
+
+    await signInWithEmailAndPassword(auth, email, password)
+      .then((res) => {
+        const userid = res.user.uid
+        router.push("/profile/" + userid);
       })
-      .catch((error) => {
-        setError(true);
-        console.log(error);
+      .catch((err) => {
+        reset();
+        console.log(err);
+        setError(err.message);
       });
   }
 
@@ -83,7 +88,6 @@ export default function Login() {
           <br></br>
         </form>
         <Button onClick={(e) => handleSignin(e)}>Log In</Button>
-        <AuthDetails />
       </Box>
     </>
   );

@@ -108,7 +108,6 @@ export default function Signup() {
           <br></br>
           <Button type="submit">Sign Up</Button>
         </form>
-        <AuthDetails />
       </Box>
     </>
   );
