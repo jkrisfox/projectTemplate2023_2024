@@ -19,8 +19,8 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import { useAuth } from './AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useAuth } from "./AuthProvider";
+import { useRouter } from "next/navigation";
 import AdbIcon from "@mui/icons-material/Adb";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
@@ -35,7 +35,6 @@ export default function RootLayout({ children, title }) {
   const { isLoggedIn, getUser, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
-  const [authUser, setAuthUser] = useState(null);
 
   const router = useRouter();
 
@@ -51,15 +50,13 @@ export default function RootLayout({ children, title }) {
     handleMenuClose();
     const userId = getUser().uid;
     router.push(`/profile/${userId}`);
-  }
+  };
 
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
       {isLoggedIn() ? (
         <>
-          <MenuItem onClick={handleViewProfileClick}>
-            View Profile
-          </MenuItem>
+          <MenuItem onClick={handleViewProfileClick}>View Profile</MenuItem>
           <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
           <MenuItem
             onClick={() => {
