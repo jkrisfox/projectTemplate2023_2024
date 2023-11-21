@@ -16,6 +16,7 @@ import Settings from '../../../components/Settings';
 
 export default function Profile({ params }) {
   const [user, setUser] = useState();
+  const [currentUserOwnsProfile, setCurrentUserOwnsProfile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
   const [heroImage, setHeroImage] = useState('https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg');
@@ -23,7 +24,7 @@ export default function Profile({ params }) {
 
   const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
-  const { getUser:getCurrentUser, isLoggedIn } = useAuth();
+  const { getUser:getCurrentUser, isLoggedIn, isAdmin } = useAuth();
 
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
@@ -69,6 +70,23 @@ export default function Profile({ params }) {
         userData['uid'] = userId;
       }
       setUser(userData);
+
+      
+      if (isLoggedIn()) {
+        const currentUser = getCurrentUser();
+        if (currentUser.uid == userId) {
+          setCurrentUserOwnsProfile(true);
+        } else {
+          isAdmin().then(admin => {
+            if (admin) {
+              setCurrentUserOwnsProfile(true);
+            }
+          }).catch(err => {
+            console.error(err);
+          })
+        }
+      }
+
       setIsLoading(false);
     }).catch(err => {
       console.error(err.message);
@@ -143,13 +161,13 @@ export default function Profile({ params }) {
       <Tabs value={currentTab} onChange={handleTabChange} centered>
         <Tab label="Overview" />
         <Tab label="My Listings" />
-        <Tab label="Settings" />
-        <Tab label="Favorites" />
-        <Tab label="Purchase History" />
+        {currentUserOwnsProfile && <Tab label="Settings" />}
+        {currentUserOwnsProfile && <Tab label="Favorites" />}
+        {currentUserOwnsProfile && <Tab label="Purchase History" />}
       </Tabs>
 
       {/* My Listings Section - Only display if the My Listings tab is active */}
-      {currentTab === 1 && <MyListings />}
+      {currentTab === 1 && !isLoading && <MyListings />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
       {currentTab === 2 && !isLoading && <Settings user={user} />}

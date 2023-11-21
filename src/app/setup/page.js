@@ -192,7 +192,7 @@ export default function Profile() {
 
           { isStudent && emailVerified && (
             <Alert severity="success">
-              You're email has been verified!
+              Your email has been verified!
             </Alert>
           )}
 
