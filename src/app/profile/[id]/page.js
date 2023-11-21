@@ -161,7 +161,8 @@ export default function Profile({ params }) {
         </Grid>
         <Grid item xs={12} sm={'auto'}>
           {/* Other buttons/actions for profile can be added here */}
-          {currentUserOwnsProfile && !user.isStudent && (getCurrentUser().email.split('@').pop() == "calpoly.edu")
+          {isLoggedIn() && currentUserOwnsProfile && !user.isStudent
+           && (getCurrentUser().email.split('@').pop() == "calpoly.edu")
            && <Button onClick={resendVerificationEmail}>Resend Verification Email</Button>}
         </Grid>
       </Grid>}

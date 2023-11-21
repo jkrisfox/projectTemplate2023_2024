@@ -71,11 +71,15 @@ export default function Signup() {
         />
         <h1>Sign Up</h1>
         <form onSubmit={handleSignup}>
-          { errorMessage ? (
+          <Alert severity="info">
+            If you are a student, use your calpoly.edu email to get a verified account!
+          </Alert>
+
+          { errorMessage && (
             <Alert severity="error">
               {errorMessage}
             </Alert>
-          ) : null}
+          )}
 
           <TextField
             autoFocus
