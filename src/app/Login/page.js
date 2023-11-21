@@ -4,30 +4,37 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
-import { signIn } from "next-auth/react";
 import { Box } from "@mui/material";
+import { auth } from "../../../firebase/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
-export default function Login() {
-  const [open, setOpen] = useState(false);
+export default function Signin() {
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const [error, setError] = useState(false);
+
+  const router = useRouter();
 
   function reset() {
     setError(false);
     setFormValues({ email: "", password: "" });
   }
 
-  function handleSignin() {
-    signIn("normal", { ...formValues, redirect: false }).then((result) => {
-      if (!result.error) {
-        // Successful login
-        setOpen(false);
+  async function handleSignin(event) {
+    event.preventDefault();
+    const email = formValues.email;
+    const password = formValues.password;
+
+    await signInWithEmailAndPassword(auth, email, password)
+      .then((res) => {
+        const userid = res.user.uid
+        router.push("/profile/" + userid);
+      })
+      .catch((err) => {
         reset();
-        window.location.href = "../"    // Reroute to home page
-      } else {
-        setError(true);
-      }
-    });
+        console.log(err);
+        setError(err.message);
+      });
   }
 
   function handleChange({ field, value }) {
@@ -80,7 +87,7 @@ export default function Login() {
           <br></br>
           <br></br>
         </form>
-        <Button onClick={() => handleSignin()}>Log In</Button>
+        <Button onClick={(e) => handleSignin(e)}>Log In</Button>
       </Box>
     </>
   );

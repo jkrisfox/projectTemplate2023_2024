@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -54,19 +54,19 @@ export default function Signup() {
 
   return (
     <>
-      <Box sx={{width: 0.5, margin: 'auto', textAlign: 'center'}}>
-      <Box
-        component="img"
-        alt="SLO Marketplace Logo"
-        src="/logo-192x192.png"
-      />
+      <Box sx={{ width: 0.5, margin: "auto", textAlign: "center" }}>
+        <Box
+          component="img"
+          alt="SLO Marketplace Logo"
+          src="/logo-192x192.png"
+        />
         <h1>Sign Up</h1>
         <form onSubmit={handleSignup}>
           { errorMessage ? (
             <Alert severity="error">
               {errorMessage}
             </Alert>
-          ) : null }
+          ) : null}
 
           <TextField
             autoFocus
@@ -89,7 +89,7 @@ export default function Signup() {
             type="password"
             required
             fullWidth
-            variant='standard'
+            variant="standard"
           />
           <br></br>
           <TextField
@@ -102,7 +102,7 @@ export default function Signup() {
             fullWidth
             error={formState.passwordConfirmation?.error}
             helperText={formState.passwordConfirmation?.message}
-            variant='standard'
+            variant="standard"
           />
           <br></br>
           <br></br>
