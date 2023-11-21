@@ -168,10 +168,17 @@ export default function Profile() {
         getUser().reload();
         const user = getUser();
         if (user.emailVerified) {
+          // Tell server to set user as student
+          fetch(`/api/verify/${user.uid}`, {method: 'put'}).catch(err => {
+            console.error(err);
+            setErrorMessage(err.error);
+          });
+
           setEmailVerified(true);
+
+          // Stop checking for email verification
+          clearInterval(interval);
         }
-      } else {
-        router.push('/Login');
       }
     }, 2000);
     return () => clearInterval(interval);
