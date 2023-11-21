@@ -66,24 +66,33 @@ export default function Profile({ params }) {
   // Get user data
   useEffect(() => {
     getUser(userId).then(userData => {
-      if (userData) {
-        if (userData.profileImage == "") {
-          userData.profileImage = null;
-        }
-        if (userData.heroImage == "") {
-          userData.heroImage = null;
-        }
+      if (!userData) {
+        setUser(userData);
+        setIsLoading(false);
+        return;
       }
-      if (userData) {
-        userData['uid'] = userId;
-      }
-      setUser(userData);
 
+      if (userData.profileImage == "") {
+        userData.profileImage = null;
+      }
+      if (userData.heroImage == "") {
+        userData.heroImage = null;
+      }
+      userData['uid'] = userId;
       
       if (isLoggedIn()) {
         const currentUser = getCurrentUser();
         if (currentUser.uid == userId) {
           setCurrentUserOwnsProfile(true);
+          
+          if (currentUser.emailVerified
+            && (currentUser.email.split('@').pop() == "calpoly.edu")
+            && !userData.isStudent) {
+              // Tell server to set user as student
+              fetch(`/api/verify/${userId}`, {method: 'put'}).catch(err => {
+                console.error(err);
+              });
+            }
         } else {
           isAdmin().then(admin => {
             if (admin) {
@@ -95,6 +104,7 @@ export default function Profile({ params }) {
         }
       }
 
+      setUser(userData);
       setIsLoading(false);
     }).catch(err => {
       console.error(err.message);
