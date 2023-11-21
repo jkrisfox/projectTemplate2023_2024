@@ -10,7 +10,11 @@ const NewItems = ({ isHomePage }) => {
 
   useEffect(() => {
     const fetchNewItems = async () => {
-      const q = query(collection(db, "listings"), orderBy("createdAt", "desc"), limit(10));
+      const q = query(
+        collection(db, "listings"),
+        orderBy("createdAt", "desc"),
+        limit(10)
+      );
       const querySnapshot = await getDocs(q);
       const items = [];
       querySnapshot.forEach((doc) => {
@@ -32,10 +36,13 @@ const NewItems = ({ isHomePage }) => {
       <Grid container spacing={2}>
         {newItems.map((item) => {
           const locationArray = item.location.split(", ");
-          const cityState = locationArray.length > 2 ? `${locationArray[1]}, ${locationArray[2]}` : item.location;
-          
+          const cityState =
+            locationArray.length > 2
+              ? `${locationArray[1]}, ${locationArray[2]}`
+              : item.location;
+
           return (
-            <Grid item xs={12} sm={6} md={4} lg={2.4} key={item.id}>
+            <Grid item xs={12} sm={12} md={4} lg={3} xl={2.4} key={item.id}>
               <ListingCard
                 title={item.title}
                 createdAt={item.createdAt}
