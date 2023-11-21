@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Alert, Avatar, Button, Dialog, DialogActions, DialogContent,
   DialogTitle, Grid, IconButton, TextField, Typography, Paper
 } from '@mui/material';
@@ -9,11 +9,14 @@ import ImageIcon from '@mui/icons-material/Image';
 import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../AuthProvider';
+import { sendEmailVerification } from 'firebase/auth';
 import { updateUser, uploadImage } from '../../lib/firebaseUtils';
 
-export default function Profile({ params }) {
+export default function Profile() {
   const [ formState, setFormState ] = useState({});
   const [ errorMessage, setErrorMessage ] = useState();
+  const [ isStudent, setIsStudent ] = useState(false);
+  const [ emailVerified, setEmailVerified ] = useState(false);
   const [profileImage, setProfileImage] = useState([]); // Stored as [file, objectUrl]
   const [heroImage, setHeroImage] = useState([]); // Stored as [file, objectUrl]
   const [isProfileImageDialogOpen, setIsProfileImageDialogOpen] = useState(false);
@@ -66,6 +69,14 @@ export default function Profile({ params }) {
 
   const handleHeroDialogClose = () => {
     setIsHeroDialogOpen(false);
+  };
+
+  const resendVerificationEmail = async () => {
+    const user = getUser();
+    await sendEmailVerification(user).catch(err => {
+      console.error(err);
+      setErrorMessage(err.message);
+    });
   };
 
   async function handleSetupSubmit(event) {
@@ -132,20 +143,64 @@ export default function Profile({ params }) {
     return false;
   }
 
-  if (!isLoggedIn()) {
-    router.push('/Login');
-    return;
-  }
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push('/Login');
+      return;
+    }
+
+    const user = getUser();
+    if (user.email.split('@').pop() == "calpoly.edu") {
+      setIsStudent(true);
+
+      // If the email has already been verified for some reason (page refresh)
+      if (user.emailVerified) {
+        setEmailVerified(true);
+      }
+    }
+  }, []);
+
+  // Email verification doesn't trigger onAuthStateChange,
+  // so just check every couple seconds.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isLoggedIn()) {
+        getUser().reload();
+        const user = getUser();
+        if (user.emailVerified) {
+          setEmailVerified(true);
+        }
+      } else {
+        router.push('/Login');
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
       <h1 style={{textAlign: 'center'}}>Set Up Profile</h1>
         <form onSubmit={handleSetupSubmit} style={{padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          { errorMessage ? (
+          { isStudent && !emailVerified && (
+            <>
+              <Alert severity="warning">
+                Check your email to verify your student status!
+              </Alert>
+              <Button onClick={resendVerificationEmail}>Resend email</Button>
+            </>
+          )}
+
+          { isStudent && emailVerified && (
+            <Alert severity="success">
+              You're email has been verified!
+            </Alert>
+          )}
+
+          { errorMessage && (
           <Alert severity="error">
-              {errorMessage}
+            {errorMessage}
           </Alert>
-          ) : null }
+          )}
 
           <Grid container spacing={2} columnSpacing={8} alignItems="center" justifyContent="center" mt={3}>
 

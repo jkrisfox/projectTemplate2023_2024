@@ -8,6 +8,7 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 import { useAuth } from '../AuthProvider';
 import { createUser } from '@/lib/firebaseUtils';
+import { sendEmailVerification } from 'firebase/auth';
 
 export default function Signup() {
   const [ formState, setFormState ] = useState({});
@@ -36,7 +37,15 @@ export default function Signup() {
       .then(async res => {
         const user = res.user;
         // Create user document
-        await createUser(user.uid, user.email).then(() => {
+        await createUser(user.uid, user.email).then(async () => {
+          if (user.email.split('@').pop() == "calpoly.edu") {
+            // Send verification email if user is a student
+            await sendEmailVerification(user).catch(err => {
+              console.error(err);
+              setErrorMessage(err.message);
+            });
+          }
+
           // Send to profile setup page
           router.push(`/setup`);
         }).catch(err => {
