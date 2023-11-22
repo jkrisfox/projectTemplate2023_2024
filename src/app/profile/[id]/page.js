@@ -196,7 +196,7 @@ export default function Profile({ params }) {
       </Tabs>
 
       {/* My Listings Section - Only display if the My Listings tab is active */}
-      {currentTab === 1 && !isLoading && <MyListings />}
+      {currentTab === 1 && !isLoading && <MyListings user={user} />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
       {currentTab === 2 && !isLoading && <Settings user={user} />}
