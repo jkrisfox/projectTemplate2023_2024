@@ -15,6 +15,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/MyListings';
 import Settings from '../../../components/Settings';
+import FavoriteListings from '../../../components/FavoriteListings';
 
 export default function Profile({ params }) {
   const [user, setUser] = useState();
@@ -201,6 +202,8 @@ export default function Profile({ params }) {
       {/* Settings Section - Only display if the Settings tab is active */}
       {currentTab === 2 && !isLoading && <Settings user={user} />}
 
+      {/* Favorite Listings Section - Only display if the Favorites tab is active */}
+      {currentTab === 3 && !isLoading && <FavoriteListings user={user} />}
 
       <Dialog
         open={isDialogOpen}
