@@ -57,7 +57,7 @@ export default function RootLayout({ children, title }) {
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
       {isLoggedIn() ? (
-        <>
+        <div>
           <MenuItem onClick={handleViewProfileClick}>View Profile</MenuItem>
           <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
           <MenuItem
@@ -68,16 +68,16 @@ export default function RootLayout({ children, title }) {
           >
             Log Out
           </MenuItem>
-        </>
+        </div>
       ) : (
-        <>
+        <div>
           <MenuItem component={Link} href="/Login" onClick={handleMenuClose}>
             Log In
           </MenuItem>
           <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
             Sign Up
           </MenuItem>
-        </>
+        </div>
       )}
     </Menu>
   );
