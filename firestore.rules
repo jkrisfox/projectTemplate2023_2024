@@ -20,10 +20,35 @@ service cloud.firestore {
                     && request.resource.data.isVerified == false
                     && request.resource.data.isStudent == false;
       allow write: if request.auth != null
-      						 && request.auth.uid == userId
-                   // Make sure user doesn't give themself permissions
-                   && (!request.resource.data.diff(resource.data).affectedKeys()
-        							.hasAny(['isAdmin', 'isVerified', 'isStudent']));
+      						 && (request.auth.token.admin == true
+                      || request.auth.uid == userId
+                      	 // Make sure user doesn't give themself permissions
+                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'isVerified', 'isStudent']));
+			
+      match /private/contact {
+      	// Allow account owner, students, and admin to read contact
+        allow read: if request.auth != null
+        						&& (request.auth.uid == userId
+                       || request.auth.token.student == true
+                    	 || request.auth.token.admin == true
+                       // Allow a registered user to read contact based on privacy setting
+                       || get(/databases/$(database)/documents/users/$(userId)).data.contactInfoVisibility == true);
+				// Allow account owner and admin to write to contact
+        allow write: if request.auth != null
+        						 && (request.auth.uid == userId
+                        || request.auth.token.admin == true);
+      }
+      
+      match /private/favorites {
+      	// Allow account owner and admin to read favorites
+      	allow read: if request.auth != null
+        						&& (request.auth.uid == userId
+                    	 || request.auth.token.admin == true);
+				// Allow account owner and admin to write to favorites
+        allow write: if request.auth != null
+        						 && (request.auth.uid == userId
+                        || request.auth.token.admin == true);
+      }
     }
 
     // Default rule for other documents to deny read/write
