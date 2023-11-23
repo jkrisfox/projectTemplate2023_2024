@@ -9,10 +9,10 @@ import { useRouter } from 'next/navigation';
 import { updateUser, uploadImage } from '@/lib/firebaseUtils';
 import { useDropzone } from 'react-dropzone';
 
-export default function Settings( {user} ) {
+export default function Settings( {user, setUser, setCurrentTab} ) {
 
-    const [ formState, setFormState ] = useState({});
-    const [ errorMessage, setErrorMessage ] = useState();
+    const [formState, setFormState] = useState({});
+    const [errorMessage, setErrorMessage] = useState();
     const [profileImage, setProfileImage] = useState([]); // Stored as [file, objectUrl]
     const [heroImage, setHeroImage] = useState([]); // Stored as [file, objectUrl]
     const [isProfileImageDialogOpen, setIsProfileImageDialogOpen] = useState(false);
@@ -143,6 +143,13 @@ export default function Settings( {user} ) {
             console.error(err);
             setErrorMessage(err.message);
         });
+
+        // Update local user
+        const newUser = {...user, ...userData};
+        setUser(newUser);
+
+        // Send to default tab
+        setCurrentTab(0);
 
         return false;
     }

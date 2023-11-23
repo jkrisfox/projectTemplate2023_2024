@@ -190,7 +190,7 @@ export default function Profile({ params }) {
       {currentTab === 0 && !isLoading && <MyListings user={user} />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
-      {currentTab === 1 && !isLoading && <Settings user={user} />}
+      {currentTab === 1 && !isLoading && <Settings user={user} setUser={setUser} setCurrentTab={setCurrentTab} />}
 
       {/* Favorite Listings Section - Only display if the Favorites tab is active */}
       {currentTab === 2 && !isLoading && <FavoriteListings user={user} />}
