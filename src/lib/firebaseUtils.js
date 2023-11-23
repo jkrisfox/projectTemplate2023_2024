@@ -92,8 +92,8 @@ export async function getUser(userId) {
     } else {
       contactData = null;
     }
-  }).catch(err => {
-    throw err;
+  }).catch(() => {
+    // User probably doesn't have permission to view document, don't do anything.
   });
 
   await getDoc(favoritesRef).then(favoritesSnapshot => {
@@ -102,8 +102,8 @@ export async function getUser(userId) {
     } else {
       favoritesData = null;
     }
-  }).catch(err => {
-    throw err;
+  }).catch(() => {
+    // User probably doesn't have permission to view document, don't do anything.
   });
 
   // Merge results

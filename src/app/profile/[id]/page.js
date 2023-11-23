@@ -13,9 +13,9 @@ import { getUser } from '@/lib/firebaseUtils';
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from "@mui/icons-material/School";
 import SettingsIcon from '@mui/icons-material/Settings';
-import MyListings from '../../../components/MyListings';
-import Settings from '../../../components/Settings';
-import FavoriteListings from '../../../components/FavoriteListings';
+import MyListings from '../../../components/ProfileTabs/MyListings';
+import Settings from '../../../components/ProfileTabs/Settings';
+import FavoriteListings from '../../../components/ProfileTabs/FavoriteListings';
 
 export default function Profile({ params }) {
   const [user, setUser] = useState();
@@ -178,6 +178,24 @@ export default function Profile({ params }) {
             Seller
           </Typography>
         </Grid>
+        {(user.email || user.phoneNumber || user.location) &&
+        <Grid item>
+          <Grid container pl={2}>
+            <Grid item>
+              <Typography variant="body1">
+                {user.email && user.email}
+              </Typography>
+
+              <Typography variant="body1">
+                {user.phoneNumber && user.phoneNumber}
+              </Typography>
+
+              <Typography variant="body1">
+                {user.location && user.location}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Grid>}
         <Grid item xs={12} sm={'auto'}>
           {/* Other buttons/actions for profile can be added here */}
           {isLoggedIn() && currentUserOwnsProfile && !user.isStudent
@@ -189,7 +207,6 @@ export default function Profile({ params }) {
 
       {/* Tabs */}
       <Tabs value={currentTab} onChange={handleTabChange} centered>
-        <Tab label="Overview" />
         <Tab label="My Listings" />
         {currentUserOwnsProfile && <Tab label="Settings" />}
         {currentUserOwnsProfile && <Tab label="Favorites" />}
@@ -197,13 +214,13 @@ export default function Profile({ params }) {
       </Tabs>
 
       {/* My Listings Section - Only display if the My Listings tab is active */}
-      {currentTab === 1 && !isLoading && <MyListings user={user} />}
+      {currentTab === 0 && !isLoading && <MyListings user={user} />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
-      {currentTab === 2 && !isLoading && <Settings user={user} />}
+      {currentTab === 1 && !isLoading && <Settings user={user} />}
 
       {/* Favorite Listings Section - Only display if the Favorites tab is active */}
-      {currentTab === 3 && !isLoading && <FavoriteListings user={user} />}
+      {currentTab === 2 && !isLoading && <FavoriteListings user={user} />}
 
       <Dialog
         open={isDialogOpen}
