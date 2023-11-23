@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
-  Alert, Button, TextField, Grid, FormControlLabel, Box, Radio,
+  Alert, Avatar, Dialog, DialogActions, DialogContent, DialogTitle,
+  Button, TextField, Grid, FormControlLabel, Box, Radio, Typography, IconButton, Paper
 } from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
+import ImageIcon from '@mui/icons-material/Image';
 import { useRouter } from 'next/navigation';
-import { updateUser } from '@/lib/firebaseUtils';
+import { updateUser, uploadImage } from '@/lib/firebaseUtils';
+import { useDropzone } from 'react-dropzone';
 
-export default function Settings( {user} ) {
+export default function Settings( {user, setUser, setCurrentTab} ) {
 
-    const [ formState, setFormState ] = useState({});
-    const [ errorMessage, setErrorMessage ] = useState();
+    const [formState, setFormState] = useState({});
+    const [errorMessage, setErrorMessage] = useState();
+    const [profileImage, setProfileImage] = useState([]); // Stored as [file, objectUrl]
+    const [heroImage, setHeroImage] = useState([]); // Stored as [file, objectUrl]
+    const [isProfileImageDialogOpen, setIsProfileImageDialogOpen] = useState(false);
+    const [isHeroDialogOpen, setIsHeroDialogOpen] = useState(false);
     
     const router = useRouter();
 
@@ -26,6 +34,51 @@ export default function Settings( {user} ) {
         setSelectedOption3(event.target.value);
     };
 
+    const onProfileImageDrop = useCallback(acceptedFiles => {
+        const file = acceptedFiles[0];
+        const objectUrl = URL.createObjectURL(file);
+        setProfileImage([file, objectUrl]); // Set the uploaded image as the hero image
+        setIsProfileImageDialogOpen(false); // Close the dialog
+    }, []);
+    
+    const onHeroDrop = useCallback(acceptedFiles => {
+        const file = acceptedFiles[0];
+        const objectUrl = URL.createObjectURL(file);
+        setHeroImage([file, objectUrl]); // Set the uploaded image as the hero image
+        setIsHeroDialogOpen(false); // Close the dialog
+    }, []);
+
+    const { getRootProps:getProfileImageRootProps, getInputProps:getProfileImageInputProps } = useDropzone({
+        onDrop: onProfileImageDrop,
+        maxFiles: 1,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png']
+        }
+    });
+    
+    const { getRootProps:getHeroRootProps, getInputProps:getHeroInputProps } = useDropzone({
+        onDrop: onHeroDrop,
+        maxFiles: 1,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png']
+        }
+    });
+
+    const handleChangeProfileImage = () => {
+        setIsProfileImageDialogOpen(true);
+    };
+    
+    const handleChangeHero = () => {
+        setIsHeroDialogOpen(true);
+    };
+
+    const handleProfileImageDialogClose = () => {
+        setIsProfileImageDialogOpen(false);
+    };
+
+    const handleHeroDialogClose = () => {
+        setIsHeroDialogOpen(false);
+    };
 
     function handleSetupSubmit(event) {
       if (event.nativeEvent.submitter.name == "saveSettings") {
@@ -39,34 +92,66 @@ export default function Settings( {user} ) {
 
 
     async function handleSaveSettings(event) {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget);
-      const userId = user.uid;
-      const name = data.get('name');
-      const location = data.get('location');
-      const phoneNumber = data.get('phoneNumber');
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const userId = user.uid;
+        const name = data.get('name');
+        const location = data.get('location');
+        const phoneNumber = data.get('phoneNumber');
 
-      // Validate phone number with regex
-      if (phoneNumber &&
-          (!event.currentTarget.reportValidity() ||
-          !phoneNumber.match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
-          setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
-          return false;
-      }
+        // Validate phone number with regex
+        if (phoneNumber &&
+            (!event.currentTarget.reportValidity() ||
+            !phoneNumber.match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
+                setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
+                return false;
+        }
+
+        let userData = {
+            name,
+            location,
+            phoneNumber
+        }
+        
+        // Upload images
+        if (profileImage.length != 0) {
+            try {
+                const profileImageURL = await uploadImage(userId, profileImage[0]);
+                userData.profileImage = profileImageURL;
+            } catch (err) {
+                console.error(err);
+                setErrorMessage(err.message);
+                return false;
+            }
+        }
+
+        if (heroImage.length != 0) {
+            try {
+                const heroImageURL = await uploadImage(userId, heroImage[0]);
+                userData.heroImage = heroImageURL;
+            } catch (err) {
+                console.error(err);
+                setErrorMessage(err.message);
+                return false;
+            }
+        }
       
-      await updateUser(userId, {
-        name,
-        location,
-        phoneNumber
-      }).then(() => {
-        // Send to profile page
-        router.push(`/profile/${userId}`);
-      }).catch(err => {
-        console.error(err);
-        setErrorMessage(err.message);
-      });
+        await updateUser(userId, userData).then(() => {
+            // Send to profile page
+            router.push(`/profile/${userId}`);
+        }).catch(err => {
+            console.error(err);
+            setErrorMessage(err.message);
+        });
 
-      return false;
+        // Update local user
+        const newUser = {...user, ...userData};
+        setUser(newUser);
+
+        // Send to default tab
+        setCurrentTab(0);
+
+        return false;
     }
 
     function handleResetPassword(event) {
@@ -117,6 +202,53 @@ return (
             {errorMessage}
           </Alert>
           ) : null }
+
+            <Grid container spacing={2} columnSpacing={8} alignItems="center" justifyContent="center" mt={3}>
+
+                <Grid item>
+                    <Typography align='center'>Profile Picture</Typography>
+                    <IconButton onClick={handleChangeProfileImage}>
+                        <Paper elevation={3}
+                            sx={{
+                                width: 100,
+                                height: 100,
+                                backgroundImage: `url(${profileImage[1]})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                position: 'relative',
+                                borderRadius: '50%'
+                            }}
+                        >
+                            {!profileImage[1] &&
+                            <Avatar alt="Banner" sx={{ width: 100, height: 100 }} variant='circular'>
+                                <PersonIcon />
+                            </Avatar>}
+                        </Paper>
+                    </IconButton>
+                </Grid>
+
+                <Grid item>
+                    <Typography align='center'>Banner Image</Typography>
+                    <IconButton onClick={handleChangeHero} sx={{borderRadius: 0}}>
+                        <Paper elevation={3}
+                            sx={{
+                                width: 200,
+                                height: 100,
+                                backgroundImage: `url(${heroImage[1]})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                position: 'relative'
+                            }}
+                        >
+                            {!heroImage[1] &&
+                            <Avatar alt="Banner" sx={{ width: 200, height: 100 }} variant='square'>
+                                <ImageIcon />
+                            </Avatar>}
+                        </Paper>
+                    </IconButton>
+                </Grid>
+
+            </Grid>
 
           <br></br>
           <div style={{width: '30%'}}>
@@ -263,6 +395,44 @@ return (
             <br></br>
           </div>
         </form>
+
+        <Dialog
+            open={isProfileImageDialogOpen}
+            onClose={handleProfileImageDialogClose}
+            aria-labelledby="responsive-dialog-title"
+        >
+            <DialogTitle id="responsive-dialog-title">{"Upload Profile Image"}</DialogTitle>
+            <DialogContent>
+                <div {...getProfileImageRootProps()} style={{ border: '1px dashed gray', padding: '20px', cursor: 'pointer' }}>
+                    <input {...getProfileImageInputProps()} />
+                    <Typography variant="body1">Drag & drop an image here, or click to select one</Typography>
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={handleProfileImageDialogClose} color="primary">
+                    Cancel
+                </Button>
+            </DialogActions>
+        </Dialog>
+
+        <Dialog
+            open={isHeroDialogOpen}
+            onClose={handleHeroDialogClose}
+            aria-labelledby="responsive-dialog-title"
+        >
+            <DialogTitle id="responsive-dialog-title">{"Upload Banner Image"}</DialogTitle>
+            <DialogContent>
+                <div {...getHeroRootProps()} style={{ border: '1px dashed gray', padding: '20px', cursor: 'pointer' }}>
+                    <input {...getHeroInputProps()} />
+                    <Typography variant="body1">Drag & drop an image here, or click to select one</Typography>
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={handleHeroDialogClose} color="primary">
+                    Cancel
+                </Button>
+            </DialogActions>
+      </Dialog>
     </div>
 );
 

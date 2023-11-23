@@ -1,18 +1,16 @@
 'use client'
 
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Avatar, Button, Divider, IconButton, Typography,
-  Box, Grid, Tabs, Tab, Paper, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress 
+  Avatar, Alert, Button, Divider, Typography,
+  Box, Grid, Tabs, Tab, Paper, CircularProgress 
 } from '@mui/material';
-import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import { getUser } from '@/lib/firebaseUtils';
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from "@mui/icons-material/School";
-import SettingsIcon from '@mui/icons-material/Settings';
 import MyListings from '../../../components/ProfileTabs/MyListings';
 import Settings from '../../../components/ProfileTabs/Settings';
 import FavoriteListings from '../../../components/ProfileTabs/FavoriteListings';
@@ -21,50 +19,27 @@ export default function Profile({ params }) {
   const [user, setUser] = useState();
   const [currentUserOwnsProfile, setCurrentUserOwnsProfile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState();
   const [currentTab, setCurrentTab] = useState(0);
-  const [heroImage, setHeroImage] = useState('https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg');
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog's visibility
 
   const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
   const { getUser:getCurrentUser, isLoggedIn, isAdmin } = useAuth();
   const router = useRouter();
 
-  const onDrop = useCallback(acceptedFiles => {
-    const file = acceptedFiles[0];
-    const objectUrl = URL.createObjectURL(file);
-    setHeroImage(objectUrl); // Set the uploaded image as the hero image
-    setIsDialogOpen(false); // Close the dialog
-  }, []);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    maxFiles: 1,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png']
-    }
-  });
+  const userId = params.id;
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
-  };
-
-  const handleChangeHero = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
   };
 
   const resendVerificationEmail = async () => {
     const currentUser = getCurrentUser();
     await sendEmailVerification(currentUser).catch(err => {
       console.error(err);
+      setErrorMessage(err.message);
     });
   };
-
-  const userId = params.id;
 
   // Get user data
   useEffect(() => {
@@ -94,6 +69,7 @@ export default function Profile({ params }) {
               // Tell server to set user as student
               fetch(`/api/verify/${userId}`, {method: 'put'}).catch(err => {
                 console.error(err);
+                setErrorMessage(err.message);
               });
             }
         } else {
@@ -103,6 +79,7 @@ export default function Profile({ params }) {
             }
           }).catch(err => {
             console.error(err);
+            setErrorMessage(err.message);
           })
         }
       }
@@ -110,7 +87,8 @@ export default function Profile({ params }) {
       setUser(userData);
       setIsLoading(false);
     }).catch(err => {
-      console.error(err.message);
+      console.error(err);
+      setErrorMessage(err.message);
     });
   }, []);
 
@@ -143,24 +121,19 @@ export default function Profile({ params }) {
         sx={{ 
           width: '100%', 
           height: 300, 
-          backgroundImage: user.heroImage ? `url(${user.heroImage}` : `url(${defaultHeroImage})`,
+          backgroundImage: user.heroImage ? `url(${user.heroImage})` : `url(${defaultHeroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           position: 'relative'
         }}
-      >
-        <IconButton 
-          onClick={handleChangeHero}
-          color="white"
-          sx={{
-            position: 'absolute',
-            bottom: 8,
-            right: 8,
-          }}
-        >
-          <SettingsIcon />
-        </IconButton>
-      </Paper>}
+      />}
+
+      {/* Error Messages */}
+      { errorMessage && (
+          <Alert severity="error">
+            {errorMessage}
+          </Alert>
+      )}
 
       {/* Profile Info */}
       {isLoading ? <CircularProgress /> :
@@ -217,30 +190,10 @@ export default function Profile({ params }) {
       {currentTab === 0 && !isLoading && <MyListings user={user} />}
 
       {/* Settings Section - Only display if the Settings tab is active */}
-      {currentTab === 1 && !isLoading && <Settings user={user} />}
+      {currentTab === 1 && !isLoading && <Settings user={user} setUser={setUser} setCurrentTab={setCurrentTab} />}
 
       {/* Favorite Listings Section - Only display if the Favorites tab is active */}
       {currentTab === 2 && !isLoading && <FavoriteListings user={user} />}
-
-      <Dialog
-        open={isDialogOpen}
-        onClose={handleDialogClose}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">{"Change Hero Image"}</DialogTitle>
-        <DialogContent>
-          <div {...getRootProps()} style={{ border: '1px dashed gray', padding: '20px', cursor: 'pointer' }}>
-            <input {...getInputProps()} />
-            <Typography variant="body1">Drag & drop an image here, or click to select one</Typography>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleDialogClose} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-
     </Box>
   );
 }
