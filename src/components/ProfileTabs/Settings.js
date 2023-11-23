@@ -103,7 +103,7 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         if (phoneNumber &&
             (!event.currentTarget.reportValidity() ||
             !phoneNumber.match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/))) {
-                setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
+                setFormState({...formState, phoneNumber: { error: true, message: "Your phone number is not formatted correctly." }});
                 return false;
         }
 

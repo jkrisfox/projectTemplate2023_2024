@@ -98,7 +98,7 @@ export default function Profile() {
     // Validate phone number with regex
     if (phoneNumber && !phoneNumber.match(/^(\+\d{1,2}\s?)?1?\-?\.?\s?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/)) {
       setErrorMessage();
-      setFormState({...formState, phoneNumber: { error: true, message: "You're phone number is not formatted correctly." }});
+      setFormState({...formState, phoneNumber: { error: true, message: "Your phone number is not formatted correctly." }});
       return false;
     }
 

@@ -28,7 +28,7 @@ export default function Signup() {
 
     if (password != passwordConfirmation) {
       setErrorMessage();
-      setFormState({...formState, passwordConfirmation: { error: true, message: "You're passwords don't match." }});
+      setFormState({...formState, passwordConfirmation: { error: true, message: "Your passwords don't match." }});
     } else if (!validForm || password.length < 6) {
       setErrorMessage("Passwords must be at least 6 characters long");
       setFormState({...formState, passwordConfirmation: { error: false, message: "" }});
