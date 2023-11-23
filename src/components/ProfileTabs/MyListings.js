@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Box, Stack, Pagination } from "@mui/material";
-import ListingCard from "./ListingCard";
-import { collection, query, orderBy, getDocs, where, limit, documentId } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
+import ListingCard from "../ListingCard";
+import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
+import { db } from "../../../firebase/firebaseConfig";
 
-export default function FavoriteListings( {user} ) {
+export default function MyListings( {user} ) {
   const [listings, setListings] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -15,48 +15,20 @@ export default function FavoriteListings( {user} ) {
     setPage(newPage);
   };
 
-  const fetchListingsByIds = async (ids) => {
-    const q = query(
-      collection(db, "listings"),
-      where(documentId(), "in", ids),
-      limit(10)
-    );
-    const querySnapshot = await getDocs(q);
-    const items = [];
-    querySnapshot.forEach((doc) => {
-      items.push({ id: doc.id, ...doc.data() });
-    });
-    return items;
-  };
-
   useEffect(() => {
     const fetchListings = async () => {
-      const ids = user.favoriteListings;
-
-      // Split favorite listings into groups of 10, the limit firebase allows for withIn
-      let idGroups = [];
-      for (let i = 0; i < ids.length; i += 10) {
-        idGroups.push(ids.slice(i, Math.min(i + 10, ids.length)));
-      }
-
-      let listingGroups = [];
-      for (const ids of idGroups) {
-        await fetchListingsByIds(ids).then(listingGroupRes => {
-          listingGroups.push(listingGroupRes);
-        }).catch(err => {
-          console.error(err);
-        });
-      }
-
-      let allListings = listingGroups.flat();
-
-      // Sort listings by creation time, since orderBy is not allowed
-      allListings.sort((a, b) => {
-        return (b.createdAt.seconds - a.createdAt.seconds);
+      const q = query(
+        collection(db, "listings"),
+        where("sellerId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push({ id: doc.id, ...doc.data() });
       });
-      
-      setListings(allListings);
-    }
+      setListings(items);
+    };
 
     fetchListings();
   }, []);
