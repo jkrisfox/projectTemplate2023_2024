@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -21,6 +21,8 @@ export default function Profile({ params }) {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState();
   const [currentTab, setCurrentTab] = useState(0);
+  const [heroImage, setHeroImage] = useState('https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg');
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog's visibility
 
   const defaultHeroImage = "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg";
 
@@ -94,9 +96,7 @@ export default function Profile({ params }) {
 
   if (!isLoading) {
     if (!user) {
-      return (
-        <Typography>User not found!</Typography>
-      )
+      return <Typography>User not found!</Typography>;
     }
 
     if (user.name == "") {
@@ -113,7 +113,9 @@ export default function Profile({ params }) {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Box
+      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
       {/* Hero Section */}
       {!isLoading &&
       <Paper
@@ -145,35 +147,14 @@ export default function Profile({ params }) {
         </Grid>
         <Grid item>
           <Typography variant="h4" gutterBottom>
-            {user.name} {user.isStudent && <SchoolIcon color="primary" />}
+            {user.name} {user.isVerified && <VerifiedIcon color="primary" />}
           </Typography>
           <Typography variant="subtitle1">
             Seller
           </Typography>
         </Grid>
-        {(user.email || user.phoneNumber || user.location) &&
-        <Grid item>
-          <Grid container pl={2}>
-            <Grid item>
-              <Typography variant="body1">
-                {user.email && user.email}
-              </Typography>
-
-              <Typography variant="body1">
-                {user.phoneNumber && user.phoneNumber}
-              </Typography>
-
-              <Typography variant="body1">
-                {user.location && user.location}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>}
         <Grid item xs={12} sm={'auto'}>
           {/* Other buttons/actions for profile can be added here */}
-          {isLoggedIn() && currentUserOwnsProfile && !user.isStudent
-           && (getCurrentUser().email.split('@').pop() == "calpoly.edu")
-           && <Button onClick={resendVerificationEmail}>Resend Verification Email</Button>}
         </Grid>
       </Grid>}
       <Divider sx={{ my: 2, width: '100%' }} />
