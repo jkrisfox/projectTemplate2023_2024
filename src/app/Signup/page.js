@@ -8,6 +8,7 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 import { useAuth } from '../AuthProvider';
 import { createUser } from '@/lib/firebaseUtils';
+import { sendEmailVerification } from 'firebase/auth';
 
 export default function Signup() {
   const [ formState, setFormState ] = useState({});
@@ -27,7 +28,7 @@ export default function Signup() {
 
     if (password != passwordConfirmation) {
       setErrorMessage();
-      setFormState({...formState, passwordConfirmation: { error: true, message: "You're passwords don't match." }});
+      setFormState({...formState, passwordConfirmation: { error: true, message: "Your passwords don't match." }});
     } else if (!validForm || password.length < 6) {
       setErrorMessage("Passwords must be at least 6 characters long");
       setFormState({...formState, passwordConfirmation: { error: false, message: "" }});
@@ -36,7 +37,15 @@ export default function Signup() {
       .then(async res => {
         const user = res.user;
         // Create user document
-        await createUser(user.uid, user.email).then(() => {
+        await createUser(user.uid, user.email).then(async () => {
+          if (user.email.split('@').pop() == "calpoly.edu") {
+            // Send verification email if user is a student
+            await sendEmailVerification(user).catch(err => {
+              console.error(err);
+              setErrorMessage(err.message);
+            });
+          }
+
           // Send to profile setup page
           router.push(`/setup`);
         }).catch(err => {
@@ -62,11 +71,15 @@ export default function Signup() {
         />
         <h1>Sign Up</h1>
         <form onSubmit={handleSignup}>
-          { errorMessage ? (
+          <Alert severity="info">
+            If you are a student, use your calpoly.edu email to get a verified account!
+          </Alert>
+
+          { errorMessage && (
             <Alert severity="error">
               {errorMessage}
             </Alert>
-          ) : null}
+          )}
 
           <TextField
             autoFocus
