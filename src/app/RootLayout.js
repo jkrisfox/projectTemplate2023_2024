@@ -94,7 +94,7 @@ export default function RootLayout({ children, title }) {
     <ThemeProvider theme={theme}>
       <CssBaseline>
         <main className={sans.className}>
-          <Box sx={{ flexGrow: 1 }}>
+          <Box display="flex" flexDirection="column" minHeight="100vh">
             <AppBar position="static">
               <Container maxWidth="xl">
                 <Toolbar
@@ -194,9 +194,16 @@ export default function RootLayout({ children, title }) {
               </Container>
             </AppBar>
             {renderMenu()}
-            <Box component="main">{children}</Box>
+            {/* Main content area */}
+            <Box component="main" sx={{ flexGrow: 1 }}>
+              {children}
+            </Box>
+
+            {/* Footer */}
+            <Box component="footer" sx={{ height: "100vh" }}>
+              <Footer />
+            </Box>
           </Box>
-          <Footer />
         </main>
       </CssBaseline>
     </ThemeProvider>

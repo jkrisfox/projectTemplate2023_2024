@@ -1,20 +1,18 @@
 import * as React from "react";
-import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
-import footer from "../../public/assets/footer.png";
-import logo from "../../public/logo.svg";
+import logo from "../../public/footerlogo.svg";
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="text.secondary">
+    <Typography variant="body2" color="text.secondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Lift Media
+      <Link color="inherit" href="https://slo.market/">
+        SLOMarket
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -22,9 +20,7 @@ function Copyright() {
   );
 }
 
-const defaultTheme = createTheme();
-
-export default function StickyFooter() {
+export default function Footer() {
   return (
     <Box
       component="footer"
@@ -32,59 +28,59 @@ export default function StickyFooter() {
         py: 3,
         px: 2,
         mt: "auto",
-        backgroundImage: `url(${footer})`,
+        backgroundImage: "url(/assets/footer.png)", // Adjusted path
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
+        height: "100%",
       }}
     >
-      <Container maxWidth="xl" style={{ position: "relative" }}>
-        <img
-          src={logo}
-          alt="Logo"
-          style={{ position: "absolute", top: "20px", left: "20px" }}
-        />
-        <Grid container justifyContent="space-between" alignItems="center">
+      <Container maxWidth="xl">
+        <Grid container spacing={3} direction="column" alignItems="center">
           <Grid item>
-            <Typography variant="body1">123 Market St. #22B</Typography>
-            <Typography variant="body1">
-              Charlottesville, California 44635
+            <img src={logo} alt="SLOMarket Logo" style={{ maxWidth: "100%" }} />
+          </Grid>
+          <Grid item>
+            <Typography variant="h4" align="center">
+              <strong>
+                Connecting local growers and merchants on one platform.
+              </strong>
             </Typography>
-            <Typography variant="body1">(434) 546-4356</Typography>
-            <Typography variant="body1">contact@lift.agency</Typography>
           </Grid>
           <Grid item>
-            <Link href="#" color="inherit">
-              About
-            </Link>
-            <Link href="#" color="inherit">
-              Growers
-            </Link>
-            <Link href="#" color="inherit">
-              Merchants
-            </Link>
-            <Link href="#" color="inherit">
-              Partners
-            </Link>
-            <Link href="#" color="inherit">
-              Contact
-            </Link>
+            <Stack mt={2} direction="row" spacing={6}>
+              <Link href="#" color="inherit">
+                About Us
+              </Link>
+              <Link href="#" color="inherit">
+                How It Works
+              </Link>
+              <Link href="#" color="inherit">
+                Community Guidelines
+              </Link>
+              <Link href="#" color="inherit">
+                Support
+              </Link>
+            </Stack>
           </Grid>
           <Grid item>
-            <Link href="#" color="inherit">
-              Facebook
-            </Link>
-            <Link href="#" color="inherit">
-              Twitter
-            </Link>
-            <Link href="#" color="inherit">
-              LinkedIn
-            </Link>
-            <Link href="#" color="inherit">
-              Instagram
-            </Link>
+            <Stack mt={2} direction="row" spacing={6}>
+              <Link href="#" color="inherit">
+                Facebook
+              </Link>
+              <Link href="#" color="inherit">
+                Twitter
+              </Link>
+              <Link href="#" color="inherit">
+                Instagram
+              </Link>
+            </Stack>
+          </Grid>
+          <Grid item>
+            <Box mt={5}>
+              <Copyright />
+            </Box>
           </Grid>
         </Grid>
-        <Copyright />
       </Container>
     </Box>
   );
