@@ -72,25 +72,26 @@ export async function getUser(userId) {
   const contactRef = doc(db, "users", userId, "private", "contact");
   const favoritesRef = doc(db, "users", userId, "private", "favorites");
   
-  let userData;
-  let contactData;
-  let favoritesData;
+  let userData = null;
+  let contactData = null;
+  let favoritesData = null;
 
   await getDoc(userRef).then(userSnapshot => {
     if (userSnapshot.exists()) {
       userData = userSnapshot.data();
-    } else {
-      userData = null;
     }
   }).catch(err => {
     throw err;
   });
 
+  // If there is no user data, there can't be anything else
+  if (!userData) {
+    return null;
+  }
+
   await getDoc(contactRef).then(contactSnapshot => {
     if (contactSnapshot.exists()) {
       contactData = contactSnapshot.data();
-    } else {
-      contactData = null;
     }
   }).catch(() => {
     // User probably doesn't have permission to view document, don't do anything.
@@ -99,8 +100,6 @@ export async function getUser(userId) {
   await getDoc(favoritesRef).then(favoritesSnapshot => {
     if (favoritesSnapshot.exists()) {
       favoritesData = favoritesSnapshot.data();
-    } else {
-      favoritesData = null;
     }
   }).catch(() => {
     // User probably doesn't have permission to view document, don't do anything.
