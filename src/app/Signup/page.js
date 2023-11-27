@@ -63,7 +63,7 @@ export default function Signup() {
 
   return (
     <>
-      <Box sx={{ width: 0.5, margin: "auto", textAlign: "center" }}>
+      <Box sx={{ width: 0.5, margin: "auto", textAlign: "center", height:'100vh' }}>
         <Box
           component="img"
           alt="SLO Marketplace Logo"

@@ -195,7 +195,7 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         }
 
 return (
-    <div style={{width: '100%', textAlign: 'left'}}>
+    <div style={{width: '100%', textAlign: 'left', height:'100vh'}}>
         <form onSubmit={handleSetupSubmit} style={{padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           { errorMessage ? (
           <Alert severity="error">

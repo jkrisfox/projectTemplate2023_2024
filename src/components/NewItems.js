@@ -2,14 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
-import ListingCard from "./ListingCard"; // Make sure this import points to ListingCard and not HomeCard
+import ListingCard from "./ListingCard";
 import { Box, Grid, Typography } from "@mui/material";
 
 const NewItems = ({ isHomePage }) => {
   const [newItems, setNewItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchNewItems = async () => {
+      setIsLoading(true);
       const q = query(
         collection(db, "listings"),
         orderBy("createdAt", "desc"),
@@ -21,6 +23,7 @@ const NewItems = ({ isHomePage }) => {
         items.push({ id: doc.id, ...doc.data() });
       });
       setNewItems(items);
+      setIsLoading(false);
     };
 
     fetchNewItems();
@@ -44,6 +47,8 @@ const NewItems = ({ isHomePage }) => {
           return (
             <Grid item xs={12} sm={12} md={4} lg={3} xl={2.4} key={item.id}>
               <ListingCard
+                loading={isLoading}
+                listingId={item.id}
                 title={item.title}
                 createdAt={item.createdAt}
                 updatedAt={item.updatedAt}

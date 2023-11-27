@@ -18,7 +18,7 @@ export default function NavBar() {
         const isActive = l.path === pathname;
         return (
           <Button component={Link}
-                  href={l.path}
+                  to={l.path}
                   sx={{ my: 2, color: 'white', display: 'block', textDecoration: (isActive ? 'underline' : 'inherit') }}
                   key={l.path}
           >{l.name}</Button>

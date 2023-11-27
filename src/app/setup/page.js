@@ -185,7 +185,7 @@ export default function Profile() {
   }, []);
 
   return (
-    <div>
+    <div style={{ height:'100vh' }}>
       <h1 style={{textAlign: 'center'}}>Set Up Profile</h1>
         <form onSubmit={handleSetupSubmit} style={{padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           { isStudent && !emailVerified && (

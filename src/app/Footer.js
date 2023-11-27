@@ -11,7 +11,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://slo.market/">
+      <Link color="inherit" to="https://slo.market/">
         SLOMarket
       </Link>{" "}
       {new Date().getFullYear()}
@@ -48,29 +48,29 @@ export default function Footer() {
           </Grid>
           <Grid item>
             <Stack mt={2} direction="row" spacing={6}>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 About Us
               </Link>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 How It Works
               </Link>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 Community Guidelines
               </Link>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 Support
               </Link>
             </Stack>
           </Grid>
           <Grid item>
             <Stack mt={2} direction="row" spacing={6}>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 Facebook
               </Link>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 Twitter
               </Link>
-              <Link href="#" color="inherit">
+              <Link to="#" color="inherit">
                 Instagram
               </Link>
             </Stack>

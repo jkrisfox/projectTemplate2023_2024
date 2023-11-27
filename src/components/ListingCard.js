@@ -10,13 +10,18 @@ import {
   Stack,
   Chip,
   useTheme,
+  Snackbar,
+  Skeleton,
+  Alert,
   useMediaQuery,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SchoolIcon from "@mui/icons-material/School";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import moment from "moment"; // Import moment library
+import { doc, deleteDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
+import { db } from '../../firebase/firebaseConfig'
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -27,6 +32,8 @@ import FlagIcon from "@mui/icons-material/Flag"; // For reporting
 import VisibilityIcon from "@mui/icons-material/Visibility"; // For tracking
 
 function ListingCard({
+  loading,
+  listingId,
   title,
   createdAt,
   updatedAt,
@@ -44,6 +51,16 @@ function ListingCard({
   // Additional state for the menu
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
+  // State for snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   // Handlers for menu
   const handleClickMenu = (event) => {
@@ -52,6 +69,17 @@ function ListingCard({
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const listingRef = doc(db, "listings", listingId);
+      await deleteDoc(listingRef);
+      alert("Listing deleted successfully."); // Show success alert
+    } catch (error) {
+      console.error("Error deleting listing: ", error);
+      alert("Failed to delete listing."); // Show error alert
+    }
   };
 
   // Function to handle the track action
@@ -158,9 +186,7 @@ function ListingCard({
           </MenuItem>
           {isAuthenticated && isAdmin && (
             <MenuItem
-              onClick={() => {
-                /* handle delete action */
-              }}
+              onClick={() => handleDeleteListing(listingId)}
               sx={{ color: red[500] }}
             >
               <DeleteIcon fontSize="small" sx={{ marginRight: 1 }} /> Delete
@@ -294,6 +320,20 @@ function ListingCard({
           </DialogContentText>
         </DialogContent>
       </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

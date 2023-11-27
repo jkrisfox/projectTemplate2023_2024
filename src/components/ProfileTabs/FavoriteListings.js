@@ -75,6 +75,7 @@ export default function FavoriteListings( {user} ) {
           return (
             <Grid item key={item.id}>
               <ListingCard
+              listingId={item.id}
                 title={item.title}
                 createdAt={item.createdAt}
                 updatedAt={item.updatedAt}

@@ -6,7 +6,7 @@ export default function Login() {
   return (
     <Button variant="outlined" 
             color="inherit"
-            href="\Login"
+            to="\Login"
             sx={{color:'white'}}>Login</Button>
   );
 }
