@@ -35,8 +35,9 @@ const NewItems = ({ isHomePage }) => {
           const cityState = locationArray.length > 2 ? `${locationArray[1]}, ${locationArray[2]}` : item.location;
           
           return (
-            <Grid item xs={12} sm={6} md={4} lg={2.4} key={item.id}>
+            <Grid item xs={12} sm={6} md={4} lg={2.4} key={item.id} >
               <ListingCard
+                id={item.id}
                 title={item.title}
                 createdAt={item.createdAt}
                 updatedAt={item.updatedAt}

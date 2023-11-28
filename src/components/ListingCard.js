@@ -14,8 +14,10 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SchoolIcon from "@mui/icons-material/School";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import moment from "moment"; // Import moment library
+import Link from 'next/link';
 
 function ListingCard({
+  id,
   title,
   createdAt,
   updatedAt,
@@ -79,6 +81,8 @@ function ListingCard({
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
         marginBottom: 2,
       }}
+      component={Link}
+      href={`/ListingDetails/${id}`}
       onClick={() => {
         /* navigate to main listings page */
       }}

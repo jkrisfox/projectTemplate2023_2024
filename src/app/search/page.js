@@ -153,6 +153,7 @@ const SearchPage = () => {
                 return (
                   <Grid item xs={12} sm={6} md={4} lg={2.4} key={result.id}>
                     <ListingCard
+                      id={result.id}
                       title={result.title}
                       createdAt={result.createdAt}
                       updatedAt={result.updatedAt}
