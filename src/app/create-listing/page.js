@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Alert,
   Avatar,
+  Snackbar,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,6 +25,8 @@ import { updateUser, uploadImage } from "../../lib/firebaseUtils";
 
 export default function CreateListing() {
   const { getUser, isLoggedIn } = useAuth();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const [listing, setListing] = useState({
     name: "",
@@ -43,6 +46,15 @@ export default function CreateListing() {
 
   const handleListingImageDialogClose = () => {
     setIsListingImageDialogOpen(false);
+  };
+
+  const handleSnackbarOpen = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const onListingImageDrop = useCallback((acceptedFiles) => {
@@ -82,6 +94,7 @@ export default function CreateListing() {
     if (listingImage.length != 0) {
       try {
         listingImageURL = await uploadImage(userId, listingImage[0]);
+        handleSnackbarOpen("Listing created successfully!");
       } catch (err) {
         console.error(err);
         setErrorMessage(err.message);
@@ -231,6 +244,20 @@ export default function CreateListing() {
           Create Listing
         </Button>
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </form>
   );
 }
