@@ -5,7 +5,9 @@ import MapWithMarker from 'src/app/marker/page.js';
 import Link from 'next/link';
 import ChristmasSnowfall from 'src/app/snowball.js';
 import SantaSleigh from 'src/app/SantaSleigh'; 
-import homeStyle from 'src/app/homestyle.module.css'
+import homeStyle from 'src/app/homestyle.module.css';
+import Sidebar from 'src/app/Sidebar';
+import './styles.css';
 
 const MyMapComponent = () => {
   const [map, setMap] = useState(null);
@@ -17,6 +19,11 @@ const MyMapComponent = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const markerRef = useRef(null);
   const [showSnowballs, setShowSnowballs] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prevCollapsed) => !prevCollapsed);
+  };
 
   const [seasons, setSeasons] = useState([]);
 
@@ -159,16 +166,17 @@ const MyMapComponent = () => {
 
   return (
     <>
-  {/* <div className={`${homeStyle.homeStyle} pageContainer`}> */}
+  <div className="map-wrapper">
    {showSnowballs && <ChristmasSnowfall /> } {/* Add your FallingSnowballs component */}
       <button onClick={toggleSnowballs}>{showSnowballs ? 'Hide Snowballs' : 'Show Snowballs'}</button>
       <h1>{reviewSubmitted ? 'Review Submitted!' : 'Find or Pin a Location!'}</h1>
-      <div>
+      <div className={`flex-container ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <Sidebar collapsed={sidebarCollapsed} />
         <MapWithMarker onMarkerPlaced={onMarkerPlaced} />
         {!showReviewForm ? (
           <button onClick={handleReviewButtonClick}>Review</button>
         ) : reviewSubmitted ? (
-          <p>Your review has been submitted!</p>
+          <p>Your review has already been submitted!</p>
         ) : (
           <form onSubmit={handleSubmit}>
             <label>
@@ -188,7 +196,7 @@ const MyMapComponent = () => {
         )}
         <button onClick={handleBackToHomeClick}>Back to Home</button>
       </div>
-      { /* </div> */ }
+      </div>
     </>
   );
 };
