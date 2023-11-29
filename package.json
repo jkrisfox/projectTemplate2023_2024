@@ -27,6 +27,7 @@
     "next": "13.4.8",
     "next-auth": "^4.22.1",
     "next-fonts": "^1.5.1",
+    "next-images": "^1.8.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",

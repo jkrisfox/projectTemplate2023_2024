@@ -21,7 +21,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import moment from "moment"; // Import moment library
 import { doc, deleteDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
-import { db } from '../../firebase/firebaseConfig'
+import { db } from "../../firebase/firebaseConfig";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -75,26 +75,39 @@ function ListingCard({
     try {
       const listingRef = doc(db, "listings", listingId);
       await deleteDoc(listingRef);
-      alert("Listing deleted successfully."); // Show success alert
+      // Update snackbar message and open the snackbar
+      setSnackbarMessage("Listing deleted successfully.");
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Error deleting listing: ", error);
-      alert("Failed to delete listing."); // Show error alert
+      // Show error alert
+      setSnackbarMessage("Failed to delete listing.");
+      setSnackbarOpen(true);
     }
   };
 
-  // Function to handle the track action
-  const handleTrackListing = () => {
-    // Implement the logic to track the listing
-    console.log("Listing tracked");
-    handleCloseMenu(); // Close the menu after the action
+  const handleReportListing = () => {
+    // Logic for reporting the listing
+    console.log("Listing reported");
+    setSnackbarMessage("Listing reported successfully.");
+    setSnackbarOpen(true);
+    handleCloseMenu();
   };
 
-  // Add a new function to handle the report action
-  const handleReportListing = () => {
-    // Implement the logic to report the listing
-    // For example, show a dialog or send a request to your server
-    console.log("Listing reported");
-    handleCloseMenu(); // Close the menu after the action
+  const handleTrackListing = () => {
+    // Logic for tracking the listing
+    console.log("Listing tracked");
+    setSnackbarMessage("Listing tracked successfully.");
+    setSnackbarOpen(true);
+    handleCloseMenu();
+  };
+
+  const handleShareListing = () => {
+    // Logic for sharing the listing
+    console.log("Listing shared");
+    setSnackbarMessage("Listing shared successfully.");
+    setSnackbarOpen(true);
+    handleCloseMenu();
   };
 
   // Simulated authentication and role check (replace with your auth logic)
@@ -137,15 +150,43 @@ function ListingCard({
     return parts.length > 2 ? `${parts[1]}, ${parts[2]}` : locationString;
   };
 
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          width: isMobile ? "100%" : 300,
+          minHeight: "420px",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+          marginBottom: 2,
+          flexDirection: "column",
+          display: "flex",
+        }}
+      >
+        <Skeleton variant="rectangular" width="100%" height={118} />
+        <Box sx={{ p: 2 }}>
+          <Skeleton variant="text" width="60%" />
+          <Skeleton variant="text" />
+          <Skeleton variant="text" />
+          <Skeleton variant="text" width="80%" />
+        </Box>
+        <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
+          <Skeleton variant="text" width="40%" />
+          <Skeleton variant="circular" width={40} height={40} />
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
         width: isMobile ? "100%" : 300,
-        minHeight: "420px",
+        height: "460px", // This sets a constant height for the card
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
-
         marginBottom: 2,
         flexDirection: "column",
         display: "flex",
@@ -177,12 +218,9 @@ function ListingCard({
           open={openMenu}
           onClose={handleCloseMenu}
         >
-          <MenuItem
-            onClick={() => {
-              /* handle share action */
-            }}
-          >
-            <ShareIcon fontSize="small" sx={{ marginRight: 1 }} /> Share
+          <MenuItem onClick={handleShareListing}>
+            <ShareIcon fontSize="small" sx={{ marginRight: 1 }} /> Copy Link to
+            Share
           </MenuItem>
           {isAuthenticated && isAdmin && (
             <MenuItem
@@ -198,10 +236,10 @@ function ListingCard({
             <FlagIcon fontSize="small" sx={{ marginRight: 1 }} /> Report Listing
           </MenuItem>
           {/* Add the Track Listing menu item */}
-          <MenuItem onClick={handleTrackListing}>
+          {/* <MenuItem onClick={handleTrackListing}>
             <VisibilityIcon fontSize="small" sx={{ marginRight: 1 }} /> Track
             Listing
-          </MenuItem>
+          </MenuItem> */}
         </Menu>
       </Box>
 
@@ -244,9 +282,18 @@ function ListingCard({
             backgroundColor: "white", // Add background color if needed
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              whiteSpace: "nowrap", // Prevent wrapping
+              overflow: "hidden", // Prevent showing overflow
+              textOverflow: "ellipsis", // Add ellipsis at the end
+            }}
+          >
             {title}
           </Typography>
+
           <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>
             {description}
           </Typography>
