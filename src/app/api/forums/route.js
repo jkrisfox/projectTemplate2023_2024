@@ -94,9 +94,14 @@ export async function GET(request) {
             JOIN "PossibleFilters" ON "possibleFilterId" = "PossibleFilters"."id"
             GROUP BY "PostFilters"."postId"
           )
-        SELECT "total_votes".*, "filters"."filters"
+          "user" AS (
+            SELECT "User"."name"
+            FROM "User"
+          )
+        SELECT "total_votes".*, "filters"."filters", "User"."name"
         FROM "total_votes"
         LEFT JOIN "filters" ON "total_votes"."id" = "filters"."postId"
+        JOIN "User" ON "User"."id" = "total_votes"."authorId"
       `;
     } catch (e) {
       console.log(e.message);
