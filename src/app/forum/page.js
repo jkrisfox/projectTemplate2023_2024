@@ -149,7 +149,6 @@ const Forum = () => {
       body: JSON.stringify({
         postTitle: postTitle,
         postDescription: postDescription,
-        filterIds: selectedTags,
       }),
     });
 
@@ -202,10 +201,10 @@ const Forum = () => {
           {posts.map((post, index) => (
             <div className="forum-post" key={index}>
               <div className="post-details">
-                <h3 className="post-title">{post.title}</h3>
+                <h3 className="post-title">{post.postTitle}</h3>
                 <div className='post-author-tags'>
-                  <p className="post-author">Posted by: {post.author}</p>
-                  <p className="post-tags">Tags: {post.tags.join(', ')}</p>
+                  <p className="post-author">Posted by: {post.authorId}</p>
+                  <p className="post-tags">Tags: {post.PostFilters && Array.isArray(post.PostFilters) ? post.PostFilters.join(', ') : ''}</p>
 
                 </div>
               </div>
