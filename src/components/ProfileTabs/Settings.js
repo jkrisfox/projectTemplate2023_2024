@@ -83,9 +83,9 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
     function handleSetupSubmit(event) {
       if (event.nativeEvent.submitter.name == "saveSettings") {
         handleSaveSettings(event);
-     } else if (event.nativeEvent.submitter.name == "resetPassword") {
+     } else if (event.nativeEvent.submitter.name == "saveNewPassword") {
          handleResetPassword(event);
-     } else if (event.nativeEvent.submitter.name == "deleteAccount") {
+     } else if (event.nativeEvent.submitter.name == "yesDeleteAccount") {
          handleDeleteAccount(event);
     }
   }
@@ -154,67 +154,84 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         return false;
     }
 
-    const [showTextField1, setShowTextField1] = useState(false);
-    const [showTextField2, setShowTextField2] = useState(false);
+        // Reset Password & Delete Account Popups
+        const [openPopup1, setOpenPopup1] = useState(false);
+        const [openPopup2, setOpenPopup2] = useState(false);
+
+        const handleOpenPopup1 = () => {
+            setOpenPopup1(true);
+        };
+
+        const handleClosePopup1 = () => {
+            setOpenPopup1(false);
+        };
+
+        const handleOpenPopup2 = () => {
+            setOpenPopup2(true);
+        };
+
+        const handleClosePopup2 = () => {
+            setOpenPopup2(false);
+        };
 
 
-    //const [isTextFieldVisible, setTextFieldVisible] = useState(false);
+        // Reset Password Button
+        const [previousPassword, setPreviousPassword] = useState('');
+        const [newPassword, setNewPassword] = useState('');
+        const [error, setError] = useState('');
 
-    function handleResetPassword(event) {
-        event.preventDefault();
+        const handleSubmit = (event) => {
+            event.preventDefault();
 
-        setShowTextField1(!showTextField1);
-        // Hide TextField2 if it's currently visible
-        if (showTextField2) {
-        setShowTextField2(false);
+            // Client-side validation
+            if (!previousPassword || !newPassword) {
+            setError('* Please fill out both fields.');
+            return;
+            }
+
+            // Server-side validation...
+
+            setError('');
+        };
+
+        // handleResetPassword
+        const handleResetPassword = (event) => {
+            event.preventDefault();
+            const userId = user.uid;
+            const previousPassword = data.get('previousPassword');
+            const newPassword = data.get('newPassword');
+
+            //setError('* aaaaaaaaa');
+            //return;
+
+            // Validate password with regex
+            if (newPassword &&
+                (!event.currentTarget.reportValidity() ||
+                !newPassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/))) {
+                    setFormState({...formState, newPassword: { error: true, message: "Your password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number." }});
+                    return false;
+            }
+
+            // Server-side validation...
+
+            // Update password
+
+            // Send to profile page
+            router.push(`/profile/${userId}`);
         }
 
-        //setTextFieldVisible(!isTextFieldVisible); // Toggle the visibility
 
-        // event.preventDefault();
-        // const userId = user.uid;
-    
-        // // Submit form
-        // fetch(`/api/users/${userId}/resetPassword`, {
-        //     method: 'put',
-        // }).then((res) => {
-        //     if (res.ok) {
-        //     // Send to profile page
-        //     router.push(`/profile/${userId}`);
-        //     } else {
-        //     setError(true);
-        //     res.json().then((err) => console.error(err));
-        //     }
-        // });
-    
-        // return false;
+        // handleDeleteAccount
+        const handleDeleteAccount = (event) => {
+            event.preventDefault();
+            const userId = user.uid;
+
+            // Delete account
+
+            // Send to profile page
+            router.push(`/profile/${userId}`);
         }
 
-    function handleDeleteAccount(event) {
-        event.preventDefault();
-        const userId = user.uid;
-
-        setShowTextField2(!showTextField2);
-        // Hide TextField1 if it's currently visible
-        if (showTextField1) {
-        setShowTextField1(false);
-        }
-    
-        // Submit form
-        // fetch(`/api/users/${userId}`, {
-        //     method: 'delete',
-        // }).then((res) => {
-        //     if (res.ok) {
-        //     // Send to profile page
-        //     router.push(`/profile/${userId}`);
-        //     } else {
-        //     setError(true);
-        //     res.json().then((err) => console.error(err));
-        //     }
-        // });
-    
-        // return false;
-        }
 
 return (
     <div style={{width: '100%', textAlign: 'left', height:'100vh'}}>
@@ -398,89 +415,106 @@ return (
             <br></br>
             <br></br>
             <Button type="submit" name="saveSettings" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
-            Save Settings
+                Save Settings
             </Button>
-            
+
             {/* RED BUTTONS */}
             <Grid container spacing={3} justifyContent="center" pt={6}>
                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button type="submit" name="resetPassword" variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                    <Button variant="contained" onClick={handleOpenPopup1} name="resetPassword" color="error" sx={{color:'white'}} fullWidth>
                         Reset Password
                     </Button>
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                <Button variant="contained" onClick={handleOpenPopup2} name="resetPassword" color="error" sx={{color:'white'}} fullWidth>
                         Delete Account
                     </Button>
                 </Grid>
             </Grid>
+            <div>
+                <Dialog open={openPopup1} onClose={handleClosePopup1}>
+                    <DialogContent>
+                        <>
+                            <form onSubmit={handleSubmit}>
+                                <TextField
+                                    margin="dense"
+                                    variant="standard"
+                                    id="previousPassword"
+                                    name="previousPassword"
+                                    label="Previous Password"
+                                    type="password"
+                                    fullWidth
+                                    required
+                                    inputProps={{ maxLength: 64 }}
+                                    value={previousPassword}
+                                    onChange={(e) => setPreviousPassword(e.target.value)}
+                                />
+                                <TextField
+                                    margin="dense"
+                                    variant="standard"
+                                    id="newPassword"
+                                    name="newPassword"
+                                    label="New Password"
+                                    type="password"
+                                    fullWidth
+                                    required
+                                    inputProps={{ maxLength: 64 }}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                />
+
+                                {/* Add vertical spacing */}
+                                <Box mt={3} />
+
+                                <Button
+                                    type="submit"
+                                    name="saveNewPassword"
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ color: 'white' }}
+                                    fullWidth
+                                >
+                                    Save New Password
+                                </Button>
+
+                                {error && <div style={{ color: 'red' }}>{error}</div>}
+                            </form>
+                        </>
+                    </DialogContent>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={openPopup2} onClose={handleClosePopup2}>
+                    <DialogContent>
+                        <>
+                            <Box mt={6} />
+                            <div>
+                                <Typography align='center'>
+                                    Are you sure you want to delete your account?<br></br>
+                                    This action cannot be undone.
+                                </Typography>
+                            </div>
+
+                            {/* Add vertical spacing */}
+                            <Box mt={1} />
+
+                            <Grid container spacing={3} justifyContent="center" pt={6}>
+                                <Grid item xs={12} sm={6} md={6} lg={6}>
+                                    <Button type="submit" name="yesDeleteAccount" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
+                                        Yes
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={6} lg={6}>
+                                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth onClick={handleClosePopup2}>
+                                        No
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </>
+                    </DialogContent>
+                </Dialog>
+            </div>
             <br></br>
-
-            {showTextField1 && (
-        <>
-          <TextField
-            margin="dense"
-            variant="standard"
-            id="previousPassword"
-            name="previousPassword"
-            label="Previous Password"
-            type="password"
-            fullWidth
-            inputProps={{ maxLength: 64 }}
-          />
-          <TextField
-            margin="dense"
-            variant="standard"
-            id="newPassword"
-            name="newPassword"
-            label="New Password"
-            type="password"
-            fullWidth
-            inputProps={{ maxLength: 64 }}
-          />
-
-          {/* Add vertical spacing */}
-          <Box mt={3} />
-
-          <Button
-            type="submit"
-            name="resetPassword"
-            variant="contained"
-            color="primary"
-            sx={{ color: 'white' }}
-            fullWidth
-          >
-            Save New Password
-          </Button>
-        </>
-      )}
-
-{showTextField2 && (
-        <>
-        <div>
-            <Typography align='center'>
-                Are you sure you want to delete your account? This action cannot be undone.
-            </Typography>
-        </div>
-        
-
-          {/* Add vertical spacing */}
-          <Box mt={3} />
-
-          <Grid container spacing={3} justifyContent="center" pt={6}>
-                <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button type="submit" name="resetPassword" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
-                        Yes
-                    </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth>
-                        No
-                    </Button>
-                </Grid>
-            </Grid>
-        </>
-      )}
           </div>
         </form>
 
