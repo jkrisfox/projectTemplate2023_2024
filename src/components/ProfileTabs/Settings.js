@@ -83,11 +83,11 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
     function handleSetupSubmit(event) {
       if (event.nativeEvent.submitter.name == "saveSettings") {
         handleSaveSettings(event);
-    } /*else if (event.nativeEvent.submitter.name == "resetPassword") {
-        handleResetPassword(event);
-    } else if (event.nativeEvent.submitter.name == "deleteAccount") {
-        handleDeleteAccount(event);
-    }*/
+     } else if (event.nativeEvent.submitter.name == "resetPassword") {
+         handleResetPassword(event);
+     } else if (event.nativeEvent.submitter.name == "deleteAccount") {
+         handleDeleteAccount(event);
+    }
   }
 
 
@@ -154,44 +154,66 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         return false;
     }
 
+    const [showTextField1, setShowTextField1] = useState(false);
+    const [showTextField2, setShowTextField2] = useState(false);
+
+
+    //const [isTextFieldVisible, setTextFieldVisible] = useState(false);
+
     function handleResetPassword(event) {
         event.preventDefault();
-        const userId = user.uid;
+
+        setShowTextField1(!showTextField1);
+        // Hide TextField2 if it's currently visible
+        if (showTextField2) {
+        setShowTextField2(false);
+        }
+
+        //setTextFieldVisible(!isTextFieldVisible); // Toggle the visibility
+
+        // event.preventDefault();
+        // const userId = user.uid;
     
-        // Submit form
-        fetch(`/api/users/${userId}/resetPassword`, {
-            method: 'put',
-        }).then((res) => {
-            if (res.ok) {
-            // Send to profile page
-            router.push(`/profile/${userId}`);
-            } else {
-            setError(true);
-            res.json().then((err) => console.error(err));
-            }
-        });
+        // // Submit form
+        // fetch(`/api/users/${userId}/resetPassword`, {
+        //     method: 'put',
+        // }).then((res) => {
+        //     if (res.ok) {
+        //     // Send to profile page
+        //     router.push(`/profile/${userId}`);
+        //     } else {
+        //     setError(true);
+        //     res.json().then((err) => console.error(err));
+        //     }
+        // });
     
-        return false;
+        // return false;
         }
 
     function handleDeleteAccount(event) {
         event.preventDefault();
         const userId = user.uid;
+
+        setShowTextField2(!showTextField2);
+        // Hide TextField1 if it's currently visible
+        if (showTextField1) {
+        setShowTextField1(false);
+        }
     
         // Submit form
-        fetch(`/api/users/${userId}`, {
-            method: 'delete',
-        }).then((res) => {
-            if (res.ok) {
-            // Send to profile page
-            router.push(`/profile/${userId}`);
-            } else {
-            setError(true);
-            res.json().then((err) => console.error(err));
-            }
-        });
+        // fetch(`/api/users/${userId}`, {
+        //     method: 'delete',
+        // }).then((res) => {
+        //     if (res.ok) {
+        //     // Send to profile page
+        //     router.push(`/profile/${userId}`);
+        //     } else {
+        //     setError(true);
+        //     res.json().then((err) => console.error(err));
+        //     }
+        // });
     
-        return false;
+        // return false;
         }
 
 return (
@@ -393,6 +415,72 @@ return (
                 </Grid>
             </Grid>
             <br></br>
+
+            {showTextField1 && (
+        <>
+          <TextField
+            margin="dense"
+            variant="standard"
+            id="previousPassword"
+            name="previousPassword"
+            label="Previous Password"
+            type="password"
+            fullWidth
+            inputProps={{ maxLength: 64 }}
+          />
+          <TextField
+            margin="dense"
+            variant="standard"
+            id="newPassword"
+            name="newPassword"
+            label="New Password"
+            type="password"
+            fullWidth
+            inputProps={{ maxLength: 64 }}
+          />
+
+          {/* Add vertical spacing */}
+          <Box mt={3} />
+
+          <Button
+            type="submit"
+            name="resetPassword"
+            variant="contained"
+            color="primary"
+            sx={{ color: 'white' }}
+            fullWidth
+          >
+            Save New Password
+          </Button>
+        </>
+      )}
+
+{showTextField2 && (
+        <>
+        <div>
+            <Typography align='center'>
+                Are you sure you want to delete your account? This action cannot be undone.
+            </Typography>
+        </div>
+        
+
+          {/* Add vertical spacing */}
+          <Box mt={3} />
+
+          <Grid container spacing={3} justifyContent="center" pt={6}>
+                <Grid item xs={12} sm={6} md={6} lg={6}>
+                    <Button type="submit" name="resetPassword" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
+                        Yes
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} lg={6}>
+                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                        No
+                    </Button>
+                </Grid>
+            </Grid>
+        </>
+      )}
           </div>
         </form>
 
