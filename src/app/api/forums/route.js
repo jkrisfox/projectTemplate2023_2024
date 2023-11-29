@@ -21,7 +21,10 @@ export async function POST(request) {
       postTitle: postTitle,
       postDescription: postDescription,
       authorId: 1, // change this to something more dynamic
-      PostFilters: {
+    };
+
+    if (filterIds && filterIds.length > 0) {
+      postData.PostFilters = {
         create: filterIds.map((id) => ({
           possibleFilter: {
             connect: {
@@ -29,8 +32,8 @@ export async function POST(request) {
             },
           },
         })),
-      },
-    };
+      };
+    }
     console.log(postData);
     let events;
     try {
