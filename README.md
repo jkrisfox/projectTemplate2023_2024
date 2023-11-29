@@ -15,6 +15,7 @@ Make sure the database is migrated.
 ```bash
 npx prisma migrate dev
 ```
+If there is an issue with migrating the database, try to delete the folder "prisma/migrations".
 
 To set up the file with the Google Maps API key, create a file called ".env.local" in the Team3/ directory. 
 The file should contain:
