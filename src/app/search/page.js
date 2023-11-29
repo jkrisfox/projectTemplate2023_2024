@@ -190,6 +190,7 @@ const SearchPage = () => {
                     key={result.id}
                   >
                     <ListingCard
+                      id={result.id}
                       loading={loading}
                       listingId={result.id}
                       title={result.title}

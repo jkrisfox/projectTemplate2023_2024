@@ -19,6 +19,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SchoolIcon from "@mui/icons-material/School";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import moment from "moment"; // Import moment library
+import Link from 'next/link';
 import { doc, deleteDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
 import { db } from "../../firebase/firebaseConfig";
@@ -32,6 +33,7 @@ import FlagIcon from "@mui/icons-material/Flag"; // For reporting
 import VisibilityIcon from "@mui/icons-material/Visibility"; // For tracking
 
 function ListingCard({
+  id,
   loading,
   listingId,
   title,
@@ -250,7 +252,9 @@ function ListingCard({
           flexGrow: 1,
           cursor: "pointer",
         }}
-        onClick={() => {
+        component={Link}
+      href={`/ListingDetails/${id}`}
+      onClick={() => {
           /* navigate to main listings page */
         }}
       >
