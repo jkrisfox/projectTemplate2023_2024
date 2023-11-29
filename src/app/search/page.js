@@ -53,40 +53,46 @@ const SearchPage = () => {
 
   useEffect(() => {
     const searchQuery = searchParams.get("query");
-    console.log("Search query:", searchQuery);
+    // console.log("Search query:", searchQuery);
     if (searchQuery) {
       performSearch(searchQuery);
     }
   }, [searchParams]); // Only re-run the effect if searchParams changes
 
   const performSearch = async (searchTerm) => {
-    console.log("Searching");
     setLoading(true);
-
+  
     try {
       const listingsRef = collection(db, "listings");
       let matches = [];
 
+  
       const querySnapshot = await getDocs(listingsRef);
       querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        // Apply filters here
-        if (passesFilters(data, searchTerm)) {
-          matches.push({ id: doc.id, ...data });
+        try {
+          const data = doc.data();
+          // console.log("Checking document", doc.id);
+          // Apply filters here
+          if (passesFilters(data, searchTerm)) {
+            matches.push({ id: doc.id, ...data });
+          }
+        } catch (error) {
+          console.error("Error processing document", doc.id, error);
         }
       });
-
+  
       // Sort and filter based on additional criteria
       matches = applyAdditionalFilters(matches);
-
-      console.log(matches);
+  
+      // console.log(matches);
       setSearchResults(matches);
     } catch (error) {
       console.error("Error fetching search results: ", error);
     }
-
+  
     setLoading(false);
   };
+  
 
   // Pagination change handler
   const handleChangePage = (event, newPage) => {
@@ -107,12 +113,12 @@ const SearchPage = () => {
       data.category.toLowerCase().includes(lowerCaseSearchTerm) ||
       data.title.toLowerCase().includes(lowerCaseSearchTerm); // Added title check
 
+
     const verifiedMatch =
       !filters.verified || (filters.verified && data.studentVerification);
 
     // Implement location-based matching if necessary
     const locationMatch = true;
-
     return searchMatch && verifiedMatch && locationMatch;
   };
   const applyAdditionalFilters = (results) => {
@@ -190,7 +196,6 @@ const SearchPage = () => {
                     key={result.id}
                   >
                     <ListingCard
-                      id={result.id}
                       loading={loading}
                       listingId={result.id}
                       title={result.title}

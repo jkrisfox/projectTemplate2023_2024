@@ -6,7 +6,7 @@ export default function Signup() {
   return (
     <Button variant="outlined" 
             color="inherit" 
-            href="/Signup"
+            href="/signup"
             sx={{color:'white'}}>Signup</Button>
   );
 }

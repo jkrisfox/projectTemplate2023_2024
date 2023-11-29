@@ -1,14 +1,15 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Allow read access to all documents in the 'listings' collection
+
+    // Match all documents in the 'listings' collection
     match /listings/{listing} {
-    	// Anyone can read listings
+      // Anyone can read listings
       allow read: if true;
-      // Only the seller can write
-      allow write: if request.auth != null
-      						 && request.auth.uid == resource.data.sellerId;
+      // Allow users to create listings if they are authenticated
+      allow create: if request.auth != null;
+      // Only the seller or an admin can write
+      allow write: if request.auth != null && (request.auth.uid == resource.data.sellerId || request.auth.token.admin == true);
     }
     
     match /users/{userId} {

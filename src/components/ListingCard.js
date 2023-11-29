@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Typography,
@@ -18,8 +19,8 @@ import {
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SchoolIcon from "@mui/icons-material/School";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import copy from "copy-to-clipboard";
 import moment from "moment"; // Import moment library
-import Link from 'next/link';
 import { doc, deleteDoc } from "firebase/firestore";
 import IconButton from "@mui/material/IconButton";
 import { db } from "../../firebase/firebaseConfig";
@@ -30,10 +31,11 @@ import ShareIcon from "@mui/icons-material/Share";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { red } from "@mui/material/colors";
 import FlagIcon from "@mui/icons-material/Flag"; // For reporting
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+
 import VisibilityIcon from "@mui/icons-material/Visibility"; // For tracking
 
 function ListingCard({
-  id,
   loading,
   listingId,
   title,
@@ -56,6 +58,11 @@ function ListingCard({
   // State for snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const router = useRouter();
+
+  const handleBoxClick = () => {
+    router.push(`/listing/${listingId}`);
+  };
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -71,6 +78,18 @@ function ListingCard({
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const handleCopyListingId = () => {
+    // Copy the listingId to the clipboard
+    copy(listingId);
+
+    // Update snackbar message and open the snackbar
+    setSnackbarMessage("Listing ID copied to clipboard.");
+    setSnackbarOpen(true);
+
+    // Close the menu
+    handleCloseMenu();
   };
 
   const handleDeleteListing = async (listingId) => {
@@ -192,6 +211,7 @@ function ListingCard({
         marginBottom: 2,
         flexDirection: "column",
         display: "flex",
+        backgroundColor: "white",
       }}
     >
       {/* Row for the menu icon */}
@@ -224,6 +244,11 @@ function ListingCard({
             <ShareIcon fontSize="small" sx={{ marginRight: 1 }} /> Copy Link to
             Share
           </MenuItem>
+          <MenuItem onClick={handleCopyListingId}>
+            <FileCopyIcon fontSize="small" sx={{ marginRight: 1 }} /> Copy
+            Listing ID
+          </MenuItem>
+
           {isAuthenticated && isAdmin && (
             <MenuItem
               onClick={() => handleDeleteListing(listingId)}
@@ -252,11 +277,7 @@ function ListingCard({
           flexGrow: 1,
           cursor: "pointer",
         }}
-        component={Link}
-      href={`/ListingDetails/${id}`}
-      onClick={() => {
-          /* navigate to main listings page */
-        }}
+        onClick={handleBoxClick}
       >
         <Box
           sx={{
