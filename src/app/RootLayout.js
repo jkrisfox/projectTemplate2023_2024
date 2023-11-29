@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import Footer from "./Footer";
+import React, { useState, useEffect } from "react";
+import Footer from "../components/Footer";
 import Searchbar from "../components/Searchbar";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../styles/theme";
@@ -14,17 +14,20 @@ import {
   Container,
   Toolbar,
   Typography,
-  Stack,
+  Snackbar,
+  Alert,
   IconButton,
   Menu,
   MenuItem,
   Button,
 } from "@mui/material";
-import { useAuth } from "./AuthProvider";
+import { useAuth, isLoggedIn } from "./AuthProvider";
 import { useRouter } from "next/navigation";
 import AdbIcon from "@mui/icons-material/Adb";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import logo from "../../public/logo.svg";
+import firebase from "firebase/app";
+import { auth } from "../../firebase/firebaseConfig";
 
 // Configure sans font
 const sans = localFont({
@@ -37,8 +40,10 @@ export default function RootLayout({ children, title }) {
   const { isLoggedIn, getUser, signOut } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
-
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const router = useRouter();
+  const firebaseAuth = useAuth();
+  const isFirebaseLoggedIn = firebaseAuth.currentUser !== null;
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,6 +59,17 @@ export default function RootLayout({ children, title }) {
     router.push(`/profile/${userId}`);
   };
 
+  const handleCreateListingClick = () => {
+    console.log("Context isLoggedIn:", isLoggedIn());
+    console.log("Firebase isLoggedIn:", isFirebaseLoggedIn);
+
+    if (isFirebaseLoggedIn) {
+      router.push("/create-listing");
+    } else {
+      router.push("/login");
+    }
+  };
+
   const renderMenu = () => (
     <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
       {isLoggedIn() ? (
@@ -64,6 +80,8 @@ export default function RootLayout({ children, title }) {
             onClick={() => {
               handleMenuClose();
               signOut();
+              router.push("/"); // Redirect to the home page after logout
+              setSnackbar({ open: true, message: "Successfully logged out" }); // Show Snackbar
             }}
           >
             Log Out
@@ -81,14 +99,6 @@ export default function RootLayout({ children, title }) {
       )}
     </Menu>
   );
-
-  const handleCreateListingClick = () => {
-    if (isLoggedIn()) {
-      router.push("/create-listing");
-    } else {
-      router.push("/signup");
-    }
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -203,6 +213,19 @@ export default function RootLayout({ children, title }) {
             <Box component="footer" sx={{ height: "100vh" }}>
               <Footer />
             </Box>
+            <Snackbar
+              open={snackbar.open}
+              autoHideDuration={6000}
+              onClose={() => setSnackbar({ ...snackbar, open: false })}
+            >
+              <Alert
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                severity="success"
+                sx={{ width: "100%" }}
+              >
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
           </Box>
         </main>
       </CssBaseline>

@@ -25,7 +25,7 @@ function HomeSubAction() {
           </Stack>
         </Grid>
         <Grid item xs={4} display="flex" justifyContent="flex-end">
-          <Button variant="contained" color="primary" sx={{color:'white', width:'200px'}}>
+          <Button href='create-listing' variant="contained" color="primary" sx={{color:'white', width:'200px'}}>
             Start now
           </Button>
         </Grid>

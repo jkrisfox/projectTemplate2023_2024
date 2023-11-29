@@ -18,7 +18,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../AuthProvider";
 import { sendEmailVerification } from "firebase/auth";
 import { getUser } from "@/lib/firebaseUtils";
@@ -55,10 +55,12 @@ export default function Profile({ params }) {
     "https://www.calpoly.edu/sites/calpoly.edu/files/inline-images/20210403-SpringScenics-JoeJ0020.jpg"
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control the dialog's visibility
+  // State variable to track successful login
+  const [isLoginSuccess, setIsLoginSuccess] = useState(false);
 
   // Handlers for menu
   const handleClickMenu = (event) => {
-    console.log(event.currentTarget); // This will log the element that was clicked
+    // console.log(event.currentTarget); // This will log the element that was clicked
     setAnchorEl(event.currentTarget);
   };
 
@@ -72,10 +74,22 @@ export default function Profile({ params }) {
   const { getUser: getCurrentUser, isLoggedIn, isAdmin } = useAuth();
   const router = useRouter();
 
+  // Redirect to the home screen after 5 seconds
+  useEffect(() => {
+    if (isLoginSuccess) {
+      const redirectTimer = setTimeout(() => {
+        router.push(`/home`); // Replace with your home screen URL
+      }, 5000); // 5 seconds
+
+      // Cleanup the timer to avoid memory leaks
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [isLoginSuccess, router]);
+
   const userId = params.id;
 
   const handleTabChange = (event, newValue) => {
-    console.log(newValue);
+    // console.log(newValue);
     setCurrentTab(newValue);
   };
 
@@ -144,8 +158,8 @@ export default function Profile({ params }) {
           checkAdminStatus();
         }
 
-        console.log(userData);
-        console.log(user);
+        // console.log(userData);
+        // console.log(user);
 
         setUser(userData);
         setIsLoading(false);
@@ -158,7 +172,23 @@ export default function Profile({ params }) {
 
   if (!isLoading) {
     if (!user) {
-      return <Typography>User not found!</Typography>;
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "20px", // Add padding to make it more apparent
+            border: "2px solid #ff0000", // Add a red border to highlight it
+            borderRadius: "8px", // Add rounded corners
+            backgroundColor: "#ffeeee", // Add a light background color
+          }}
+        >
+          <Typography variant="h6" color="error" margin={30}>
+            User not found!
+          </Typography>
+        </Box>
+      );
     }
 
     if (user.name == "") {
@@ -167,14 +197,50 @@ export default function Profile({ params }) {
         router.push(`/setup`);
         return;
       }
-
-      return <Typography>User has not set up their page yet!</Typography>;
+      return (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "20px", // Add padding to make it more apparent
+            border: "2px solid #ff0000", // Add a red border to highlight it
+            borderRadius: "8px", // Add rounded corners
+            backgroundColor: "#ffeeee", // Add a light background color
+          }}
+        >
+          <Typography variant="h6" color="error" margin={30}>
+            User has not set up their page yet!
+          </Typography>
+        </Box>
+      );
     }
+  }
+
+  // Display a success message after successful login
+  if (isLoginSuccess) {
+    return (
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        <Typography variant="h4" gutterBottom>
+          You are now logged in!
+        </Typography>
+        <Typography>
+          You will be redirected to the home screen in 5 seconds...
+        </Typography>
+      </Box>
+    );
   }
 
   return (
     <Box
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
     >
       {/* Hero Section */}
       {!isLoading && (
@@ -196,7 +262,7 @@ export default function Profile({ params }) {
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
       {/* Profile Info */}
       {isLoading ? (
-        <CircularProgress />
+        <CircularProgress sx={{ height: "100vh" }} />
       ) : (
         <Grid
           container
@@ -217,7 +283,11 @@ export default function Profile({ params }) {
           <Grid item>
             <Typography variant="h4" gutterBottom>
               {user.name}
-              {user.isVerified && <Tooltip title='The user is a verified student.'><VerifiedIcon color="primary" /></Tooltip>}
+              {user.isVerified && (
+                <Tooltip title="The user is a verified student.">
+                  <VerifiedIcon color="primary" />
+                </Tooltip>
+              )}
               {user.isAdmin && <AdminBadge />}{" "}
               {/* Display the Admin badge if user is an admin */}
             </Typography>
@@ -242,20 +312,20 @@ export default function Profile({ params }) {
               onClose={handleCloseMenu}
             >
               {/* {isAdminStatus && ( */}
-                <>
-                  {/* <MenuItem
+              <>
+                {/* <MenuItem
                     onClick={() => handleUserActions("ban")}
                     sx={{ color: "red" }}
                   >
                     <BanIcon /> Restrict User Actions
                   </MenuItem> */}
-                  <MenuItem
-                    onClick={() => handleUserActions("delete")}
-                    sx={{ color: "red" }}
-                  >
-                    <DeleteIcon /> Delete Account
-                  </MenuItem>
-                </>
+                <MenuItem
+                  onClick={() => handleUserActions("delete")}
+                  sx={{ color: "red" }}
+                >
+                  <DeleteIcon /> Delete Account
+                </MenuItem>
+              </>
               {/* )} */}
               <MenuItem onClick={() => handleUserActions("report")}>
                 <ReportIcon /> Report User

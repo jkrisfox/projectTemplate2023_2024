@@ -1,13 +1,19 @@
 "use client";
-
 import { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Alert from "@mui/material/Alert";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Button,
+  TextField,
+  Alert,
+  Paper,
+  Typography,
+  Link,
+} from "@mui/material";
 import { auth } from "../../../firebase/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import logo from "../../../public/logo.svg";
 
 export default function Signin() {
   const [formValues, setFormValues] = useState({ email: "", password: "" });
@@ -27,7 +33,7 @@ export default function Signin() {
 
     await signInWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        const userid = res.user.uid
+        const userid = res.user.uid;
         router.push("/profile/" + userid);
       })
       .catch((err) => {
@@ -43,52 +49,94 @@ export default function Signin() {
 
   return (
     <>
-      <Box sx={{ width: 0.5, margin: "auto", textAlign: "center", height: '100vh' }}>
-        <Box
-          component="img"
-          alt="SLO Marketplace Logo"
-          src="/logo-192x192.png"
+      <Grid container component="main" sx={{ height: "100vh" }}>
+        {/* You can keep the background image or remove it */}
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage:
+              "url(https://source.unsplash.com/random?wallpapers)",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: (t) =>
+              t.palette.mode === "light"
+                ? t.palette.grey[50]
+                : t.palette.grey[900],
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         />
-        <h1>Log In</h1>
-        <form>
-          {error ? (
-            <Alert severity="error">
-              There was an issue signing in! Check email and password.
-            </Alert>
-          ) : null}
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              width: 0.5,
+              margin: "auto",
+              textAlign: "center",
+              height: "100vh",
+            }}
+          >
+            <img
+              src={logo}
+              alt="Logo"
+              style={{ width: "300px" }} // Adjust the height as needed
+            />
+            <Typography variant="h5" pb={6}>
+              <strong>Log into your account.</strong>
+            </Typography>
+            <form>
+              {error ? (
+                <Alert severity="error">
+                  There was an issue signing in! Check email and password.
+                </Alert>
+              ) : null}
 
-          <TextField
-            autoFocus
-            margin="dense"
-            id="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            value={formValues.email}
-            onChange={(e) =>
-              handleChange({ field: "email", value: e.target.value })
-            }
-            variant="standard"
-            error={formValues.email?.error}
-          />
-          <br></br>
-          <TextField
-            margin="dense"
-            id="password"
-            label="Password"
-            type="password"
-            fullWidth
-            value={formValues.password}
-            onChange={(e) =>
-              handleChange({ field: "password", value: e.target.value })
-            }
-            variant="standard"
-          />
-          <br></br>
-          <br></br>
-        </form>
-        <Button onClick={(e) => handleSignin(e)}>Log In</Button>
-      </Box>
+              <TextField
+                variant="outlined"
+                autoFocus
+                margin="dense"
+                id="email"
+                label="Email Address"
+                type="email"
+                fullWidth
+                value={formValues.email}
+                onChange={(e) =>
+                  handleChange({ field: "email", value: e.target.value })
+                }
+                error={formValues.email?.error}
+              />
+              <br></br>
+              <TextField
+                variant="outlined"
+                margin="dense"
+                id="password"
+                label="Password"
+                type="password"
+                fullWidth
+                value={formValues.password}
+                onChange={(e) =>
+                  handleChange({ field: "password", value: e.target.value })
+                }
+              />
+              <br></br>
+              <br></br>
+              {/* Add the "Don't have an account?" link */}
+              <Typography variant="body2">
+                Don't have an account? <Link href="/signup">Create one</Link>
+              </Typography>
+            </form>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "20px" }}
+              onClick={(e) => handleSignin(e)}
+            >
+              Login
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
     </>
   );
 }

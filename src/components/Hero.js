@@ -126,6 +126,7 @@ function Hero() {
                   variant="contained"
                   color="primary"
                   sx={{ color: "white" }}
+                  href="create-listing"
                 >
                   Get started now
                 </Button>
