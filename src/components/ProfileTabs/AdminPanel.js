@@ -15,6 +15,8 @@ import {
   ListItemSecondaryAction,
   IconButton,
   Pagination,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
@@ -39,6 +41,9 @@ const AdminPanel = () => {
   const [userPage, setUserPage] = useState(1);
   const [listingPage, setListingPage] = useState(1);
   const itemsPerPage = 5; // Set items per page for pagination
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertType, setAlertType] = useState("success"); // New state for alert type
+  const [alertMessage, setAlertMessage] = useState(""); // New state for alert message
 
   useEffect(() => {
     const fetchUsersAndListings = async () => {
@@ -69,6 +74,13 @@ const AdminPanel = () => {
 
     fetchUsersAndListings();
   }, []);
+
+  const handleCloseAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
 
   const handleSearchUser = async () => {
     setIsLoading(true);
@@ -126,8 +138,14 @@ const AdminPanel = () => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { banned: true });
+      setOpenAlert(true);
+      setAlertType("success");
+      setAlertMessage("User banned successfully!");
     } catch (error) {
       console.error("Error banning user: ", error);
+      setOpenAlert(true);
+      setAlertType("error");
+      setAlertMessage("Failed to ban user.");
     }
   };
 
@@ -135,8 +153,14 @@ const AdminPanel = () => {
     try {
       const listingRef = doc(db, "listings", listingId);
       await deleteDoc(listingRef);
+      setOpenAlert(true);
+      setAlertType("success");
+      setAlertMessage("Listing deleted successfully!");
     } catch (error) {
       console.error("Error deleting listing: ", error);
+      setOpenAlert(true);
+      setAlertType("error");
+      setAlertMessage("Failed to delete listing.");
     }
   };
 
@@ -176,15 +200,15 @@ const AdminPanel = () => {
                 <ListItem key={user.id}>
                   <ListItemText primary={user.name} />
                   <ListItemSecondaryAction>
-                    <Tooltip title="Restrict User">
+                    {/* <Tooltip title="Restrict User">
                       <IconButton
                         edge="end"
                         onClick={() => handleRestrictUser(user.id)}
                       >
                         <LockIcon />
                       </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
+                    </Tooltip> */}
+                    <Tooltip title="Delete User">
                       <IconButton
                         edge="end"
                         onClick={() => handleDeleteListing(listing.id)}
@@ -245,6 +269,20 @@ const AdminPanel = () => {
           />
         </Grid>
       </Grid>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity={alertType}
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

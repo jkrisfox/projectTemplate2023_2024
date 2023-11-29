@@ -243,12 +243,12 @@ export default function Profile({ params }) {
             >
               {/* {isAdminStatus && ( */}
                 <>
-                  <MenuItem
+                  {/* <MenuItem
                     onClick={() => handleUserActions("ban")}
                     sx={{ color: "red" }}
                   >
                     <BanIcon /> Restrict User Actions
-                  </MenuItem>
+                  </MenuItem> */}
                   <MenuItem
                     onClick={() => handleUserActions("delete")}
                     sx={{ color: "red" }}
