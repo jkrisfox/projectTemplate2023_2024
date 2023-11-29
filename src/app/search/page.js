@@ -129,20 +129,20 @@ const SearchPage = () => {
     }
 
     // Apply radius-based filtering if location and radius are available and radius is set
-  if (filters.userLocation && filters.radius) {
-    results = results.filter((item) => {
-      const distance = getDistanceFromLatLonInMiles(
-        filters.userLocation.latitude,
-        filters.userLocation.longitude,
-        item.location.latitude, // Assuming item has a location object with latitude and longitude
-        item.location.longitude
-      );
-      return distance <= parseFloat(filters.radius);
-    });
-  }
+    if (filters.userLocation && filters.radius) {
+      results = results.filter((item) => {
+        const distance = getDistanceFromLatLonInMiles(
+          filters.userLocation.latitude,
+          filters.userLocation.longitude,
+          item.location.latitude, // Assuming item has a location object with latitude and longitude
+          item.location.longitude
+        );
+        return distance <= parseFloat(filters.radius);
+      });
+    }
 
-  return results;
-};
+    return results;
+  };
   const renderSearchResults = () => {
     if (loading) {
       return (
@@ -170,7 +170,7 @@ const SearchPage = () => {
       );
     } else {
       return (
-        <Box>
+        <Box p={0}>
           <Grid container spacing={2}>
             {searchResults
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
