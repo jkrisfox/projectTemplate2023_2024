@@ -19,6 +19,10 @@ export default function Review() {
   const pathname = usePathname();
 
 
+
+  const [seasons, setSeasons] = useState([]);
+  const [selectedSeason, setSelectedSeason] = useState('');
+
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value, 10));
   };
@@ -33,10 +37,12 @@ export default function Review() {
     });
   };
 
+  const handleSeasonChange = (event) => {
+    setSelectedSeason(event.target.value);
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
 
     // Check if a review has already been submitted and marker is placed
     if (reviewSubmitted) {
@@ -47,14 +53,13 @@ export default function Review() {
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
-
-
-      const seasonName = "Thanksgiving 2023";  // TODO: get actual season instead of hardcoding
+      console.log('Selected season:', selectedSeason);
+      
       const placeId = markerPlaceId;
 
 
       fetch("api/reviews", { method: "post", body: JSON.stringify(
-        {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasonName, score: rating}) } )
+        {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: selectedSeason, score: rating}) } )
           .then((response) => {
             console.log("Sent POST request for review of", placeId);
             console.log("post response:", response);
@@ -85,6 +90,22 @@ export default function Review() {
   };
 
 
+  const fetchSeasonsAndPopulateSelect = async () => {
+    try {
+      const response = await fetch("api/seasons", { method: "get" });
+      const data = await response.json();
+      console.log("Fetched data:", data);
+      setSeasons(data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSeasonsAndPopulateSelect();
+  }, []);
+
+
   return (
     <>
       <h1>Leave a Review</h1>
@@ -104,6 +125,16 @@ export default function Review() {
                 min="1"
                 max="10"
               />
+
+              <select name="season" id="season" onChange={handleSeasonChange} value={selectedSeason}>
+              <option value=""> </option>
+                {seasons.map(season => (
+                  <option key={season.id} value={season.name}>
+                    {season.name}
+                  </option>
+                ))}
+              </select>
+              
             </label>
             {markerAddress && <p>Selected Address: {markerAddress}</p>}
             <button type="submit">Submit Review</button>

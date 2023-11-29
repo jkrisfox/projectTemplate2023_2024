@@ -20,13 +20,14 @@ export async function GET(request) {
     return NextResponse.json({error: error}, {status: 500}, {data: request});
   }
 
-  // get optional fields from data
-  const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
-  const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
+  // // get optional fields from data
+  // const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
+  // const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
+  const {placeId, seasonName} = data;
   // convert to ids
   const listingId = getListingId(placeId);
   const seasonId = getSeasonId(seasonName);
-
+  
   const reviews = await prisma.review.findMany({
     where: {
       ownerId: {
@@ -107,6 +108,7 @@ async function getSeasonId(seasonName) {
 
 
 // request should have placeId, latitude, longitude, seasonName, and score
+// (seasonName can be the Season's name or id)
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
