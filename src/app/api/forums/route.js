@@ -15,14 +15,14 @@ export async function POST(request) {
   if (true) {
     // if user is logged in, then create the event if needed
     const responseData = await request.json();
-    const { postTitle, postDescription, filterIds } = responseData;
+    const { postTitle, postDescription, filterIds=null } = responseData;
     // create data layout for post creation
     const postData = {
       postTitle: postTitle,
       postDescription: postDescription,
       authorId: 1, // change this to something more dynamic
     };
-
+    console.log("filterId", filterIds)
     if (filterIds && filterIds.length > 0) {
       postData.PostFilters = {
         create: filterIds.map((id) => ({
@@ -94,9 +94,10 @@ export async function GET(request) {
             JOIN "PossibleFilters" ON "possibleFilterId" = "PossibleFilters"."id"
             GROUP BY "PostFilters"."postId"
           )
-        SELECT "total_votes".*, "filters"."filters"
+        SELECT "total_votes".*, "filters"."filters", "User"."name"
         FROM "total_votes"
         LEFT JOIN "filters" ON "total_votes"."id" = "filters"."postId"
+        JOIN "User" ON "User"."id" = "total_votes"."authorId"
       `;
     } catch (e) {
       console.log(e.message);
