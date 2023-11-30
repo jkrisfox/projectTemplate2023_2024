@@ -1,41 +1,62 @@
 "use client";
 
 import Image from "next/image";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Grid, Button, Link, Paper } from "@mui/material";
 
 export default function About() {
   return (
-    <>
-      <Box padding="40px">
-        <div align="center">
-          <Image
-            src="/college-student-packed.jpg"
-            alt="Image of stuckents packing"
-            width={750}
-            height={500}
-          />
-        </div>
-        <h1 style={{ textAlign: "center" }}>
-          <strong>About Us</strong>
-        </h1>
-        <p style={{ textAlign: "center" }}>
-          Have you ever moved out of your dorm or apartment and realized that
-          you're throwing away a lot of stuff that can be reused? Have you tried
-          to give away your stuff but struggled finding someone that wants it?
-          SLOMarketplace is here to help! Initially though up by Jadon,
-          SLOMarketpalce serves as a digital market platform tailored
-          specifically for the student body of California Polytechnic State
-          University, San Luis Obispo. We aim to facilitate peer-to-peer
-          transactions, primarily focusing on the trade and giveaway of
-          furnishings, home appliances, decoratives, and similar material
-          assets. Designed with a community-centric ethos, the platform aspires
-          not only to simplify asset exchange but also to foster a tightly-knit
-          network of trust and cooperation among its user base. Sign up and
-          connect with other Cal Poly students that are in the same position.
-          Look for students that want your stuff or browse what other students
-          are giving away!
-        </p>
-      </Box>
-    </>
+    <Box sx={{ flexGrow: 1, p: 12, height: "100vh" }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} md={6}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src="/college-student-packed.jpg"
+              alt="Image of students packing"
+              layout="responsive"
+              width={750}
+              height={750}
+            />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Typography
+            variant="h5"
+            component="div"
+            color="secondary.main"
+            gutterBottom
+          >
+            <strong>BUY · SELL</strong>
+          </Typography>
+          <Typography
+            variant="h3"
+            component="div"
+            sx={{ fontWeight: "bold", mb: 4 }}
+          >
+            The easiest way to buy and sell undesired items and products
+          </Typography>
+          <Typography variant="subtitle1" component="div" sx={{ mb: 4 }}>
+            SLOMarket: A digital marketplace by Cal Poly students, for Cal Poly
+            students, where your old stuff finds new homes and your next
+            treasure is just a click away.
+          </Typography>
+          <Button href="create-listing" variant="contained" sx={{ mb: 2 }}>
+            Get Started
+          </Button>
+          <Typography variant="body2" component="div">
+            Already a member?{" "}
+            <Link href="/signin" underline="hover">
+              Sign in
+            </Link>
+          </Typography>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
