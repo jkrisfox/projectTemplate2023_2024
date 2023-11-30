@@ -189,16 +189,3 @@ ALTER TABLE "_Attendee" ADD CONSTRAINT "_Attendee_A_fkey" FOREIGN KEY ("A") REFE
 
 -- AddForeignKey
 ALTER TABLE "_Attendee" ADD CONSTRAINT "_Attendee_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
-INSERT INTO "Equipments" ("equipmentName", "short_description", "long_description", "image_path") 
-VALUES 
-('Treadmill', 'Compact Treadmill', 'A high-quality, space-saving treadmill for home use', '/images/treadmill.jpg'),
-('Exercise Bike', 'Stationary Bike', 'Durable and comfortable stationary exercise bike', '/images/exercise_bike.jpg'),
-('Dumbbells', 'Set of Dumbbells', 'A set of adjustable dumbbells for strength training', '/images/dumbbells.jpg'),
-('Yoga Mat', 'Eco-friendly Yoga Mat', 'Non-slip, eco-friendly yoga mat for all types of yoga', '/images/yoga_mat.jpg'),
-('Resistance Bands', 'Strength Bands', 'A set of resistance bands of varying strengths for flexibility and strength workouts', '/images/resistance_bands.jpg'),
-('Kettlebell', 'Cast Iron Kettlebell', 'A heavy-duty cast iron kettlebell for strength training', '/images/kettlebell.jpg'),
-('Rowing Machine', 'Indoor Rower', 'A smooth and quiet indoor rowing machine', '/images/rowing_machine.jpg'),
-('Elliptical Trainer', 'Compact Elliptical', 'Space-efficient elliptical trainer for low-impact cardio', '/images/elliptical.jpg'),
-('Foam Roller', 'Muscle Roller', 'High-density foam roller for muscle recovery and flexibility', '/images/foam_roller.jpg'),
-('Punching Bag', 'Heavy Punching Bag', 'Durable heavy bag for boxing and martial arts training', '/images/punching_bag.jpg');
