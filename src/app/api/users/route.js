@@ -65,7 +65,7 @@ export async function PUT(request) {
       name, shortBio, status, ProfileImage
     };
     try {
-      updatedEvent = await prisma.Event.update({
+      updatedEvent = await prisma.User.update({
         where: {
           id: userId,
         },
