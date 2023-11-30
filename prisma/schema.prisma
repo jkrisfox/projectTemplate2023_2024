@@ -35,7 +35,7 @@ model User {
   gymFrequency         String?
   verified             Boolean?
   shortBio             String?
-  ProfileImage         Bytes?
+  ProfileImage         String?
   initiatedFriendships Friendship[]    @relation("FriendshipInitiator")
   receivedFriendships  Friendship[]    @relation("FriendshipRecipient")
   Interest             Interest[]
