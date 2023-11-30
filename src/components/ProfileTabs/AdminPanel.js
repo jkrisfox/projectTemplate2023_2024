@@ -181,7 +181,8 @@ const AdminPanel = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Autocomplete
-            options={users.map((option) => option.name)}
+            options={users.map((user) => user.name)} // Make sure users is an array
+            getOptionLabel={(option) => option} // Defines how to get the option label from the option
             value={searchUser}
             onChange={(event, newValue) => {
               setSearchUser(newValue);
@@ -190,6 +191,7 @@ const AdminPanel = () => {
               <TextField {...params} label="Search User" margin="normal" />
             )}
           />
+
           <Button startIcon={<SearchIcon />} onClick={handleSearchUser}>
             Search
           </Button>
@@ -228,7 +230,8 @@ const AdminPanel = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Autocomplete
-            options={listings.map((option) => option.title)}
+            options={listings.map((listing) => listing.title)} // Make sure listings is an array
+            getOptionLabel={(option) => option} // Defines how to get the option label from the option
             value={searchTitle}
             onChange={(event, newValue) => {
               setSearchTitle(newValue);
@@ -237,6 +240,7 @@ const AdminPanel = () => {
               <TextField {...params} label="Search Listing" margin="normal" />
             )}
           />
+
           <Button startIcon={<SearchIcon />} onClick={handleSearchListing}>
             Search
           </Button>
