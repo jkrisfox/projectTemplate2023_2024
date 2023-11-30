@@ -124,39 +124,54 @@ export default function CreateListing() {
 
   const handleSubmit = async () => {
     try {
-      // Ensure that router is defined
-      if (!router) {
-        console.error("Router is not defined");
+      // Ensure that router and user are defined
+      if (!router || !isFirebaseLoggedIn) {
+        console.error("Router is not defined or user is not logged in");
         return;
       }
 
       const user = getUser();
-      const listingImageURL = listingImage.length
-        ? await uploadImage(user.uid, listingImage[0])
-        : "";
-      const docData = {
+      if (!user || !user.uid) {
+        console.error("No user found");
+        return;
+      }
+      const userId = user.uid; // Ensure you have a uid property on the user object
+
+      // Include the userId in the listing data
+      const listingData = {
         title: listing.title,
         description: listing.description,
         price: listing.price,
         location: listing.location,
-        images: [listingImageURL],
+        images: [], // This will be populated with URLs after image upload
         createdAt: Timestamp.fromDate(new Date()),
-        sellerId: user.uid,
+        sellerId: userId, // Include the user's ID as the sellerId
       };
 
-      const docRef = await addDoc(collection(db, "listings"), docData);
+      // Handle image upload if there is an image to upload
+      if (listingImage.length) {
+        const imageUploadResponse = await uploadImage(
+          userId,
+          listingImage[0].file
+        );
+        listingData.images.push(imageUploadResponse); // Add image URL to listing data
+      }
+
+      // Add the listing to the database
+      const docRef = await addDoc(collection(db, "listings"), listingData);
 
       setSnackbar({ open: true, message: "Listing created successfully!" });
       setNewListingId(docRef.id);
       setListingCreated(true);
 
-      // Use router with the check
+      // Redirect to the newly created listing page
       router.push(`/listing/${docRef.id}`);
     } catch (err) {
       console.log(err);
       setSnackbar({ open: true, message: err.message });
     }
   };
+
   const handleChangeListingImage = () => {
     setIsListingImageDialogOpen(true);
   };

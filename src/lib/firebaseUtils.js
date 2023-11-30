@@ -3,49 +3,29 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export async function uploadImage(userId, image) {
-  if (!image || !image.name) {
-    throw new Error("Invalid image file");
-  }
   if (image.size > 5000000) {
-    const error = new Error("Image cannot be more than 5 MB large");
-    error.code = 413;
-    throw error;
+    throw new Error("Image cannot be more than 5 MB large");
   }
 
-  if (!image.name.match(/^[\w -]+.(jpeg|jpg|png)$/i)) {
-    const error = new Error(
-      "Image has an invalid extension. Allowed: jpg, png"
-    );
-    error.code = 400;
-    throw error;
+  if (!/\.(jpeg|jpg|png)$/i.test(image.name)) {
+    throw new Error("Image has an invalid extension. Allowed: jpg, png");
   }
 
   // Image name is a random 9 digit number
-  const imageName =
-    Math.floor(100000000 + Math.random() * 900000000) +
-    "." +
-    image.name.split(".").pop();
+  const imageName = `${Math.floor(100000000 + Math.random() * 900000000)}.${image.name.split(".").pop()}`;
   const filePath = `images/${userId}/${imageName}`;
   const newImageRef = ref(storage, filePath);
-  let imageURL;
 
-  await uploadBytes(newImageRef, image)
-    .then(async () => {
-      await getDownloadURL(newImageRef)
-        .then((res) => {
-          imageURL = res;
-        })
-        .catch((err) => {
-          throw err;
-        });
-    })
-    .catch((err) => {
-      throw err;
-    });
-
-  return imageURL;
+  try {
+    await uploadBytes(newImageRef, image);
+    const imageURL = await getDownloadURL(newImageRef);
+    return imageURL;
+  } catch (err) {
+    // Handle or rethrow the error as appropriate
+    console.error("Error uploading image:", err);
+    throw err;
+  }
 }
-
 export async function createUser(userId, email) {
   const userRef = doc(db, "users", userId);
   const contactRef = doc(db, "users", userId, "private", "contact");
