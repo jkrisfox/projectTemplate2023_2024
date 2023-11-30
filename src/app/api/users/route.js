@@ -57,12 +57,12 @@ export async function PUT(request) {
   const loggedInData = await checkLoggedIn();
   if (loggedInData.loggedIn) {
     const responseData = await request.json();
-    const userId = loggedInData.id
+    const userId = loggedInData.user.id;
     const {
-      name, shortBio, photo, status, ProfileImage
+      name, shortBio, status, ProfileImage
     } = responseData;
     const eventData = {
-      name, shortBio, photo, status, ProfileImage
+      name, shortBio, status, ProfileImage
     };
     try {
       updatedEvent = await prisma.Event.update({
