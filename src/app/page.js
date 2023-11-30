@@ -8,6 +8,7 @@ import SantaSleigh from 'src/app/SantaSleigh';
 import homeStyle from 'src/app/homestyle.module.css'
 
 const MyMapComponent = () => {
+  
   const [map, setMap] = useState(null);
   const [rating, setRating] = useState(0);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -23,28 +24,6 @@ const MyMapComponent = () => {
   const toggleSnowballs = () => {
     setShowSnowballs((prevShow) => !prevShow);
   };
-
-  useEffect(() => {
-    // Make sure the Google Maps API is loaded before trying to create a map
-    if (window.google && window.google.maps) {
-      const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 35.299878, lng: -120.662337 },
-        zoom: 14,
-      });
-
-      // Add click event listener to the map
-      mapInstance.addListener('click', (event) => {
-        // Remove the previous marker if it exists
-        if (markerRef.current) {
-          markerRef.current.setMap(null);
-        }
-        // Place a new marker
-        placeMarker(event.latLng, mapInstance);
-      });
-
-      setMap(mapInstance);
-    }
-  }, []);
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -65,6 +44,14 @@ const MyMapComponent = () => {
     onMarkerPlaced(newMarker.getPosition().toJSON());
     // Update the marker ref
     markerRef.current = newMarker;
+  };
+
+  const placeMarkerStatic = (location, mapInstance) => {
+    console.log("received location: ", location);
+    new window.google.maps.Marker({
+      position: location,
+      map: mapInstance,
+    });
   };
 
   const onMarkerPlaced = (position) => {
@@ -89,10 +76,6 @@ const MyMapComponent = () => {
     if (markerRef.current) {
       markerRef.current.setMap(null);
     }
-  };
-
-  const handleSeasonChange = (event) => {
-    setSelectedSeason(event.target.value);
   };
 
   const handleSubmit = (event) => {
@@ -153,14 +136,81 @@ const MyMapComponent = () => {
     }
   };
 
+  const fetchReviews = async (mapInstance) => {
+    try {
+      // Fetch reviews
+      const response = await fetch("api/reviews", { method: "get" });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch reviews. Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log("Fetched reviews data:", data);
+  
+      // Store longitude and latitude information for each item
+      
+  
+      // Fetch individual data for each listing ID
+      for (const item of data) {
+        const individualResponse = await fetch(`api/listings/${item.listingId}`, { method: "get" });
+  
+        if (!individualResponse.ok) {
+          console.error(`Failed to fetch data for item with ID ${item.listingId}. Status: ${individualResponse.status}`);
+          continue; // Skip to the next iteration in case of an error
+        }
+  
+        const individualData = await individualResponse.json();
+        console.log(`Fetched data for item with ID ${item.listingId}:`, individualData);
+        
+        console.log("lat: ", individualData.latitude, "lng: ", individualData.longitude);
+
+        const marker = new google.maps.Marker({
+          position: {
+            lat: parseFloat(individualData.latitude),
+            lng: parseFloat(individualData.longitude),
+          },
+          map: mapInstance,
+          // icon: {
+          //   url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', // URL to a blue marker icon
+          // },
+        });
+      }
+  
+      // Do something with the locations array, for example:
+      console.log("Stored locations:", locations);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
+
   useEffect(() => {
+    // Make sure the Google Maps API is loaded before trying to create a map
+      const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
+        center: { lat: 35.299878, lng: -120.662337 },
+        zoom: 14,
+      });
+
+      // Add click event listener to the map
+      mapInstance.addListener('click', (event) => {
+        // Remove the previous marker if it exists
+        if (markerRef.current) {
+          markerRef.current.setMap(null);
+        }
+        // Place a new marker
+        placeMarker(event.latLng, mapInstance);
+      });
+
+      setMap(mapInstance);
+
     fetchSeasonsAndPopulateSelect();
+    fetchReviews(mapInstance);
   }, []);
 
   return (
     <>
-  {/* <div className={`${homeStyle.homeStyle} pageContainer`}> */}
-   {showSnowballs && <ChristmasSnowfall /> } {/* Add your FallingSnowballs component */}
+      {/* <div className={`${homeStyle.homeStyle} pageContainer`}> */}
+      {showSnowballs && <ChristmasSnowfall /> } {/* Add your FallingSnowballs component */}
       <button onClick={toggleSnowballs}>{showSnowballs ? 'Hide Snowballs' : 'Show Snowballs'}</button>
       <h1>{reviewSubmitted ? 'Review Submitted!' : 'Find or Pin a Location!'}</h1>
       <div>
@@ -184,14 +234,16 @@ const MyMapComponent = () => {
             {markerAddress && <p>Selected Address: {markerAddress}</p>}
             {seasons.name && <p>Season: {seasons.name}</p>}
             <button type="submit">Submit Review</button>
-          </form>
-        )}
-        <button onClick={handleBackToHomeClick}>Back to Home</button>
+            </form>
+          )}
+          <button onClick={handleBackToHomeClick}>Back to Home</button>
       </div>
       { /* </div> */ }
     </>
   );
+
 };
+          
 
 const MyApp = () => (
   <Wrapper apiKey={process.env.NEXT_PUBLIC_MAPS_KEY} onLoad={() => console.log('Google Maps API loaded successfully.')}>

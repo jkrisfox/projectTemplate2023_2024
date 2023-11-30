@@ -11,13 +11,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
 // basic GET function. 
-export async function GET(request)
-{
-    console.log("input: ", request);
+export async function GET(request, { params })
+{   
+    const inputId = parseInt(params.id);
+    console.log("input: ", inputId);
 
     const listings = await prisma.Listing.findFirst({
         where: {
-            id: request.params.id
+            id: inputId
         }
     });
     return NextResponse.json(listings)

@@ -4,45 +4,27 @@ import { checkLoggedIn } from "@/lib/auth";
 
 
 // gets reviews by the user
-// optional fields: placeId, seasonName
-export async function GET(request) {
-  const loggedInData = await checkLoggedIn();
-  if (!loggedInData.loggedIn) {
-    return NextResponse.json({error: 'not signed in'}, {status: 403});
-  }
+export async function GET(request)
+{   
+  // const currentDate = new Date();
+  // console.log(currentDate);
+  // const currentSeason = await prisma.season.findMany({
+  //     where: {
+  //         start: { lte: currentDate },
+  //         end: { gte: currentDate },
+  //     },
+  // });
 
-  let data;
-  try {
-    data = await request.json();
-  }
-  catch(error) {
-    console.error(error);
-    return NextResponse.json({error: error}, {status: 500}, {data: request});
-  }
-
-  // // get optional fields from data
-  // const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
-  // const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
-  const {placeId, seasonName} = data;
-  // convert to ids
-  const listingId = getListingId(placeId);
-  const seasonId = getSeasonId(seasonName);
-  
+  // HARDCODED FOR DEMO PURPOSES.
   const reviews = await prisma.review.findMany({
-    where: {
-      ownerId: {
-        equals: loggedInData.user?.id
-      }, 
-      // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
-      listingId: listingId === null ? undefined : {
-        equals: listingId
-      },
-      seasonId: seasonId === null ? undefined : {
-        equals: seasonId
-      }
-    }
+    // where: {
+    //   season: process.env.NEXT_PUBLIC_ETERNAL_SEASON
+    // },
   });
-  return NextResponse.json(reviews);
+
+  console.log(reviews);
+
+  return NextResponse.json(reviews)
 }
 
 
