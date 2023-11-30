@@ -89,10 +89,10 @@ export default function RootLayout({ children, title }) {
         </div>
       ) : (
         <div>
-          <MenuItem component={Link} href="/login" onClick={handleMenuClose}>
+          <MenuItem component={Link} href="/Login" onClick={handleMenuClose}>
             Log In
           </MenuItem>
-          <MenuItem component={Link} href="/signup" onClick={handleMenuClose}>
+          <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
             Sign Up
           </MenuItem>
         </div>
