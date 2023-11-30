@@ -101,10 +101,37 @@ const Forum = () => {
   const handleLikeClick = async (postId) => {
     try {
       // Make a fetch request to your server endpoint
-      const response = await fetch(`/api/votes/${postId}`, {
+      const response = await fetch("/api/votes/", {
         method: 'POST',
         body: JSON.stringify({
+          postId: postId,
           voteType: "UPVOTE"
+        }),
+      });
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === updatedPost.id ? updatedPost : post
+          )
+        );
+      } else {
+        console.error('Failed to update like count');
+      }
+    } catch (error) {
+      console.error('Error updating like count:', error);
+    }
+  };
+
+  const handleDislikeClick = async (postId) => {
+    try {
+      // Make a fetch request to your server endpoint
+      const response = await fetch("/api/votes/", {
+        method: 'POST',
+        body: JSON.stringify({
+          postId: postId,
+          voteType: "DOWNVOTE"
         }),
       });
 
@@ -154,6 +181,10 @@ const Forum = () => {
 
     if (response.ok) {
       console.log("success added a post");
+      posts.push({
+        postTitle: postTitle,
+        postDescription: postDescription,
+      });
     }
 
     // Close the popup
@@ -213,7 +244,7 @@ const Forum = () => {
                   <ThumbUpIcon />
                   <span className="action-count">{post.likes}</span>
                 </button>
-                <button className="dislike-button"  onClick={() => handleLikeClick(post.id)}>
+                <button className="dislike-button"  onClick={() => handleDislikeClick(post.id)}>
                   <ThumbDownIcon />
                   <span className="action-count">{post.dislikes}</span>
                 </button>
