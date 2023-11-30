@@ -17,7 +17,7 @@ CREATE TABLE "User" (
     "gymFrequency" TEXT,
     "verified" BOOLEAN,
     "shortBio" TEXT,
-    "ProfileImage" BYTEA,
+    "ProfileImage" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
