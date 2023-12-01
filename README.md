@@ -1,12 +1,16 @@
-## Getting Started
+## DecorMaps Demo Instructions
 
-First, get a database running. You will need Docker installed on your machine. 
+Clone this repository, make sure your working directory is "Team3/", and check out the "staging" branch.
+```bash
+git checkout staging
+```
 
+Get a database running. You will need Docker installed on your machine. 
 ```bash
 docker-compose up
 ```
 
-Then, make sure all your node modules are installed.
+Make sure all your node modules are installed.
 ```bash
 npm install
 ```
@@ -15,6 +19,7 @@ Make sure the database is migrated.
 ```bash
 npx prisma migrate dev
 ```
+If there is an issue with migrating the database, try deleting the folder "prisma/migrations".
 
 To set up the file with the Google Maps API key, create a file called ".env.local" in the Team3/ directory. 
 The file should contain:
@@ -24,12 +29,12 @@ NEXT_PUBLIC_ETERNAL_SEASON="Christmas 2023"
 ```
 Replace "YOUR_API_KEY_HERE" with a Google Maps API key (email superjoeyd123@gmail.com to ask for Joe's key).
 
-Initialize the database (from the Team3/ directory).
+Initialize the database.
 ```bash
-node db_seeding/seed.js
+node db_seeding/seed.js -a
 ```
 
-Finally, run the development server:
+Run the development server.
 ```bash
 npm run dev
 ```
