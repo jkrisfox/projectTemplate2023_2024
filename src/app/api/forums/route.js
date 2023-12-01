@@ -50,9 +50,9 @@ export async function POST(request) {
 
 export async function GET(request) {
   // send in GET request as query in URL
-  // const loggedInData = await checkLoggedIn();
+  const loggedInData = await checkLoggedIn();
   // Optimize this with SQL later :))
-  if (true) {
+  if (loggedInData.loggedIn) {
     let forums;
     try {
       forums = await prisma.$queryRaw`
