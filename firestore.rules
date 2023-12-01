@@ -1,30 +1,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
     // Match all documents in the 'listings' collection
     match /listings/{listing} {
       // Anyone can read listings
       allow read: if true;
       // Allow users to create listings if they are authenticated
       allow create: if request.auth != null;
+      // Admin users can delete
+      allow delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin;
       // Only the seller or an admin can write
-      allow write: if request.auth != null && (request.auth.uid == resource.data.sellerId || request.auth.token.admin == true);
+      allow write: if request.auth.uid == resource.data.sellerId 
+                    || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin;
     }
     
     match /users/{userId} {
-    	allow read: if true;
-      allow create: if request.auth != null
-      							&& request.auth.uid == userId
-                    // Make sure user doesn't give themself permissions
-                    && request.resource.data.isAdmin == false
-                    && request.resource.data.isVerified == false
-                    && request.resource.data.isStudent == false;
-      allow write: if request.auth != null
-      						 && (request.auth.token.admin == true
-                      || request.auth.uid == userId
-                      	 // Make sure user doesn't give themself permissions
-                         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'isVerified', 'isStudent']));
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth.uid == userId
+                    // Users can change their own documents except for isAdmin, isVerified, isStudent fields
+                    && (!("isAdmin" in request.resource.data) || resource.data.isAdmin == request.resource.data.isAdmin)
+                    && (!("isVerified" in request.resource.data) || resource.data.isVerified == request.resource.data.isVerified)
+                    && (!("isStudent" in request.resource.data) || resource.data.isStudent == request.resource.data.isStudent);
+      // Admin can write to any user document
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin;
 			
       match /private/contact {
       	// Allow account owner, students, and admin to read contact
@@ -50,6 +49,7 @@ service cloud.firestore {
         						 && (request.auth.uid == userId
                         || request.auth.token.admin == true);
       }
+      }
     }
 
     // Default rule for other documents to deny read/write
@@ -57,5 +57,5 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
-  }
+  
 }
