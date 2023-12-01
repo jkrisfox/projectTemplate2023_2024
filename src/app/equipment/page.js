@@ -66,10 +66,11 @@ export default function Equipment() {
                       <Typography variant="body2" className="equipment-description">
                         {equipment.long_description}
                       </Typography>
-                    </Paper>
-                    <Button variant="outlined" className="equipment-button" onClick={handleShrink}>
+                      <Button variant="outlined" className="equipment-button" onClick={handleShrink}>
                       Back
                     </Button>
+                    </Paper>
+                    
                   </div>
                 ) : (
                   <Paper

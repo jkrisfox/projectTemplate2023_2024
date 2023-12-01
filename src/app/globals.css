@@ -246,6 +246,7 @@ body {
   background-color: var(--white);
   margin-top: 5px;
   padding: 10px;
+  min-height: 100px;
 }
 
 .equipment-title {
@@ -283,6 +284,7 @@ body {
 .equipment-image {
   width: 100%;
   height: 65%;
+  min-height: 100px;
   object-fit: cover; 
   display: block;
 }
@@ -296,6 +298,13 @@ body {
   color: var(--gray);
   font-size: 1rem;
   line-height: 1.4;
+}
+
+.pagination-container{
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+  padding-bottom: 25px;
 }
 
 .equipment-button {
@@ -317,12 +326,6 @@ body {
   color: white;
 }
 
-.pagination-container{
-  display: flex;
-  justify-content: center;
-  margin: 15px 0;
-  padding-bottom: 25px;
-}
 
 
 .equipment-box-expanded {
@@ -341,49 +344,48 @@ body {
   padding: 5px 10px; /* Adjust the padding to change the button size */
 }
 
-
 .grid-container {
   background-color: white;
+  position: relative;
+  min-height: 600px;
 }
 
 .equipment-expanded {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%; /* Adjust the width based on your preference */
-  height: 94%; /* Adjust the height based on your preference */
+  top: 0;
+  left: 0;
+  width: 100%; /* 100% of the viewport width */
+  height: 100%; /* 100% of the viewport height */
   z-index: 2;
   background-color: white;
-  border-radius: 10px;
-}
-
-
-
-.grid-container {
-  background-color: white;
-  position: relative;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .equipment-expanded .equipment-box {
   padding: 10px;
   border-radius: 10px;
-  height: 100%;
+  height: 95%;
   transform: none;
-  max-height: 500px; /* Limit the height of the box */
-  max-width: 80%; /* Limit the width of the box */
+  width: 95%;
+  max-height: 600px; /* Limit the height of the box */
+  max-width: 90%; /* Limit the width of the box */
   margin: auto; /* Center the box */
 }
 
 .equipment-expanded .equipment-button {
-  position: relative; /* Change from absolute to relative */
+  position: absolute; /* Change from absolute to relative */
   margin-top: 20px; /* Add some space above the button */
-  width: auto; /* Reset width to auto */
+  bottom: 5;
+  left: 45%;
+  width: 10%; /* Reset width to auto */
   transform: none; /* Remove transform */
 }
 
 .equipment-expanded .equipment-image {
-  height: 500px; /* Fixed height for consistency */
+  height: 50%; /* Fixed height for consistency */
   object-fit: contain; /* Ensures the entire image is visible */
 }
 
