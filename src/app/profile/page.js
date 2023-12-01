@@ -22,6 +22,7 @@ export default function Profile() {
   const [photo, setPhoto] = useState();
   const [experience, setExperience] = useState('No experience set');
   const [errorMessage, setErrorMessage] = useState("");
+  const [HostEvents, setEvent] = useState("No Events")
   // TODO: add useState for interested in, upcoming events, forum activities
   const { data : session, status} = useSession();
 
@@ -36,12 +37,15 @@ export default function Profile() {
     getId().then(
       (response) => response.json()
     ).then((user) => {
-      const {id, name, email, status, ProfileImage, shortBio} = user;
-      console.log(ProfileImage)
+      const {id, name, email, status, ProfileImage, shortBio, HostEvents, gymFrequency} = user;
+ 
       setName(name);
       setPrivate((check) => status === 'PRIVATE' ? true : false);
-      setPhoto(ProfileImage)
+      //setPhoto(ProfileImage)
       setBio(shortBio)
+      setEvent(HostEvents)
+      setExperience(gymFrequency)
+      console.log(HostEvents) // this is returning undefined for some reason... 
     });
     
 
@@ -60,8 +64,10 @@ export default function Profile() {
             shortBio: bio,
             status: isPrivate ? "PRIVATE" : "PUBLIC",
             ProfileImage: "Something",
+            gymFrequency : experience
           }),
         });
+        console.log(experience)
         console.log(response)
       };
   
@@ -176,7 +182,8 @@ export default function Profile() {
             <Button
               className="spacing"
               variant="contained"
-              onClick={toggleStatus}
+              onClick= {isEditing ? toggleStatus : null}
+              
               size='small'
               style={customButtonStyle}
             >
@@ -194,13 +201,13 @@ export default function Profile() {
                 </InputLabel>
                 <div className="select-wrapper">
                   <NativeSelect
-                    defaultValue={''}
-                    //onChange={handleExperienceChange}
+                    onClick={handleExperienceChange}
                     inputProps={{
                       name: 'Frequency',
                       id: 'uncontrolled-native',
                     }}
                   >
+                    <option className='option-frequency'>No experience</option>
                     <option className='option-frequency'>1 time a week</option>
                     <option className='option-frequency'>2-3 times a week</option>
                     <option className='option-frequency'>4-5 times a week</option>
@@ -211,6 +218,7 @@ export default function Profile() {
               </FormControl>
             ) : (
               experience
+              
             )}
           </div>
           <div className="bottom-cards-container">
@@ -227,10 +235,10 @@ export default function Profile() {
                 <div className='upcoming-event'>
                   <center><b><p>Upcoming Events</p></b></center>
                   <div className="eventContent">
-                    <div className="title">Basketball</div>
+                    {/* <div className="title">Basketball</div>
                     <div className="body">Location: Rec-Center courts</div>
                     <div className="body">Date: 11/9/2023</div>
-                    <div className="body">Time: 3pm </div>
+                    <div className="body">Time: 3pm </div> */}
                   </div>
                 </div>
               </CardContent>

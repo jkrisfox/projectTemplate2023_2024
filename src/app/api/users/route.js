@@ -59,10 +59,10 @@ export async function PUT(request) {
     const responseData = await request.json();
     const userId = loggedInData.user.id;
     const {
-      name, shortBio, status, ProfileImage
+      name, shortBio, status, ProfileImage, gymFrequency
     } = responseData;
     const eventData = {
-      name, shortBio, status, ProfileImage
+      name, shortBio, status, ProfileImage, gymFrequency
     };
     try {
       updatedEvent = await prisma.User.update({
