@@ -101,6 +101,7 @@ export default function Signup() {
                 id="email"
                 label="Email Address"
                 type="email"
+                name="email"
                 fullWidth
                 value={formState.email}
                 onChange={(e) =>
@@ -114,6 +115,7 @@ export default function Signup() {
                 id="password"
                 label="Password"
                 type="password"
+                name="password"
                 fullWidth
                 value={formState.password}
                 onChange={(e) =>
@@ -126,6 +128,7 @@ export default function Signup() {
                 id="passwordConfirmation"
                 label="Password Confirmation"
                 type="password"
+                name="passwordConfirmation"
                 fullWidth
                 value={formState.passwordConfirmation}
                 onChange={(e) =>
