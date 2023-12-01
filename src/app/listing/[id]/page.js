@@ -43,8 +43,6 @@ const ListingPage = () => {
   // State for selected image
   const [selectedImage, setSelectedImage] = useState(0);
 
-  // ... existing loading and error handling
-
   // Function to handle image selection
   const handleImageSelect = (index) => {
     setSelectedImage(index);
