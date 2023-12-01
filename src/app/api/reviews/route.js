@@ -15,11 +15,34 @@ export async function GET(request)
   //     },
   // });
 
-  // HARDCODED FOR DEMO PURPOSES.
+  let data;
+  var placeId, seasonName;
+  try {
+    data = await request.json();
+    var {placeId, seasonName} = data;
+  }
+  catch(error) {
+    placeId = null;
+    seasonName = null;
+  }
+
+  // convert to ids
+  const listingId = await getListingId(placeId);
+  const seasonId = await getSeasonId(seasonName);
+
   const reviews = await prisma.review.findMany({
-    // where: {
-    //   season: process.env.NEXT_PUBLIC_ETERNAL_SEASON
-    // },
+    where: {
+      userId: {
+        equals: loggedInData.user?.id
+      }, 
+      // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
+      listingId: listingId === null ? undefined : {
+        equals: listingId
+      },
+      seasonId: seasonId === null ? undefined : {
+        equals: seasonId
+      }
+    }
   });
 
   console.log(reviews);
@@ -82,10 +105,10 @@ async function getSeasonId(seasonName) {
       id: true, 
     }
   });
-  if ("id" in seasonId) {
-    return seasonId["id"];
+  if (seasonId === null || !("id" in seasonId)) {
+    return null;
   }
-  return null;
+  return seasonId["id"];
 }
 
 
@@ -106,22 +129,27 @@ export async function POST(request) {
     return NextResponse.json({error: error}, {status: 500}, {data: request});
   }
 
-  // check for required fields
-  if (!Object.hasOwn(data, "placeId") || !Object.hasOwn(data, "latitude") || !Object.hasOwn(data, "longitude") 
-      || !Object.hasOwn(data, "seasonName") || !Object.hasOwn(data, "score")) {
-    return NextResponse.json({status: 400}, {data: request});
-  }
-  const placeId = data.placeId;
-  const lat = data.latitude;
-  const lng = data.longitude;
-  const seasonName = data.seasonName;
-  const score = data.score;
+  const {placeId, latitude, longitude, seasonName, score} = data;
 
   // specify true to create new listing if there is no listing with this placeId
-  const listingId = await getListingId(placeId, true, lat, lng);
+  const listingId = await getListingId(placeId, true, latitude, longitude);
+  // if seasonName is an integer, assume it is the seasonId
+  let seasonId;
+  if (Number.isInteger(seasonName) || Number.isInteger(parseInt(seasonName))) {
+    seasonId = parseInt(seasonName);
+  }
+  // otherwise, assume it is the string name and look up its id
+  else {
+    seasonId = await getSeasonId(seasonName);
+  }
 
-  const seasonId = await getSeasonId(seasonName);
-  // make sure seasonId and score are valid
+  // make sure everything is valid
+  if (latitude === null) {
+    return NextResponse.json({error: `latitude is null`}, {status: 500});
+  }
+  if (longitude === null) {
+    return NextResponse.json({error: `longitude is null`}, {status: 500});
+  }
   if (seasonId === null) {
     return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 500});
   }
@@ -150,24 +178,23 @@ export async function DELETE(request) {
   }
 
   let data;
+  var placeId, seasonName;
   try {
     data = await request.json();
+    var {placeId, seasonName} = data;
   }
   catch(error) {
-    console.error(error);
-    return NextResponse.json({error: error}, {status: 500}, {data: request});
+    placeId = null;
+    seasonName = null;
   }
 
-  // get optional fields from data
-  const placeId = Object.hasOwn(data, "placeId") ? data.placeId : null;
-  const seasonName = Object.hasOwn(data, "seasonName") ? data.seasonName : null;
   // convert to ids
-  const listingId = getListingId(placeId);
-  const seasonId = getSeasonId(seasonName);
+  const listingId = await getListingId(placeId);
+  const seasonId = await getSeasonId(seasonName);
 
   const reviews = await prisma.review.deleteMany({
     where: {
-      ownerId: {
+      userId: {
         equals: loggedInData.user?.id
       }, 
       // if listingId or seasonId is null, set to undefined so that the prisma query ignores it
@@ -200,15 +227,8 @@ export async function PATCH(request) {
     return NextResponse.json({error: error}, {status: 500}, {data: request});
   }
 
-  // check for required fields
-  if (!Object.hasOwn(data, "placeId") || !Object.hasOwn(data, "seasonName") 
-      || !Object.hasOwn(data, "newScore")) {
-    return NextResponse.json({status: 400}, {data: request});
-  }
-  const placeId = data.placeId;
-  const seasonName = data.seasonName;
-  const newScore = data.newScore;
-
+  const {placeId, seasonName, newScore} = data;
+  // convert to ids
   const listingId = await getListingId(placeId);
   const seasonId = await getSeasonId(seasonName);
   // make sure placeId, seasonId and newScore are valid
@@ -218,13 +238,13 @@ export async function PATCH(request) {
   if (seasonId === null) {
     return NextResponse.json({error: `season ${seasonName} does not exist`}, {status: 500});
   }
-  if (!Number.isInteger(newScore)) {
+  if (newScore === null || !Number.isInteger(newScore)) {
     return NextResponse.json({error: `newScore ${newScore} is not an Integer`}, {status: 500});
   }
 
   const reviews = await prisma.review.updateMany({
     where: {
-      ownerId: {
+      userId: {
         equals: loggedInData.user?.id
       }, 
       listingId: {
