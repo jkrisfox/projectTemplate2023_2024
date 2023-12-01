@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
+CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'BLOCKED');
 
 -- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
@@ -199,17 +199,46 @@ ALTER TABLE "EventFilter" ADD CONSTRAINT "EventFilter_possibleFilterId_fkey" FOR
 
 INSERT INTO "Equipments" ("equipmentName", "short_description", "long_description", "image_path") 
 VALUES 
-('Treadmill', 'Compact Treadmill', 'A high-quality, space-saving treadmill for home use', '/images/treadmill.jpg'),
-('Exercise Bike', 'Stationary Bike', 'Durable and comfortable stationary exercise bike', '/images/exercise_bike.jpg'),
-('Dumbbells', 'Set of Dumbbells', 'A set of adjustable dumbbells for strength training', '/images/dumbbells.jpg'),
-('Yoga Mat', 'Eco-friendly Yoga Mat', 'Non-slip, eco-friendly yoga mat for all types of yoga', '/images/yoga_mat.jpg'),
-('Resistance Bands', 'Strength Bands', 'A set of resistance bands of varying strengths for flexibility and strength workouts', '/images/resistance_bands.jpg'),
-('Kettlebell', 'Cast Iron Kettlebell', 'A heavy-duty cast iron kettlebell for strength training', '/images/kettlebell.jpg'),
-('Rowing Machine', 'Indoor Rower', 'A smooth and quiet indoor rowing machine', '/images/rowing_machine.jpg'),
-('Elliptical Trainer', 'Compact Elliptical', 'Space-efficient elliptical trainer for low-impact cardio', '/images/elliptical.jpg'),
-('Foam Roller', 'Muscle Roller', 'High-density foam roller for muscle recovery and flexibility', '/images/foam_roller.jpg'),
-('Punching Bag', 'Heavy Punching Bag', 'Durable heavy bag for boxing and martial arts training', '/images/punching_bag.jpg');
+('Cable Back Rows', 'Upper Back Strength', 'Cable Back Rows are a compound exercise targeting the upper back muscles, including the latissimus dorsi, rhomboids, and traps. Utilize a cable machine for this movement by pulling the handle toward your chest while maintaining proper form.', '/images/cablerows.webp'),
+('Bulgarian Split Squat', 'Leg Strength and Stability', 'The Bulgarian Split Squat is a single-leg exercise that focuses on the quadriceps, hamstrings, and glutes. Stand with one foot forward and the other on an elevated surface, lowering your body into a lunge position for an effective lower body workout.', '/images/bss.jpeg'),
+('Chest Fly', 'Pectoral Isolation', 'The Chest Fly is an isolation exercise targeting the pectoralis major muscles. Perform this movement on a chest fly machine or with dumbbells, bringing your arms from an extended position outward to enhance chest muscle definition.', '/images/chestfly.jpeg'),
+('Stair Master', 'Cardiovascular Endurance', 'The Stair Master simulates climbing stairs and engages muscles in the lower body, including the quadriceps, hamstrings, calves, and glutes. This cardiovascular exercise promotes endurance and calorie burning for an effective workout.', '/images/stair.jpeg'),
+('Deadlift', 'Total Body Strength', 'The Deadlift is a compound movement where you lift a loaded barbell from the ground to a standing position, engaging multiple muscle groups. Targeting the erector spinae, glutes, hamstrings, lats, traps, and forearms, the Deadlift promotes overall strength, muscle development, and functional fitness. Maintain a neutral spine, engage your core, and start with lighter weights to perfect form.', '/images/deadlift.jpeg'),
+('Dumbbell Curl', 'Bicep Isolation', 'Dumbbell Curls involve flexing the elbow to lift dumbbells, targeting the biceps for muscle growth and definition. This isolation exercise targets the biceps brachii and brachialis. To maximize benefits, keep your elbows close to your body, use a full range of motion, and avoid swinging your body for momentum.', '/images/curl.webp'),
+('Barbell Shoulder Press', 'Shoulder Strength', 'The Barbell Shoulder Press involves lifting a barbell from shoulder height to overhead, targeting the shoulder muscles. This compound exercise targets the deltoids, trapezius, and triceps. To ensure safety and effectiveness, maintain a stable grip, use proper form to avoid lower back strain, and start with lighter weights to build strength gradually.', ''),
+('Hamstring Machine Curl', 'Isolate Hamstring Muscles', 'The Hamstring Machine Curl is designed to isolate and strengthen the hamstring muscles. Adjust the machine to suit your body and target the hamstrings for improved muscle tone and functionality.', '/images/hamstring.jpeg'),
+('Calf Raise Machine', 'Develop Calf Muscles', 'The Calf Raise Machine is essential for targeting the calf muscles. Adjust the machine to provide resistance as you perform calf raises, promoting muscle growth and strength in the calves.', '/images/calfraise.webp'),
+('Lat Pulldown', 'Upper Back Strength', 'The Lat Pulldown involves pulling a bar or handle down towards the chest from an overhead position. It targets the muscles in the upper back, including the latissimus dorsi, rhomboids, and trapezius. Keep a straight back, initiate the movement with your lats, and adjust the weight for optimal engagement.', ''),
+('Elliptical', 'Low-Impact Cardio', 'The Elliptical is a low-impact cardio machine that simulates running or walking without causing stress on the joints. It engages the muscles in the legs, including the quadriceps, hamstrings, and calves, while also providing an effective cardiovascular workout. Customize resistance and duration for your fitness level.', '/images/elliptical.jpg'),
+('Bench Press', 'Upper Body Strength', 'The Bench Press is a classic upper body exercise where you lie on a flat bench and lift a barbell or dumbbells from chest level to full arm extension. It primarily targets the chest, shoulders, and triceps. Maintain a stable grip, keep your feet flat on the floor, and use a spotter for heavier lifts.', '/images/bench.jpge'),
+('Treadmill', 'Cardiovascular Endurance', 'The Treadmill is a versatile cardio machine that allows you to walk, jog, or run indoors. It engages the muscles in the legs and promotes cardiovascular endurance. Adjust speed and incline to tailor your workout intensity. A treadmill provides a convenient way to achieve effective cardio exercise.', '/images/treadmill.jpg'),
+('Tricep Dips', 'Tricep and Chest Workout', 'Tricep Dips are a bodyweight exercise that targets the triceps and chest. Use parallel bars or a sturdy surface to lower and lift your body, engaging the triceps, deltoids, and pectoral muscles. Maintain an upright position, avoid leaning too far forward, and control the movement for optimal results.', '/images/dips.webp'),
+('Tricep Pushdown', 'Isolate Tricep Muscles', 'The Tricep Pushdown is performed using a cable machine with a straight or V-bar attachment. It focuses on extending the elbow to engage and strengthen the triceps. Keep elbows close to your body, use a controlled motion, and avoid locking your elbows at the bottom of the movement.', '/images/pushdown.webp');;
 
 INSERT INTO "User" ("name", "password", "email")
 VALUES
-('admin', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin@calpoly.edu')
+('admin', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin@calpoly.edu');
+
+INSERT INTO "User" ("name", "password", "email")
+VALUES
+('admin2', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin2@calpoly.edu');
+
+INSERT INTO "User" ("name", "password", "email")
+VALUES
+('admin3', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin3@calpoly.edu');
+
+INSERT INTO "PossibleFilters" ("filterType")
+VALUES
+('General'), 
+('Discussions'), 
+('Sports'), 
+('Exercise'), 
+('ASI'), 
+('Events');
+
+
+INSERT INTO "Post" ("postTitle", "postDescription", "authorId")
+VALUES
+('Title of Post 1', 'Description of Post 1', 1),
+('Title of Post 2', 'Description of Post 2', 2),
+('Title of Post 3', 'Description of Post 3', 3);

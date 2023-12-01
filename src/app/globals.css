@@ -226,8 +226,8 @@ body {
 }
 
 .events-info-button:hover {
-  background: var(--green); /* Darken the background color on hover */
-  transform: scale(1.02); /* Slightly scale up the button on hover */
+  background: var(--green); 
+  transform: scale(1.02); 
   color: white;
 }
 
@@ -247,6 +247,7 @@ body {
   background-color: var(--white);
   margin-top: 5px;
   padding: 10px;
+  min-height: 100px;
 }
 
 .equipment-title {
@@ -263,6 +264,7 @@ body {
   margin-top: 0px;
   margin-bottom: 20px;
 }
+
 /* Equipment Box Styles */
 .equipment-box {
   position: relative;
@@ -270,30 +272,40 @@ body {
   border-radius: 10px;
   margin: 20px;
   height: 300px;
-  background-color: #f4f4f4; /* Add a background color */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle box shadow */
-  transition: transform 0.2s; /* Add a transform transition for hover effect */
+  background-color: #f4f4f4; 
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s; 
   overflow: hidden;
 }
 
 .equipment-box:hover {
-  transform: scale(1.05); /* Slightly scale up the box on hover */
+  transform: scale(1.05); 
 }
 
 .equipment-image {
   width: 100%;
-  height: auto; /* Maintains the aspect ratio of the image */
-  object-fit: cover; /* Ensures the image covers the area without distorting */
-  display: block; /* Removes any extra space around the image */
+  height: 65%;
+  min-height: 100px;
+  object-fit: cover; 
+  display: block;
 }
-
 .equipment-name {
-  font-size: 1.25rem;
-  color: var(--black);
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-blue);
 }
 
 .equipment-description {
-  color: black;
+  color: var(--gray);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.pagination-container{
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+  padding-bottom: 25px;
 }
 
 .equipment-button {
@@ -315,12 +327,6 @@ body {
   color: white;
 }
 
-.pagination-container{
-  display: flex;
-  justify-content: center;
-  margin: 15px 0;
-  padding-bottom: 25px;
-}
 
 
 .equipment-box-expanded {
@@ -339,49 +345,48 @@ body {
   padding: 5px 10px; /* Adjust the padding to change the button size */
 }
 
-
 .grid-container {
   background-color: white;
+  position: relative;
+  min-height: 600px;
 }
 
 .equipment-expanded {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%; /* Adjust the width based on your preference */
-  height: 94%; /* Adjust the height based on your preference */
+  top: 0;
+  left: 0;
+  width: 100%; /* 100% of the viewport width */
+  height: 100%; /* 100% of the viewport height */
   z-index: 2;
   background-color: white;
-  border-radius: 10px;
-}
-
-
-
-.grid-container {
-  background-color: white;
-  position: relative;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .equipment-expanded .equipment-box {
   padding: 10px;
   border-radius: 10px;
-  height: 100%;
+  height: 95%;
   transform: none;
-  max-height: 500px; /* Limit the height of the box */
-  max-width: 80%; /* Limit the width of the box */
+  width: 95%;
+  max-height: 600px; /* Limit the height of the box */
+  max-width: 90%; /* Limit the width of the box */
   margin: auto; /* Center the box */
 }
 
 .equipment-expanded .equipment-button {
-  position: relative; /* Change from absolute to relative */
+  position: absolute; /* Change from absolute to relative */
   margin-top: 20px; /* Add some space above the button */
-  width: auto; /* Reset width to auto */
+  bottom: 5;
+  left: 45%;
+  width: 10%; /* Reset width to auto */
   transform: none; /* Remove transform */
 }
 
 .equipment-expanded .equipment-image {
-  height: 500px; /* Fixed height for consistency */
+  height: 50%; /* Fixed height for consistency */
   object-fit: contain; /* Ensures the entire image is visible */
 }
 
