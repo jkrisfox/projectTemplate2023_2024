@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import CommentIcon from '@mui/icons-material/Forum';
@@ -71,6 +72,9 @@ const Forum = () => {
   const [showNewPostPopup, setShowNewPostPopup] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const [posts, setPosts] = useState([]);
+
+  const { data : session, status} = useSession();
+  let userId = session?.user?.id;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -170,12 +174,14 @@ const Forum = () => {
   };
   
   const handleNewPostSubmit = async () => {
+
     // Perform validation
     const response = await fetch("/api/forums", {
       method: "POST",
       body: JSON.stringify({
         postTitle: postTitle,
         postDescription: postDescription,
+        authorId: userId,
       }),
     });
 
@@ -184,6 +190,7 @@ const Forum = () => {
       posts.push({
         postTitle: postTitle,
         postDescription: postDescription,
+        authorId: userId,
       });
     }
 
@@ -235,7 +242,7 @@ const Forum = () => {
                 <h3 className="post-title">{post.postTitle}</h3>
                 <div className='post-author-tags'>
                   <p className="post-author">Posted by: {post.authorId}</p>
-                  <p className="post-tags">Tags: {post.PostFilters && Array.isArray(post.PostFilters) ? post.PostFilters.join(', ') : ''}</p>
+                  {/* <p className="post-tags">Tags: {post.PostFilters && Array.isArray(post.PostFilters) ? post.PostFilters.join(', ') : ''}</p> */}
 
                 </div>
               </div>
@@ -297,7 +304,7 @@ const Forum = () => {
                 </div>
              </div>
             <div className="button-container">
-              <button className="draft-button" onClick={handleClosePopup}>Save as Draft</button>
+              {/* <button className="draft-button" onClick={handleClosePopup}>Save as Draft</button> */}
               <button className="submit-button" onClick={handleNewPostSubmit}>Submit</button>
             </div>
           </div>
