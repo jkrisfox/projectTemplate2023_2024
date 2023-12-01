@@ -129,7 +129,7 @@ const SearchPage = () => {
       results.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
     }
 
-    // Sort by date if 'newest' is selected
+    // Sort by date if newest is selected
     if (filters.sort === "newest") {
       results.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
@@ -160,7 +160,7 @@ const SearchPage = () => {
       return (
         <Box textAlign="center" p={30}>
           <Typography variant="h5" gutterBottom>
-            No listings for "{searchParams.get("query")}". Make one from here!
+            No listings for {searchParams.get("query")}. Make one from here!
           </Typography>
           <Button
             variant="contained"
