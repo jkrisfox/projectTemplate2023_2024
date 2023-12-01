@@ -58,7 +58,28 @@ export default function MyListings({ user }) {
             {listings
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((item) => {
-                // Existing code for rendering listings...
+                const locationArray = item.location.split(", ");
+                const cityState =
+                  locationArray.length > 2
+                    ? `${locationArray[1]}, ${locationArray[2]}`
+                    : item.location;
+      
+                return (
+                  <Grid item key={item.id}>
+                    <ListingCard
+                    listingId={item.id}
+                      title={item.title}
+                      createdAt={item.createdAt}
+                      updatedAt={item.updatedAt}
+                      description={item.description}
+                      images={item.images}
+                      location={cityState}
+                      price={item.price}
+                      studentVerification={item.studentVerification}
+                      priceHistory={item.priceHistory}
+                    />
+                  </Grid>
+                );
               })}
           </Grid>
           {/* Pagination control */}

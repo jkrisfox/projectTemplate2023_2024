@@ -66,7 +66,7 @@ export default function RootLayout({ children, title }) {
     if (isFirebaseLoggedIn) {
       router.push("/create-listing");
     } else {
-      router.push("/login");
+      router.push("/Login");
     }
   };
 
