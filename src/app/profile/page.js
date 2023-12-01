@@ -19,16 +19,15 @@ export default function Profile() {
   const [isPrivate, setPrivate] = useState(false);
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState();
   const [experience, setExperience] = useState('No experience set');
+  const [errorMessage, setErrorMessage] = useState("");
   // TODO: add useState for interested in, upcoming events, forum activities
   const { data : session, status} = useSession();
 
   useEffect(() => {
     let userId = session?.user?.id;
     async function getId(){
-      // let userId = session?.user?.id;
-      // consolelog(userId)
       const response = await fetch("/api/users", {
         method: "GET"
       })
@@ -53,13 +52,30 @@ export default function Profile() {
     color: 'white',
   };
 
+  const handleSaveProfile = async () => { 
+      const response = await fetch("/api/users", {
+          method: "PUT",
+          body: JSON.stringify({
+            name,
+            shortBio: bio,
+            status: isPrivate ? "PRIVATE" : "PUBLIC",
+            ProfileImage: "Something",
+          }),
+        });
+        console.log(response)
+      };
+  
+
   const handleNameChange = (e) => {
     setName(e.target.value);
   };
 
-  const handleBioChange = (e) => {
-    setBio(e.target.value);
+  const handleBioChange = async (e) => {
+    setBio(e.target.value)
   };
+  
+  
+  
 
   const handlePhotoChange = (e) => {
     const selectedPhoto = e.target.files[0];
@@ -114,7 +130,12 @@ export default function Profile() {
             <Button
               className="spacing"
               variant="text"
-              onClick={toggleEditing}
+              onClick={() => {
+                toggleEditing()
+                console.log("editing", isEditing)
+                isEditing ? handleSaveProfile() : null
+              }
+              }
               size='small'
             >
               {isEditing ? 'Save' : 'Edit'}
@@ -174,7 +195,7 @@ export default function Profile() {
                 <div className="select-wrapper">
                   <NativeSelect
                     defaultValue={''}
-                    onChange={handleExperienceChange}
+                    //onChange={handleExperienceChange}
                     inputProps={{
                       name: 'Frequency',
                       id: 'uncontrolled-native',

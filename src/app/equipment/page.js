@@ -59,17 +59,18 @@ export default function Equipment() {
                 {expandedEquipment && expandedEquipment.id === equipment.id ? (
                   <div className="equipment-expanded">
                     <Paper className="equipment-box" elevation={3}>
-                      <img src={equipment.image_path} alt={equipment.name} className="equipment-image" />
+                      <img src={equipment.image_path} alt={equipment.equipmentName} className="equipment-image" />
                       <Typography variant="h6" className="equipment-name">
-                        {equipment.name}
+                        {equipment.equipmentName}
                       </Typography>
                       <Typography variant="body2" className="equipment-description">
-                        {equipment.description}
+                        {equipment.long_description}
                       </Typography>
-                    </Paper>
-                    <Button variant="outlined" className="equipment-button" onClick={handleShrink}>
+                      <Button variant="outlined" className="equipment-button" onClick={handleShrink}>
                       Back
                     </Button>
+                    </Paper>
+                    
                   </div>
                 ) : (
                   <Paper
@@ -77,12 +78,12 @@ export default function Equipment() {
                     elevation={3}
                     onClick={() => handleExpand(equipment)}
                   >
-                    <img src={equipment.image_path} alt={equipment.name} className="equipment-image" />
+                    <img src={equipment.image_path} alt={equipment.equipmentName} className="equipment-image" />
                     <Typography variant="h6" className="equipment-name">
-                      {equipment.name}
+                      {equipment.equipmentName}
                     </Typography>
                     <Typography variant="body2" className="equipment-description">
-                      {equipment.description}
+                      {equipment.short_description}
                     </Typography>
                     
                   </Paper>

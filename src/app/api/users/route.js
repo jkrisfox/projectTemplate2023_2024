@@ -51,3 +51,31 @@ export async function GET(request) {
   }
   return USER_NOT_SIGNED_IN;
 }
+
+export async function PUT(request) {
+  // delete events and cascade delete all the event attendees
+  const loggedInData = await checkLoggedIn();
+  if (loggedInData.loggedIn) {
+    const responseData = await request.json();
+    const userId = loggedInData.user.id;
+    const {
+      name, shortBio, status, ProfileImage
+    } = responseData;
+    const eventData = {
+      name, shortBio, status, ProfileImage
+    };
+    try {
+      updatedEvent = await prisma.User.update({
+        where: {
+          id: userId,
+        },
+        data: eventData,
+      });
+    } catch (e) {
+      console.log(e.message);
+      return NextResponse.json({ error: e.message }, { status: 500 });
+    }
+    return NextResponse.json(updatedEvent);
+  }
+  return USER_NOT_SIGNED_IN;
+}
