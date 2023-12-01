@@ -106,7 +106,7 @@ export default function CreateListing() {
     // Check if the user is authenticated
     if (!isFirebaseLoggedIn) {
       // User is not authenticated, navigate to the login page
-      router.push("/login");
+      router.push("/Login");
     }
   }, [isFirebaseLoggedIn, router]);
 

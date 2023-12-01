@@ -145,7 +145,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (!isLoggedIn()) {
-      router.push('/login');
+      router.push('/Login');
       return;
     }
 
