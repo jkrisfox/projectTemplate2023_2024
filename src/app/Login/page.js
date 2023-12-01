@@ -121,9 +121,8 @@ export default function Signin() {
               />
               <br></br>
               <br></br>
-              {/* Add the "Don't have an account?" link */}
               <Typography variant="body2">
-                Don't have an account? <Link href="/signup">Create one</Link>
+                Dont have an account? <Link href="/signup">Create one</Link>
               </Typography>
             </form>
             <Button

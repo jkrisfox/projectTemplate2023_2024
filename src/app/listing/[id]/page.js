@@ -18,7 +18,7 @@ import {
   Card,
   CardMedia,
   CardContent,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import SwipeableViews from "react-swipeable-views";
 import { virtualize } from "react-swipeable-views-utils";
@@ -26,21 +26,22 @@ import ShareIcon from "@mui/icons-material/Share";
 import { db } from "../../../../firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import GoogleMapReact from 'google-map-react';
+import GoogleMapReact from "google-map-react";
+import { useRouter } from "next/navigation";
 
 // Virtualized SwipeableViews for better performance
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 
 const ListingPage = () => {
+  const router = useRouter();
   const { id } = useParams();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [sellerInfo, setSellerInfo] = useState(null);
 
   // State for selected image
   const [selectedImage, setSelectedImage] = useState(0);
-
-  // ... existing loading and error handling
 
   // Function to handle image selection
   const handleImageSelect = (index) => {
@@ -80,6 +81,25 @@ const ListingPage = () => {
       fetchListing();
     }
   }, [id]);
+
+  useEffect(() => {
+    // Fetch the seller information based on sellerId
+    const fetchSellerInfo = async () => {
+      if (listing && listing.sellerId) {
+        // Replace 'users' with your actual user collection name
+        const userRef = doc(db, "users", listing.sellerId);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          setSellerInfo(userSnap.data());
+        } else {
+          console.error("Seller not found");
+        }
+      }
+    };
+
+    fetchSellerInfo();
+  }, [listing]);
 
   // Function to render slide
   const renderSlide = ({ index, key }) => {
@@ -146,6 +166,23 @@ const ListingPage = () => {
         <Typography variant="body2" color="textSecondary" gutterBottom>
           Location: {listing.location}
         </Typography>
+
+        {sellerInfo && (
+          <Card
+            sx={{ maxWidth: 345, cursor: "pointer" }}
+            onClick={() => router.push(`/profile/${sellerInfo.id}`)}
+          >
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {sellerInfo.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {sellerInfo.email}
+              </Typography>
+              {/* Include additional seller information here */}
+            </CardContent>
+          </Card>
+        )}
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
           <Button

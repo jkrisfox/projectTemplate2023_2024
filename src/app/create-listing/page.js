@@ -25,6 +25,20 @@ import AddIcon from "@mui/icons-material/Add";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+const categories = [
+  "Furniture",
+  "Electronics",
+  "School Supplies",
+  "Home Decor",
+  "Clothing and Accessories",
+  "Appliances",
+  "Bicycles and Transportation",
+  "Textbooks",
+  "Sports and Fitness Equipment",
+  "Home Office",
+  "Miscellaneous",
+];
+
 const californiaCities = [
   "Los Angeles",
   "San Diego",
@@ -101,6 +115,7 @@ export default function CreateListing() {
   const [newListingId, setNewListingId] = useState(null);
   const firebaseAuth = useAuth();
   const isFirebaseLoggedIn = firebaseAuth.currentUser !== null;
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -146,6 +161,7 @@ export default function CreateListing() {
         images: [], // This will be populated with URLs after image upload
         createdAt: Timestamp.fromDate(new Date()),
         sellerId: userId, // Include the user's ID as the sellerId
+        category: category, // Add this line
       };
 
       // Handle image upload if there is an image to upload
@@ -249,7 +265,7 @@ export default function CreateListing() {
             required
           />
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <TextField
                 autoFocus
                 margin="dense"
@@ -263,7 +279,7 @@ export default function CreateListing() {
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <Autocomplete
                 id="location"
                 options={californiaCities}
@@ -280,6 +296,21 @@ export default function CreateListing() {
                 onChange={(event, newValue) => {
                   setSelectedCity(newValue);
                   setListing({ ...listing, location: newValue });
+                }}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Autocomplete
+                id="category"
+                options={categories}
+                getOptionLabel={(option) => option}
+                style={{ width: 300 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Category" variant="outlined" />
+                )}
+                value={category}
+                onChange={(event, newValue) => {
+                  setCategory(newValue);
                 }}
               />
             </Grid>
