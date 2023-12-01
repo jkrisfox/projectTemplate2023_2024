@@ -4,12 +4,16 @@ import { checkLoggedIn } from "@/lib/auth";
 
 
 // gets reviews by the user
-// optional fields: placeId, seasonName
-export async function GET(request) {
-  const loggedInData = await checkLoggedIn();
-  if (!loggedInData.loggedIn) {
-    return NextResponse.json({error: 'not signed in'}, {status: 403});
-  }
+export async function GET(request)
+{   
+  // const currentDate = new Date();
+  // console.log(currentDate);
+  // const currentSeason = await prisma.season.findMany({
+  //     where: {
+  //         start: { lte: currentDate },
+  //         end: { gte: currentDate },
+  //     },
+  // });
 
   let data;
   var placeId, seasonName;
@@ -40,7 +44,10 @@ export async function GET(request) {
       }
     }
   });
-  return NextResponse.json(reviews);
+
+  console.log(reviews);
+
+  return NextResponse.json(reviews)
 }
 
 
