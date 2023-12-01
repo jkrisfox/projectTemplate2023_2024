@@ -66,7 +66,7 @@ export default function RootLayout({ children, title }) {
     if (isFirebaseLoggedIn) {
       router.push("/create-listing");
     } else {
-      router.push("/Login");
+      router.push("/login");
     }
   };
 
@@ -89,10 +89,10 @@ export default function RootLayout({ children, title }) {
         </div>
       ) : (
         <div>
-          <MenuItem component={Link} href="/Login" onClick={handleMenuClose}>
+          <MenuItem component={Link} href="/login" onClick={handleMenuClose}>
             Log In
           </MenuItem>
-          <MenuItem component={Link} href="/Signup" onClick={handleMenuClose}>
+          <MenuItem component={Link} href="/signup" onClick={handleMenuClose}>
             Sign Up
           </MenuItem>
         </div>
