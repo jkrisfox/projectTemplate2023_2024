@@ -1,10 +1,13 @@
 'use client'
 
+
 import Map from 'src/app/map.js';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import MapWithMarker from 'src/app/marker/page.js';
+
+
 
 
 export default function Review() {
@@ -15,12 +18,14 @@ export default function Review() {
   const [markerPlaceId, setMarkerPlaceId] = useState(null);
   const pathname = usePathname();
 
+
+
   const [seasons, setSeasons] = useState([]);
-  const [selectedSeason, setSelectedSeason] = useState('');
 
   const handleRatingChange = (event) => {
     setRating(parseInt(event.target.value, 10));
   };
+
 
   const handleMarkerPlacement = (position) => {
     setMarkerPosition(position);
@@ -33,7 +38,7 @@ export default function Review() {
 
   const handleSeasonChange = (event) => {
     setSelectedSeason(event.target.value);
-  };
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -43,27 +48,27 @@ export default function Review() {
       alert('You cannot submit more than one review.');
     } else if (!markerPosition) {
       alert('Please select a location on the map.');
-    } else if (!selectedSeason) {
-      alert('Please select a season.');
     } else {
       console.log('Rating submitted:', rating);
       console.log('Marker position:', markerPosition);
       console.log('Marker address:', markerAddress);
       console.log('Selected season:', selectedSeason);
-
+      
       const placeId = markerPlaceId;
 
+
       fetch("api/reviews", { method: "post", body: JSON.stringify(
-        {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: selectedSeason, score: rating}) } )
+        {placeId: placeId, latitude: markerPosition.lat, longitude: markerPosition.lng, seasonName: seasons.id, score: rating}) } )
           .then((response) => {
             console.log("Sent POST request for review of", placeId);
             console.log("post response:", response);
           });
-      
+     
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);
     }
   };
+
 
   // returns a GeocoderResult, including formatted_address and place_id fields
   const getPlaceFromLatLng = (latLng) => {
@@ -83,6 +88,7 @@ export default function Review() {
     });
   };
 
+
   const fetchSeasonsAndPopulateSelect = async () => {
     try {
       const response = await fetch("api/seasons", { method: "get" });
@@ -97,6 +103,7 @@ export default function Review() {
   useEffect(() => {
     fetchSeasonsAndPopulateSelect();
   }, []);
+
 
   return (
     <>
@@ -117,18 +124,10 @@ export default function Review() {
                 min="1"
                 max="10"
               />
-
-              <select name="season" id="season" onChange={handleSeasonChange} value={selectedSeason}>
-              <option value=""> </option>
-                {seasons.map(season => (
-                  <option key={season.id} value={season.name}>
-                    {season.name}
-                  </option>
-                ))}
-              </select>
-              
             </label>
+            <p id="currentDate"></p>
             {markerAddress && <p>Selected Address: {markerAddress}</p>}
+            {seasons.name && <p>Season: {seasons.name}</p>}
             <button type="submit">Submit Review</button>
           </form>
         )}
@@ -136,3 +135,5 @@ export default function Review() {
     </>
   );
 }
+
+
