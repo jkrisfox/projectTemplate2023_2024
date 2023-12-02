@@ -1,16 +1,11 @@
 ## DecorMaps Demo Instructions
 
-Clone this repository, make sure your working directory is "Team3/", and check out the "staging" branch.
-```bash
-git checkout staging
-```
-
-Get a database running. You will need Docker installed on your machine. 
+Get a database running. You will need [Docker](https://docs.docker.com/engine/install/) installed on your machine. 
 ```bash
 docker-compose up
 ```
 
-Make sure all your node modules are installed.
+Make sure all your node modules are installed. If this doesn't work, you'll have to [install Node](https://nodejs.org/en/download).
 ```bash
 npm install
 ```
@@ -19,7 +14,7 @@ Make sure the database is migrated.
 ```bash
 npx prisma migrate dev
 ```
-If there is an issue with migrating the database, try deleting the folder "prisma/migrations".
+If there is an issue with migrating the database, delete the folder "prisma/migrations" and try again.
 
 To set up the file with the Google Maps API key, create a file called ".env.local" in the Team3/ directory. 
 The file should contain:
@@ -46,4 +41,7 @@ Things to try:
     * username: alice@gmail.com, password: password
     * username: bob@gmail.com, password: password
 * click on the map to place a pin
-* click the "Review" button, leave a rating, select a season, and click "Submit Review"
+* click the "Review" button, leave a rating, and click "Submit Review"
+* open up Prisma Studio (npx prisma studio) and confirm that the review is in the Review table
+    * if the database was seeded with the -a option, your reviews will start at number 104
+    * the userId should match the id of the User that is signed in
