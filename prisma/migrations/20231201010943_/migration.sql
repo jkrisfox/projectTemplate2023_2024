@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
+CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'BLOCKED');
 
 -- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('UPVOTE', 'DOWNVOTE');
@@ -213,4 +213,32 @@ VALUES
 ('Bench Press', 'Upper Body Strength', 'The Bench Press is a classic upper body exercise where you lie on a flat bench and lift a barbell or dumbbells from chest level to full arm extension. It primarily targets the chest, shoulders, and triceps. Maintain a stable grip, keep your feet flat on the floor, and use a spotter for heavier lifts.', '/images/bench.jpge'),
 ('Treadmill', 'Cardiovascular Endurance', 'The Treadmill is a versatile cardio machine that allows you to walk, jog, or run indoors. It engages the muscles in the legs and promotes cardiovascular endurance. Adjust speed and incline to tailor your workout intensity. A treadmill provides a convenient way to achieve effective cardio exercise.', '/images/treadmill.jpg'),
 ('Tricep Dips', 'Tricep and Chest Workout', 'Tricep Dips are a bodyweight exercise that targets the triceps and chest. Use parallel bars or a sturdy surface to lower and lift your body, engaging the triceps, deltoids, and pectoral muscles. Maintain an upright position, avoid leaning too far forward, and control the movement for optimal results.', '/images/dips.webp'),
-('Tricep Pushdown', 'Isolate Tricep Muscles', 'The Tricep Pushdown is performed using a cable machine with a straight or V-bar attachment. It focuses on extending the elbow to engage and strengthen the triceps. Keep elbows close to your body, use a controlled motion, and avoid locking your elbows at the bottom of the movement.', '/images/pushdown.webp');
+('Tricep Pushdown', 'Isolate Tricep Muscles', 'The Tricep Pushdown is performed using a cable machine with a straight or V-bar attachment. It focuses on extending the elbow to engage and strengthen the triceps. Keep elbows close to your body, use a controlled motion, and avoid locking your elbows at the bottom of the movement.', '/images/pushdown.webp');;
+
+INSERT INTO "User" ("name", "password", "email")
+VALUES
+('admin', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin@calpoly.edu');
+
+INSERT INTO "User" ("name", "password", "email")
+VALUES
+('admin2', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin2@calpoly.edu');
+
+INSERT INTO "User" ("name", "password", "email")
+VALUES
+('admin3', '$2a$10$ApKSbcr80X.AvrZn5HhxY.59TkwXrUyUbz6ZHRXhSNJFoOGEyTSLe', 'admin3@calpoly.edu');
+
+INSERT INTO "PossibleFilters" ("filterType")
+VALUES
+('General'), 
+('Discussions'), 
+('Sports'), 
+('Exercise'), 
+('ASI'), 
+('Events');
+
+
+INSERT INTO "Post" ("postTitle", "postDescription", "authorId")
+VALUES
+('Title of Post 1', 'Description of Post 1', 1),
+('Title of Post 2', 'Description of Post 2', 2),
+('Title of Post 3', 'Description of Post 3', 3);

@@ -20,7 +20,7 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     /*max-width: 1500px;*/
     min-height: 50px;
-    height: 90vh;
+    height: flex;
     width: 100%;
     margin-top: 1%;
 }
@@ -116,13 +116,12 @@ input[type="file"] {
     margin-right: 10px;
     margin-left: 10px;
     box-shadow: 0 0 4px #003831;
-    /*border: 1px solid #A89968;*/
     height: auto;
     
-    transition: transform 0.5s ease-in-out, box-shadow 0.3s ease-in-out;
+    transition: transform .1s ease-in-out, box-shadow 0.3s ease-in-out;
 
     &:hover {
-        transform: scale(1.2); 
+        transform: scale(1.05); 
         box-shadow: 0 0 15px #A89968;
     }
 }

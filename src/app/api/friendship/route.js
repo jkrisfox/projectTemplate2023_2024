@@ -73,13 +73,14 @@ export async function POST(request) {
 
 export async function GET(request) {
   // send in GET request as query in URL
-  // const loggedInData = await checkLoggedIn();
+  const loggedInData = await checkLoggedIn();
   // const { id } = router.query;
-  if (true) {
+  if (loggedInData.loggedIn) {
     const searchParams = request.nextUrl.searchParams;
     // Get all 'filters' query parameters as an array
     let status = searchParams.get("status");
-    const userId = 2;
+    const userId = loggedInData.user.id;
+    console.log(userId)
     let friends;
     try {
       switch(status) {
@@ -114,6 +115,28 @@ export async function GET(request) {
             JOIN "User" ON "User"."id" = "AcceptedFriends"."Friends"
           `;
           break;
+        default:
+          // Grab all users who are not currently pending or accepted
+          friends = await prisma.$queryRaw`
+            WITH 
+              "FriendsOngoing" AS (
+                (
+                  SELECT "recipientId" AS "Friends"
+                  FROM "Friendship"
+                  WHERE "initiatorId" = ${userId}
+                )
+                UNION
+                (                
+                  SELECT "initiatorId" AS "Friends"
+                  FROM "Friendship"
+                  WHERE "recipientId" = ${userId}
+                )
+              )
+            SELECT "User"."id", "User"."name", "User"."status", "User"."ProfileImage" as "image"
+            FROM "User"
+            WHERE "User"."id" NOT IN (SELECT "Friends" FROM "FriendsOngoing") AND "User"."id" != ${userId};
+          `;
+        break;
       }
     } catch (e) {
       console.log(e.message);

@@ -15,7 +15,8 @@ export default function NavBar() {
     { path: '/profile', name: 'Profile' },
     { path: '/events', name: 'Events' },
     { path: '/equipment', name: 'Equipment' },
-    { path: '/forum', name: 'Forum' }
+    { path: '/forum', name: 'Forum' },
+    { path: '/search-friend', name: 'Search Friends'}
   ];
 
   return (
