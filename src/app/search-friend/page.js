@@ -107,7 +107,7 @@ export default function SearchFriends() {
           method: "GET",
         });
         const data = await response.json();
-        console.log("Friends data", data);
+        console.log("events data", data);
         setfriendList(data);
         setFilteredFriends(data);
       } catch (error) {
