@@ -32,6 +32,7 @@ function HeroInspiration() {
 
         <Box sx={{ alignSelf: 'flex-end', mt: 2 }}>
           <Button 
+            href="create-listing"
             variant="contained" 
             sx={{
               backgroundColor: 'primary.main',
