@@ -116,6 +116,25 @@ export default function CreateListing() {
   const firebaseAuth = useAuth();
   const isFirebaseLoggedIn = firebaseAuth.currentUser !== null;
   const [category, setCategory] = useState("");
+  const [isStudent, setIsStudent] = useState(false);
+
+  // Fetch user details and determine if they are a student as soon as the component mounts and the user is authenticated
+  useEffect(() => {
+    // Since customAttributes are already a JSON string, you might not need to parse them.
+    if (firebaseAuth.currentUser && firebaseAuth.currentUser.reloadUserInfo) {
+      const attributes =
+        firebaseAuth.currentUser.reloadUserInfo.customAttributes;
+      if (attributes) {
+        // The customAttributes seem to be a JSON string, so we parse it.
+        try {
+          const customAttributes = JSON.parse(attributes);
+          setIsStudent(customAttributes["student"] === true);
+        } catch (error) {
+          console.error("Error parsing customAttributes", error);
+        }
+      }
+    }
+  }, [firebaseAuth.currentUser]);
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -131,10 +150,22 @@ export default function CreateListing() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setListing({
-      ...listing,
-      [name]: name === "price" ? parseFloat(value) : value,
-    });
+    // Check if the input name is 'price' and handle the 'free' case
+    if (name === "price") {
+      const priceValue = parseFloat(value);
+      if (priceValue === 0) {
+        setSnackbar({
+          open: true,
+          message: "The price will be registered as 'free'",
+        });
+      } else if (priceValue < 0) {
+        setSnackbar({ open: true, message: "Price cannot be negative." });
+        return;
+      }
+      setListing({ ...listing, price: priceValue });
+    } else {
+      setListing({ ...listing, [name]: value });
+    }
   };
 
   const handleSubmit = async () => {
@@ -155,7 +186,7 @@ export default function CreateListing() {
         console.error("No user found");
         return;
       }
-      const userId = user.uid; // Ensure you have a uid property on the user object
+      const userId = user.uid;
 
       // Include the userId in the listing data
       const listingData = {
@@ -165,7 +196,8 @@ export default function CreateListing() {
         location: listing.location,
         images: [], // This will be populated with URLs after image upload
         createdAt: Timestamp.fromDate(new Date()),
-        sellerId: userId, // Include the user's ID as the sellerId
+        sellerId: userId,
+        studentVerification: isStudent,
         category: category, // Add this line
       };
 
@@ -199,6 +231,7 @@ export default function CreateListing() {
     if (!listing.price) return "Price is required.";
     if (!listing.location) return "Location is required.";
     if (listingImage.length === 0) return "At least one image is required.";
+    if (listing.price < 0) return "Price cannot be negative."; // Ensure price is not negative
     return "";
   };
 
@@ -267,6 +300,13 @@ export default function CreateListing() {
           {" "}
           {/* Form Fields here */}
           <h1>New Listing</h1>
+          {firebaseAuth.currentUser && (
+            <Typography variant="body1" style={{ marginBottom: "1rem" }}>
+              {isStudent
+                ? "Your listing will be displayed with a student verification symbol."
+                : "If you want to add student verification to your listing, please register your account as a student."}
+            </Typography>
+          )}
           <TextField
             autoFocus
             margin="dense"
@@ -389,7 +429,7 @@ export default function CreateListing() {
                 {...getRootProps()}
                 style={{
                   border: "1px dashed gray",
-                  padding: "20px",
+                  padding: "6rem",
                   cursor: "pointer",
                 }}
               >
