@@ -24,10 +24,14 @@ import SwipeableViews from "react-swipeable-views";
 import { virtualize } from "react-swipeable-views-utils";
 import ShareIcon from "@mui/icons-material/Share";
 import { db } from "../../../../firebase/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import GoogleMapReact from "google-map-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../AuthProvider";
+import { getUser } from "@/lib/firebaseUtils";
+
+
 
 // Virtualized SwipeableViews for better performance
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
@@ -39,7 +43,17 @@ const ListingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [sellerInfo, setSellerInfo] = useState(null);
+  const [currentUserOwnsProfile, setCurrentUserOwnsProfile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdminStatus, setIsAdminStatus] = useState(false);
+  const [isFavorited, setFavorited] = useState(false);
 
+
+  const [user, setUser] = useState({ isAdmin: false, isStudent: false });
+
+
+
+  const { getUser: getCurrentUser, isLoggedIn, isAdmin } = useAuth();
   // State for selected image
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -47,6 +61,8 @@ const ListingPage = () => {
   const handleImageSelect = (index) => {
     setSelectedImage(index);
   };
+
+
 
   // Google Maps settings
   // const mapOptions = {
@@ -100,6 +116,120 @@ const ListingPage = () => {
 
     fetchSellerInfo();
   }, [listing]);
+
+
+  useEffect(() => {
+    // Fetch the seller information based on sellerId
+    
+      const user = getCurrentUser();
+
+      getUser(user.uid)
+      .then((userData) => {
+        if (!userData) {
+          setUser(userData);
+          setIsLoading(false);
+          return;
+        }
+
+        if (userData.profileImage == "") {
+          userData.profileImage = null;
+        }
+        if (userData.heroImage == "") {
+          userData.heroImage = null;
+        }
+        userData["uid"] = user.uid;
+
+        if (isLoggedIn()) {
+          const currentUser = getCurrentUser();
+          if (currentUser.uid == user.uid) {
+            setCurrentUserOwnsProfile(true);
+
+            if (
+              currentUser.emailVerified &&
+              currentUser.email.split("@").pop() == "calpoly.edu" &&
+              !userData.isStudent
+            ) {
+              // Tell server to set user as student
+              fetch(`/api/verify/${user.uid}`, { method: "put" }).catch((err) => {
+                console.error(err);
+                setErrorMessage(err.message);
+              });
+            }
+          } else {
+            isAdmin()
+              .then((admin) => {
+                if (admin) {
+                  setCurrentUserOwnsProfile(true);
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+                setErrorMessage(err.message);
+              });
+          }
+        }
+
+        const checkAdminStatus = async () => {
+          const adminStatus = await isAdmin();
+          setIsAdminStatus(adminStatus);
+        };
+
+        if (isLoggedIn()) {
+          checkAdminStatus();
+        }
+
+        // console.log(userData);
+        // console.log(user);
+
+        setUser(userData);
+        setIsLoading(false);
+
+        console.log(userData)
+        if (userData.favoriteListings.includes(id)){
+          setFavorited(true);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setErrorMessage(err.message);
+      });
+
+      console.log(user.favoriteListings)
+     
+
+  }, [isLoggedIn, isAdmin]);
+
+  const handleFavorite = async () => {
+
+    console.log(user)
+    user.favoriteListings.push(id)
+ 
+    const favoritesRef = doc(db, "users", user.uid, "private", "favorites");
+
+
+    await updateDoc(favoritesRef, {
+      favoriteListings: user.favoriteListings
+    });
+
+    setFavorited(true);
+  }
+
+  const handleUnfavorite = async () => {
+
+    console.log(user)
+    const index = user.favoriteListings.indexOf(id)
+    const random = user.favoriteListings.splice(index)
+ 
+    const favoritesRef = doc(db, "users", user.uid, "private", "favorites");
+
+
+    await updateDoc(favoritesRef, {
+      favoriteListings: user.favoriteListings
+    });
+
+    setFavorited(false);
+  }
+
 
   // Function to render slide
   const renderSlide = ({ index, key }) => {
@@ -194,6 +324,22 @@ const ListingPage = () => {
           >
             View on Map
           </Button>
+
+          {!isFavorited && (<Button
+            variant="contained"
+            onClick={handleFavorite}
+          >
+            Favorite
+          </Button>)}
+
+        {isFavorited && (
+          <Button
+            variant="contained"
+            onClick={handleUnfavorite}
+          >
+            Unfavorite
+          </Button>)}
+          
           <Button
             variant="outlined"
             startIcon={<ShareIcon />}
