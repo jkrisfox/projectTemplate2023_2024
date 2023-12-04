@@ -167,8 +167,11 @@ function ListingCard({
   };
 
   const formatLocation = (locationString) => {
-    const parts = locationString.split(", ");
-    return parts.length > 2 ? `${parts[1]}, ${parts[2]}` : locationString;
+    // Directly return the location string as it only contains the city name
+    return locationString;
+
+    // const parts = locationString.split(", ");
+    // return parts.length > 2 ? `${parts[1]}, ${parts[2]}` : locationString;
   };
 
   if (loading) {
@@ -331,7 +334,7 @@ function ListingCard({
           </Typography>
           {updatedAt && (
             <Typography variant="caption" color="textSecondary">
-              {`Updated: ${formatDate(updatedAt) || "Not available"}`}
+              {/* {`Updated: ${formatDate(updatedAt) || "Not available"}`} */}
             </Typography>
           )}
         </Box>
@@ -379,7 +382,7 @@ function ListingCard({
         >
           <LocationOnIcon fontSize="small" color="primary" />
           <Typography variant="caption" color="textSecondary" sx={{ ml: 1 }}>
-            {formatLocation(location)}
+            {location}
           </Typography>
         </Box>
       </Box>

@@ -38,11 +38,11 @@ const NewItems = ({ isHomePage }) => {
       )}
       <Grid container spacing={2}>
         {newItems.map((item) => {
-          const locationArray = item.location.split(", ");
-          const cityState =
-            locationArray.length > 2
-              ? `${locationArray[1]}, ${locationArray[2]}`
-              : item.location;
+          // const locationArray = item.location.split(", ");
+          // const cityState =
+          //   locationArray.length > 2
+          //     ? `${locationArray[1]}, ${locationArray[2]}`
+          //     : item.location;
 
           return (
             <Grid item xs={12} sm={12} md={4} lg={3} xl={2.4} key={item.id} >
@@ -55,8 +55,8 @@ const NewItems = ({ isHomePage }) => {
                 updatedAt={item.updatedAt}
                 description={item.description}
                 images={item.images}
-                location={cityState}
-                price={item.price}
+                location={item.location}          
+                      price={item.price}
                 studentVerification={item.studentVerification}
                 priceHistory={item.priceHistory}
               />

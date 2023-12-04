@@ -63,7 +63,7 @@ const FilterComponent = ({ onFilterChange }) => {
       alignItems="center"
     >
       <SortFilter value={selectedSort} onChange={setSelectedSort} />
-      <TextField
+      {/* <TextField
         type="number"
         label="Radius (miles)"
         value={radius}
@@ -75,7 +75,7 @@ const FilterComponent = ({ onFilterChange }) => {
           ...(radius !== "" && { color: "primary.main" }),
         }}
         placeholder="Enter radius"
-      />
+      /> */}
       <VerifiedFilter checked={verified} onChange={setVerified} />
       <Button
         onClick={applyFilters}

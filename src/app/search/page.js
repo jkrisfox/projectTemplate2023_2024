@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = 'force-static'
+export const dynamic = "force-static";
 // pages/search.js
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -61,12 +61,11 @@ const SearchPage = () => {
 
   const performSearch = async (searchTerm) => {
     setLoading(true);
-  
+
     try {
       const listingsRef = collection(db, "listings");
       let matches = [];
 
-  
       const querySnapshot = await getDocs(listingsRef);
       querySnapshot.forEach((doc) => {
         try {
@@ -80,19 +79,18 @@ const SearchPage = () => {
           console.error("Error processing document", doc.id, error);
         }
       });
-  
+
       // Sort and filter based on additional criteria
       matches = applyAdditionalFilters(matches);
-  
+
       // console.log(matches);
       setSearchResults(matches);
     } catch (error) {
       console.error("Error fetching search results: ", error);
     }
-  
+
     setLoading(false);
   };
-  
 
   // Pagination change handler
   const handleChangePage = (event, newPage) => {
@@ -112,7 +110,6 @@ const SearchPage = () => {
       data.description.toLowerCase().includes(lowerCaseSearchTerm) ||
       data.category.toLowerCase().includes(lowerCaseSearchTerm) ||
       data.title.toLowerCase().includes(lowerCaseSearchTerm); // Added title check
-
 
     const verifiedMatch =
       !filters.verified || (filters.verified && data.studentVerification);
@@ -182,8 +179,8 @@ const SearchPage = () => {
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((result, index) => {
                 // Extract city and state from the location string
-                const locationArray = result.location.split(", ");
-                const cityState = `${locationArray[1]}, ${locationArray[2]}`;
+                // const locationArray = result.location.split(", ");
+                // const cityState = `${locationArray[1]}, ${locationArray[2]}`;
 
                 return (
                   <Grid
@@ -203,7 +200,7 @@ const SearchPage = () => {
                       updatedAt={result.updatedAt}
                       description={result.description}
                       images={result.images} // images is an array of URLs
-                      location={cityState} // city and state extracted from location string
+                      location={result.location}
                       price={result.price}
                       studentVerification={result.studentVerification}
                       priceHistory={result.priceHistory} // priceHistory is an array of objects with date and price
