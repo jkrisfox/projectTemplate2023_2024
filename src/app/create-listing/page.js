@@ -138,6 +138,11 @@ export default function CreateListing() {
   };
 
   const handleSubmit = async () => {
+    const validationError = validateForm();
+    if (validationError) {
+      setSnackbar({ open: true, message: validationError });
+      return;
+    }
     try {
       // Ensure that router and user are defined
       if (!router || !isFirebaseLoggedIn) {
@@ -186,6 +191,15 @@ export default function CreateListing() {
       console.log(err);
       setSnackbar({ open: true, message: err.message });
     }
+  };
+
+  const validateForm = () => {
+    if (!listing.title.trim()) return "Title is required.";
+    if (!listing.description.trim()) return "Description is required.";
+    if (!listing.price) return "Price is required.";
+    if (!listing.location) return "Location is required.";
+    if (listingImage.length === 0) return "At least one image is required.";
+    return "";
   };
 
   const handleChangeListingImage = () => {
@@ -282,6 +296,7 @@ export default function CreateListing() {
             <Grid item xs={4}>
               <Autocomplete
                 id="location"
+                required
                 options={californiaCities}
                 getOptionLabel={(option) => option}
                 renderInput={(params) => (
@@ -303,8 +318,9 @@ export default function CreateListing() {
               <Autocomplete
                 id="category"
                 options={categories}
+                required
                 getOptionLabel={(option) => option}
-                style={{ width: 300 }}
+                // style={{ width: 300 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Category" variant="outlined" />
                 )}
@@ -422,7 +438,7 @@ export default function CreateListing() {
           >
             <Alert
               onClose={() => setSnackbar({ ...snackbar, open: false })}
-              severity="success"
+              severity="error" // Changed to "error" for validation errors
               sx={{ width: "100%" }}
             >
               {snackbar.message}
