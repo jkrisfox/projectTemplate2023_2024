@@ -40,7 +40,7 @@ export async function POST(request) {
   // const loggedInData = await checkLoggedIn();
   if (true) {
     // if user is logged in, then create the event if needed
-    const userId = 2;
+    const userId = 1;
     const responseData = await request.json();
     const { friendId } = responseData;
     responseData;

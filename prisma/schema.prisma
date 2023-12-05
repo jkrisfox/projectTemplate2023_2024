@@ -33,12 +33,10 @@ model User {
   email                String          @unique
   status               Status          @default(PUBLIC)
   gymFrequency         String?
-  verified             Boolean?
   shortBio             String?
   ProfileImage         String?
   initiatedFriendships Friendship[]    @relation("FriendshipInitiator")
   receivedFriendships  Friendship[]    @relation("FriendshipRecipient")
-  Interest             Interest[]
   Post                 Post[]
   Votes                Votes[]
   Comment              Comment[]
@@ -56,14 +54,6 @@ model Friendship {
   status      FriendshipStatus @default(PENDING)
 
   @@id([initiatorId, recipientId])
-}
-
-model Interest {
-  // model different interst of userse
-  Id       Int    @id @default(autoincrement())
-  interest String
-  user     User   @relation(fields: [userId], references: [id])
-  userId   Int
 }
 
 model Post {
@@ -168,7 +158,6 @@ model Equipments {
 enum FriendshipStatus {
   PENDING
   ACCEPTED
-  BLOCKED
 }
 
 enum VoteType {
