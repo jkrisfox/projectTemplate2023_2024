@@ -1,90 +1,176 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import './profile.css';
+import { useState } from "react";
+import "./profile.css";
 //import '../globals.css';
 
-
-import { Card, CardContent, Button, TextField, FormControl, Avatar, InputLabel, NativeSelect } from '@mui/material';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
-
-
-
-
+import {
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  FormControl,
+  Avatar,
+  InputLabel,
+  NativeSelect,
+} from "@mui/material";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [isPrivate, setPrivate] = useState(false);
-  const [name, setName] = useState('');
-  const [bio, setBio] = useState('');
-  const [photo, setPhoto] = useState();
-  const [experience, setExperience] = useState('No experience set');
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [experience, setExperience] = useState("No experience set");
   const [errorMessage, setErrorMessage] = useState("");
-  const [HostEvents, setEvent] = useState("No Events")
+  const [HostEvents, setEvent] = useState([]);
+  const [postCreated, setPostCreated] = useState([]);
+  const [friendPending, setFriendPending] = useState([]);
+  const [friends, setFriends] = useState([]);
   // TODO: add useState for interested in, upcoming events, forum activities
-  const { data : session, status} = useSession();
+  const { data: session, status } = useSession();
+  // console.log(
+  //   JSON.stringify(
+  //     {
+  //       name,
+  //       bio,
+  //       photo,
+  //       experience,
+  //       HostEvents,
+  //       postCreated,
+  //       friendPending,
+  //       friends,
+  //     },
+  //     null,
+  //     2
+  //   )
+  // );
 
   useEffect(() => {
-    let userId = session?.user?.id;
-    async function getId(){
-      const response = await fetch("/api/users", {
-        method: "GET"
-      })
-      return response;
-    }
-    getId().then(
-      (response) => response.json()
-    ).then((user) => {
-      const {id, name, email, status, ProfileImage, shortBio, HostEvents, gymFrequency} = user;
- 
-      setName(name);
-      setPrivate((check) => status === 'PRIVATE' ? true : false);
-      //setPhoto(ProfileImage)
-      setBio(shortBio)
-      setEvent(HostEvents)
-      setExperience(gymFrequency)
-      console.log(HostEvents) // this is returning undefined for some reason... 
-    });
-    
-
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("/api/users", {
+          method: "GET",
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          const {
+            name,
+            shortBio,
+            ProfileImage,
+            gymFrequency,
+            status,
+            email,
+            HostEvents,
+            Post,
+            initiatedFriendships,
+            receivedFriendships,
+          } = userData;
+          const combinedFriends = [
+            ...initiatedFriendships,
+            ...receivedFriendships,
+          ];
+          const pendingFriends = receivedFriendships.map(
+            (friend) => friend["initiatorId"]
+          );
+          const acceptedFriends = combinedFriends
+            .filter((friend) => friend["status"] === "ACCEPTED")
+            .map((friend) => friend?.recipientId ?? friend?.initiatorId);
+          setName(name);
+          setBio(shortBio);
+          setPhoto(ProfileImage);
+          setPrivate(status === "PRIVATE" ? true : false);
+          setExperience(gymFrequency ?? "No experience set");
+          setFriendPending(pendingFriends);
+          setFriends(acceptedFriends);
+          setEvent(HostEvents);
+          setPostCreated(Post);
+        } else {
+          console.error("Failed to get user data");
+        }
+      } catch (error) {
+        console.error("Failed to fetch [user]:", error);
+      }
+    };
+    fetchProfile();
   }, []);
 
+  // useEffect(async () => {
+  //   let userId = session?.user?.id;
+  //   try {
+
+  //   }
+  //     const response = await fetch("/api/users", {
+  //       method: "GET"
+  //     })
+  //     return response;
+  //   }
+  //   getId().then(
+  //     (response) => response.json()
+  //   ).then((user) => {
+  //     const {id, name, email, status, ProfileImage, shortBio, HostEvents, gymFrequency} = user;
+
+  //     setName(name);
+  //     setPrivate((check) => status === 'PRIVATE' ? true : false);
+  //     //setPhoto(ProfileImage)
+  //     setBio(shortBio)
+  //     setEvent(HostEvents)
+  //     setExperience(gymFrequency)
+  //     console.log(HostEvents) // this is returning undefined for some reason...
+  //   });
+
+  // }, []);
+
   const customButtonStyle = {
-    backgroundColor: '#003831',
-    color: 'white',
+    backgroundColor: "#003831",
+    color: "white",
   };
 
-  const handleSaveProfile = async () => { 
-      const response = await fetch("/api/users", {
-          method: "PUT",
-          body: JSON.stringify({
-            name,
-            shortBio: bio,
-            status: isPrivate ? "PRIVATE" : "PUBLIC",
-            ProfileImage: "Something",
-            gymFrequency : experience
-          }),
-        });
-        console.log(experience)
-        console.log(response)
-      };
-  
+  const handleSaveProfile = async () => {
+    try {
+      let base64photo;
+      // takes the image and turns it into a blob and sends it to the backend to put into cloud
+      fetch(photo)
+      .then(response => response.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob); 
+        reader.onloadend = async function() {
+          base64photo = reader.result;
+          const response = await fetch("/api/users", {
+            method: "PUT",
+            body: JSON.stringify({
+              name,
+              shortBio: bio,
+              status: isPrivate ? "PRIVATE" : "PUBLIC",
+              ProfileImage: base64photo,
+              gymFrequency: experience,
+            }),
+          });
+          if (response.ok) {
+            console.log("Success", response);
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
 
   const handleNameChange = (e) => {
     setName(e.target.value);
   };
 
   const handleBioChange = async (e) => {
-    setBio(e.target.value)
+    setBio(e.target.value);
   };
-  
-  
-  
 
   const handlePhotoChange = (e) => {
     const selectedPhoto = e.target.files[0];
+    console.log(selectedPhoto);
     setPhoto(URL.createObjectURL(selectedPhoto));
   };
 
@@ -93,168 +179,186 @@ export default function Profile() {
   };
 
   const toggleStatus = () => {
-    setPrivate(!isPrivate)
+    setPrivate(!isPrivate);
   };
 
   const handleExperienceChange = (e) => {
-    setExperience(e.target.value)
+    setExperience(e.target.value);
   };
 
   return (
-    <div className='background'>
-    <div className="profile-container">
-      <div className="profile-form">
-        <div className="profile-photo">
-          <center>
-            <Avatar
-              alt="Profile"
-              src={photo}
-              sx={{ width: 150, height: 150 }}
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoChange}
-              style={{ display: 'none' }}
-              id="photo-upload"
-            />
-            {isEditing &&
-              <label htmlFor="photo-upload">
-                <Button
-                  className="spacing"
-                  variant="contained"
-                  color='primary'
-                  component="span"
-                  size='small'
-                  style={customButtonStyle}
-                  startIcon={<PhotoCamera />}
-                >
-                  Upload Photo
-                </Button>
-              </label>
-            }
-            <Button
-              className="spacing"
-              variant="text"
-              onClick={() => {
-                toggleEditing()
-                console.log("editing", isEditing)
-                isEditing ? handleSaveProfile() : null
-              }
-              }
-              size='small'
-            >
-              {isEditing ? 'Save' : 'Edit'}
-            </Button>
-          </center>
-        </div>
-        <div className="profile-info">
-          <div className={`profile-name ${isEditing ? 'editing' : ''}`}>
-            {isEditing ? (
-              <TextField
-                className="font"
-                label="Your Name"
-                size='normal'
-                value={name}
-                onChange={handleNameChange}
-                margin='normal'
+    <div className="background">
+      <div className="profile-container">
+        <div className="profile-form">
+          <div className="profile-photo">
+            <center>
+              <Avatar
+                alt="Profile"
+                src={photo}
+                // src={URL.createObjectURL(photo)}
+                sx={{ width: 150, height: 150 }}
               />
-            ) : (
-              <div className="font">
-                <b>{name}</b>
-              </div>
-            )}
-          </div>
-          <div className={`profile-bio ${isEditing ? 'editing' : ''}`}>
-            {isEditing ? (
-              <TextField
-                placeholder="Short Bio"
-                minRows={4}
-                value={bio}
-                onChange={handleBioChange}
-                margin='normal'
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                style={{ display: "none" }}
+                id="photo-upload"
               />
-            ) : (
-              bio
-            )}
-          </div>
-          <div className="profile-status">
-            <Button
-              className="spacing"
-              variant="contained"
-              onClick= {isEditing ? toggleStatus : null}
-              
-              size='small'
-              style={customButtonStyle}
-            >
-              {isPrivate ? 'Private' : 'Public'}
-            </Button>
-          </div>
-        </div>
-        <div className='middle'>
-          <div className='gym-frequency'>
-            <b><p>Gym frequency:</p></b>
-            {isEditing ? (
-              <FormControl
-                variant="filled">
-                <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                </InputLabel>
-                <div className="select-wrapper">
-                  <NativeSelect
-                    onClick={handleExperienceChange}
-                    inputProps={{
-                      name: 'Frequency',
-                      id: 'uncontrolled-native',
-                    }}
+              {isEditing && (
+                <label htmlFor="photo-upload">
+                  <Button
+                    className="spacing"
+                    variant="contained"
+                    color="primary"
+                    component="span"
+                    size="small"
+                    style={customButtonStyle}
+                    startIcon={<PhotoCamera />}
                   >
-                    <option className='option-frequency'>No experience</option>
-                    <option className='option-frequency'>1 time a week</option>
-                    <option className='option-frequency'>2-3 times a week</option>
-                    <option className='option-frequency'>4-5 times a week</option>
-                    <option className='option-frequency'>EVERY DAY</option>
-                  </NativeSelect>
-                </div>
-
-              </FormControl>
-            ) : (
-              experience
-              
-            )}
+                    Upload Photo
+                  </Button>
+                </label>
+              )}
+              <Button
+                className="spacing"
+                variant="text"
+                onClick={() => {
+                  toggleEditing();
+                  console.log("editing", isEditing);
+                  isEditing ? handleSaveProfile() : null;
+                }}
+                size="small"
+              >
+                {isEditing ? "Save" : "Edit"}
+              </Button>
+            </center>
           </div>
-          <div className="bottom-cards-container">
-            <Card>
-              <CardContent>
-                <div className='interested-in'>
-                  <center><b><p>Interested in</p></b></center>
-
+          <div className="profile-info">
+            <div className={`profile-name ${isEditing ? "editing" : ""}`}>
+              {isEditing ? (
+                <TextField
+                  className="font"
+                  label="Your Name"
+                  size="normal"
+                  value={name}
+                  onChange={handleNameChange}
+                  margin="normal"
+                />
+              ) : (
+                <div className="font">
+                  <b>{name}</b>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <div className='upcoming-event'>
-                  <center><b><p>Upcoming Events</p></b></center>
-                  <div className="eventContent">
-                    {/* <div className="title">Basketball</div>
+              )}
+            </div>
+            <div className={`profile-bio ${isEditing ? "editing" : ""}`}>
+              {isEditing ? (
+                <TextField
+                  placeholder="Short Bio"
+                  minRows={4}
+                  value={bio}
+                  onChange={handleBioChange}
+                  margin="normal"
+                />
+              ) : (
+                bio
+              )}
+            </div>
+            <div className="profile-status">
+              <Button
+                className="spacing"
+                variant="contained"
+                onClick={isEditing ? toggleStatus : null}
+                size="small"
+                style={customButtonStyle}
+              >
+                {isPrivate ? "Private" : "Public"}
+              </Button>
+            </div>
+          </div>
+          <div className="middle">
+            <div className="gym-frequency">
+              <b>
+                <p>Gym frequency:</p>
+              </b>
+              {isEditing ? (
+                <FormControl variant="filled">
+                  <InputLabel
+                    variant="standard"
+                    htmlFor="uncontrolled-native"
+                  ></InputLabel>
+                  <div className="select-wrapper">
+                    <NativeSelect
+                      onChange={handleExperienceChange}
+                      inputProps={{
+                        name: "Frequency",
+                        id: "uncontrolled-native",
+                      }}
+                    >
+                      <option className="option-frequency">
+                        No experience
+                      </option>
+                      <option className="option-frequency">
+                        1 time a week
+                      </option>
+                      <option className="option-frequency">
+                        2-3 times a week
+                      </option>
+                      <option className="option-frequency">
+                        4-5 times a week
+                      </option>
+                      <option className="option-frequency">EVERY DAY</option>
+                    </NativeSelect>
+                  </div>
+                </FormControl>
+              ) : (
+                experience
+              )}
+            </div>
+            <div className="bottom-cards-container">
+              <Card>
+                <CardContent>
+                  <div className="interested-in">
+                    <center>
+                      <b>
+                        <p>Interested in</p>
+                      </b>
+                    </center>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent>
+                  <div className="upcoming-event">
+                    <center>
+                      <b>
+                        <p>Upcoming Events</p>
+                      </b>
+                    </center>
+                    <div className="eventContent">
+                      {/* <div className="title">Basketball</div>
                     <div className="body">Location: Rec-Center courts</div>
                     <div className="body">Date: 11/9/2023</div>
                     <div className="body">Time: 3pm </div> */}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <div className='forum-activity'>
-                  <center><b><p>Forum Activity</p></b></center>
-
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent>
+                  <div className="forum-activity">
+                    <center>
+                      <b>
+                        <p>Forum Activity</p>
+                      </b>
+                    </center>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }
