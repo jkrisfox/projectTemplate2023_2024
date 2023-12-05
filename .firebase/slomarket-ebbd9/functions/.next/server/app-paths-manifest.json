@@ -1,0 +1,17 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/about/page": "app/about/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/search/route": "app/api/search/route.js",
+  "/api/verify/[id]/route": "app/api/verify/[id]/route.js",
+  "/api/search/[id]/route": "app/api/search/[id]/route.js",
+  "/listing/[id]/page": "app/listing/[id]/page.js",
+  "/create-listing/page": "app/create-listing/page.js",
+  "/login/page": "app/login/page.js",
+  "/profile/[id]/page": "app/profile/[id]/page.js",
+  "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/setup/page": "app/setup/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/search/page": "app/search/page.js"
+}

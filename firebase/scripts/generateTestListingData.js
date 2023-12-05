@@ -51,7 +51,7 @@ const generateFakeData = async () => {
     const randomProduct = categoryProducts[randomCategory][Math.floor(Math.random() * categoryProducts[randomCategory].length)];
     const brandOrAdjective = brandsAndAdjectives[randomCategory][Math.floor(Math.random() * brandsAndAdjectives[randomCategory].length)];
     const title = `${brandOrAdjective} ${randomProduct}`;
-    const description = `A ${faker.commerce.productMaterial()} ${randomProduct} with ${faker.commerce.productAdjective()} features.`;
+    const description = `A ${faker.commerce.productMaterial().toLowerCase()}, ${faker.commerce.productMaterial().toLowerCase()} ${randomProduct.toLowerCase()} with ${faker.commerce.productAdjective().toLowerCase()} and ${faker.commerce.productAdjective().toLowerCase()} features.`;
     const keywords = title.split(' ').concat(randomCategory.toLowerCase().split(' '));
     const imageKeywords = keywords.join(','); // Combining keywords for a more focused search
     const randomPrice = faker.datatype.boolean() ? 0 : faker.commerce.price(50, 500);

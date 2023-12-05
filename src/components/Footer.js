@@ -42,7 +42,7 @@ export default function Footer() {
           <Grid item>
             <Typography variant="h4" align="center">
               <strong>
-                Connecting local growers and merchants on one platform.
+                Connecting local students and merchants on one platform.
               </strong>
             </Typography>
           </Grid>

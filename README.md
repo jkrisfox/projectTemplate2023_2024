@@ -76,6 +76,20 @@ The application should now be running on [http://localhost:3000](http://localhos
 
 If you want to perform server-side admin actions, please contact us for an admin key. 
 
+## Deploying 
+
+To deploy slomarket, please follow the steps: 
+
+1. run: 
+```bash
+npm run build
+```
+
+2. run: 
+```bash
+firebase deploy --only hosting
+```
+
 ## Usage
 
 After logging in, users can create listings by providing details about the item they want to sell, including images, description, price, and location. Users can browse listings, filter by categories, and send messages to sellers to inquire more about items they are interested in.
