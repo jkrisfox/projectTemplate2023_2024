@@ -16,6 +16,7 @@ const Sidebar = ({ listings }) => {
           listings.map(async (listing) => {
             try {
               // Create a geocoder object
+              console.log("Listing :" + listing)
               const geocoder = new window.google.maps.Geocoder();
 
               // Turn coordinates into an object
