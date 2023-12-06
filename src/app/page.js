@@ -6,10 +6,11 @@ import Link from 'next/link';
 import ChristmasSnowfall from 'src/app/snowball.js';
 import SantaSleigh from 'src/app/SantaSleigh'; 
 import homeStyle from 'src/app/homestyle.module.css';
-import Sidebar from 'src/app/Sidebar';
+import Sidebar from 'src/app/sidebar.js';
 import './styles.css';
 
 const MyMapComponent = () => {
+  
   const [map, setMap] = useState(null);
   const [rating, setRating] = useState(0);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -20,6 +21,8 @@ const MyMapComponent = () => {
   const markerRef = useRef(null);
   const [showSnowballs, setShowSnowballs] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [houseLocations, setHouseLocations] = useState([]);
+  
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prevCollapsed) => !prevCollapsed);
@@ -29,7 +32,34 @@ const MyMapComponent = () => {
 
   const toggleSnowballs = () => {
     setShowSnowballs((prevShow) => !prevShow);
+
   };
+
+  useEffect(() => {
+    const fetchHouseLocations = async () => {
+      try {
+        const response = await fetch("api/listings", {
+          method: "get",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch listings: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Listings data:", data);
+
+        // Update the state with the fetched listings
+        setHouseLocations(data);
+
+        
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+      }
+    };
+
+    fetchHouseLocations();
+  }, []); // Run only once when the component mounts
 
   useEffect(() => {
     // Make sure the Google Maps API is loaded before trying to create a map
@@ -125,6 +155,10 @@ const MyMapComponent = () => {
         console.log("post response:", response);
       });
 
+      
+
+      
+
       // After successful submission, set reviewSubmitted to true
       setReviewSubmitted(true);
       setShowReviewForm(false);
@@ -171,7 +205,7 @@ const MyMapComponent = () => {
       <button onClick={toggleSnowballs}>{showSnowballs ? 'Hide Snowballs' : 'Show Snowballs'}</button>
       <h1>{reviewSubmitted ? 'Review Submitted!' : 'Find or Pin a Location!'}</h1>
       <div className={`flex-container ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <Sidebar collapsed={sidebarCollapsed} />
+        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} />
         <MapWithMarker onMarkerPlaced={onMarkerPlaced} />
         {!showReviewForm ? (
           <button onClick={handleReviewButtonClick}>Review</button>

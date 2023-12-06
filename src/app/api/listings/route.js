@@ -13,7 +13,7 @@ import prisma from "@/lib/db";
 // basic GET function. 
 export async function GET(request)
 {
-    const listings = await prisma.listings.findMany();
+    const listings = await prisma.listing.findMany();
     return NextResponse.json(listings)
 }
 
