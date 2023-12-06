@@ -246,28 +246,10 @@ const MyMapComponent = () => {
     }
   };
 
-  // useEffect(() => {
-  //   // Make sure the Google Maps API is loaded before trying to create a map
-  //     const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-  //       center: { lat: 35.299878, lng: -120.662337 },
-  //       zoom: 14,
-  //     });
-
-  //     // Add click event listener to the map
-  //     mapInstance.addListener('click', (event) => {
-  //       // Remove the previous marker if it exists
-  //       if (markerRef.current) {
-  //         markerRef.current.setMap(null);
-  //       }
-  //       // Place a new marker
-  //       placeMarker(event.latLng, mapInstance);
-  //     });
-
-  //     setMap(mapInstance);
-
-  //   fetchSeasonsAndPopulateSelect();
-  //   fetchReviews(mapInstance);
-  // }, []);
+  useEffect(() => {
+    fetchSeasonsAndPopulateSelect();
+    //fetchReviews(mapInstance);
+  }, []);
 
   return (
     <>
