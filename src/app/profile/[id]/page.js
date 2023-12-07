@@ -299,6 +299,25 @@ export default function Profile({ params }) {
             </Stack>
           </Grid>
 
+          {(user.email || user.phoneNumber || user.location) &&
+          <Grid item>
+            <Grid container pl={2}>
+              <Grid item>
+                <Typography variant="body1">
+                  {user.email}
+                </Typography>
+
+                <Typography variant="body1">
+                  {user.phoneNumber}
+                </Typography>
+
+                <Typography variant="body1">
+                  {user.location}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>}
+
           <Grid item xs={12} sm={"auto"}>
             {/* User actions */}
             <IconButton aria-label="User Actions" onClick={handleClickMenu}>
