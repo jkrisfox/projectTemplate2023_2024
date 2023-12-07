@@ -90,6 +90,11 @@ export default function Signup() {
             <Typography variant="h5" pb={6}>
               <strong>Sign Up for an account.</strong>
             </Typography>
+            
+            <Alert severity="info">
+              Use your calpoly.edu email to get a verified account!
+            </Alert>
+            
             <form onSubmit={handleSignup}>
               {errorMessage && (
                 <Alert severity="error">{errorMessage}</Alert>
