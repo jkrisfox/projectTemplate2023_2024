@@ -22,7 +22,30 @@ const MyMapComponent = () => {
   const [showSnowballs, setShowSnowballs] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [houseLocations, setHouseLocations] = useState([]);
-  
+
+  const showMarkerForAddress = (address) => {
+    if (map) {
+      // Create a geocoder object
+      const geocoder = new window.google.maps.Geocoder();
+
+      // Geocode the address to get coordinates
+      geocoder.geocode({ address: address }, (results, status) => {
+        if (status === 'OK' && results[0] && results[0].geometry && results[0].geometry.location) {
+          const location = results[0].geometry.location;
+
+          // Remove the previous marker if it exists
+          if (markerRef.current) {
+            markerRef.current.setMap(null);
+          }
+
+          // Place a new marker
+          placeMarker(location, map);
+        } else {
+          console.error('Geocoder failed or no results found for the address:', address);
+        }
+      });
+    }
+  };
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prevCollapsed) => !prevCollapsed);
@@ -258,7 +281,7 @@ const MyMapComponent = () => {
       <button onClick={toggleSnowballs}>{showSnowballs ? 'Hide Snowballs' : 'Show Snowballs'}</button>
       <h1>{reviewSubmitted ? 'Review Submitted!' : 'Find or Pin a Location!'}</h1>
       <div className={`flex-container ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} />
+        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} onShowMarker={showMarkerForAddress} />
         <MapWithMarker onMarkerPlaced={onMarkerPlaced} />
         {!showReviewForm ? (
           <button onClick={handleReviewButtonClick}>Review</button>
