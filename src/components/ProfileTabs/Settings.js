@@ -8,6 +8,8 @@ import ImageIcon from '@mui/icons-material/Image';
 import { useRouter } from 'next/navigation';
 import { updateUser, uploadImage } from '@/lib/firebaseUtils';
 import { useDropzone } from 'react-dropzone';
+import { useAuth } from "../../app/AuthProvider";
+import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 
 export default function Settings( {user, setUser, setCurrentTab} ) {
 
@@ -19,6 +21,7 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
     const [isHeroDialogOpen, setIsHeroDialogOpen] = useState(false);
     
     const router = useRouter();
+    const { getUser } = useAuth();
 
     // RADIO HANDLERS
     const [selectedOption1, setSelectedOption1] = useState(null);
@@ -180,24 +183,10 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         const [newPassword, setNewPassword] = useState('');
         const [error, setError] = useState('');
 
-        const handleSubmit = (event) => {
-            event.preventDefault();
-
-            // Client-side validation
-            if (!previousPassword || !newPassword) {
-            setError('* Please fill out both fields.');
-            return;
-            }
-
-            // Server-side validation...
-
-            setError('');
-        };
-
         // handleResetPassword
         const handleResetPassword = (event) => {
             event.preventDefault();
-            const userId = user.uid;
+            const data = new FormData(event.currentTarget);
             const previousPassword = data.get('previousPassword');
             const newPassword = data.get('newPassword');
 
@@ -207,17 +196,33 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
             // Validate password with regex
             if (newPassword &&
                 (!event.currentTarget.reportValidity() ||
-                !newPassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/))) {
-                    setFormState({...formState, newPassword: { error: true, message: "Your password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number." }});
-                    return false;
+                newPassword.length < 6)) {
+                setError("Your password must be at least 6 characters long.");
+                return false;
+            }
+
+            // Client-side validation
+            if (!previousPassword || !newPassword) {
+                setError('* Please fill out both fields.');
+                return false;
             }
 
             // Server-side validation...
 
-            // Update password
-
-            // Send to profile page
-            router.push(`/profile/${userId}`);
+            const authUser = getUser();
+            let newCredential = EmailAuthProvider.credential(authUser.email, previousPassword);
+            reauthenticateWithCredential(authUser, newCredential).then(() => {
+                // Reset password
+                updatePassword(authUser, newPassword).then(() => {
+                    handleClosePopup1();
+                }).catch(err => {
+                    console.error(err);
+                    setError(err.message);
+                });
+            }).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
         }
 
 
@@ -435,7 +440,7 @@ return (
                 <Dialog open={openPopup1} onClose={handleClosePopup1}>
                     <DialogContent>
                         <>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleSetupSubmit}>
                                 <TextField
                                     margin="dense"
                                     variant="standard"
