@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
+
 // gets the placeIds of all listings, their coordinates, and their average scores
 export async function GET(request) {
     const listings = await prisma.$queryRaw`

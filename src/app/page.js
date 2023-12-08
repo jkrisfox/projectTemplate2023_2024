@@ -22,7 +22,30 @@ const MyMapComponent = () => {
   const [showSnowballs, setShowSnowballs] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [houseLocations, setHouseLocations] = useState([]);
-  
+
+  const showMarkerForAddress = (address) => {
+    if (map) {
+      // Create a geocoder object
+      const geocoder = new window.google.maps.Geocoder();
+
+      // Geocode the address to get coordinates
+      geocoder.geocode({ address: address }, (results, status) => {
+        if (status === 'OK' && results[0] && results[0].geometry && results[0].geometry.location) {
+          const location = results[0].geometry.location;
+
+          // Remove the previous marker if it exists
+          if (markerRef.current) {
+            markerRef.current.setMap(null);
+          }
+
+          // Place a new marker
+          placeMarker(location, map);
+        } else {
+          console.error('Geocoder failed or no results found for the address:', address);
+        }
+      });
+    }
+  };
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prevCollapsed) => !prevCollapsed);
@@ -62,10 +85,50 @@ const MyMapComponent = () => {
   }, []); // Run only once when the component mounts
 
   useEffect(() => {
+    let latitude = 35.299878;
+    let longitude = -120.662337;
+
+    // get location of user
+    if (navigator.geolocation) {
+      // Browser supports geolocation
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // Successfully retrieved the current location
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          
+          console.log(`Current location: Latitude ${latitude}, Longitude ${longitude}`);
+          
+          // Now you can use the latitude and longitude as needed
+        },
+        (error) => {
+          // Handle errors
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              console.error("User denied the request for geolocation.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              console.error("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              console.error("The request to get user location timed out.");
+              break;
+            case error.UNKNOWN_ERROR:
+              console.error("An unknown error occurred.");
+              break;
+          }
+        }
+      );
+    } else {
+      // Browser doesn't support geolocation
+      console.error("Geolocation is not supported by this browser.");
+    }
+    
+
     // Make sure the Google Maps API is loaded before trying to create a map
     if (window.google && window.google.maps) {
       const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 35.299878, lng: -120.662337 },
+        center: { lat: latitude, lng: longitude },
         zoom: 14,
       });
 
@@ -80,8 +143,29 @@ const MyMapComponent = () => {
       });
 
       setMap(mapInstance);
+
+      fetchReviews(mapInstance);
     }
   }, []);
+
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            resolve({ latitude, longitude });
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      } else {
+        reject(new Error("Geolocation is not supported by this browser."));
+      }
+    });
+  }
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
@@ -200,47 +284,25 @@ const MyMapComponent = () => {
 
   const fetchReviews = async (mapInstance) => {
     try {
-      // Fetch reviews
-      const response = await fetch("api/reviews", { method: "get" });
-  
-      if (!response.ok) {
-        throw new Error(`Failed to fetch reviews. Status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log("Fetched reviews data:", data);
-  
-      // Store longitude and latitude information for each item
-      
-  
       // Fetch individual data for each listing ID
-      for (const item of data) {
-        const individualResponse = await fetch(`api/listings/${item.listingId}`, { method: "get" });
+      const individualResponse = await fetch(`api/listings`, { method: "get" });
   
-        if (!individualResponse.ok) {
-          console.error(`Failed to fetch data for item with ID ${item.listingId}. Status: ${individualResponse.status}`);
-          continue; // Skip to the next iteration in case of an error
-        }
-  
-        const individualData = await individualResponse.json();
-        console.log(`Fetched data for item with ID ${item.listingId}:`, individualData);
-        
-        console.log("lat: ", individualData.latitude, "lng: ", individualData.longitude);
+      const data = await individualResponse.json();
+      console.log("Fetched data:", data);
 
-        const marker = new google.maps.Marker({
+      // Assuming data is an array of objects with latitude and longitude properties
+      data.forEach((individualData) => {
+        console.log(`Fetched data:`, individualData);
+
+        new google.maps.Marker({
           position: {
             lat: parseFloat(individualData.latitude),
             lng: parseFloat(individualData.longitude),
           },
           map: mapInstance,
-          // icon: {
-          //   url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', // URL to a blue marker icon
-          // },
         });
-      }
+      });
   
-      // Do something with the locations array, for example:
-      console.log("Stored locations:", locations);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
@@ -258,7 +320,7 @@ const MyMapComponent = () => {
       <button onClick={toggleSnowballs}>{showSnowballs ? 'Hide Snowballs' : 'Show Snowballs'}</button>
       <h1>{reviewSubmitted ? 'Review Submitted!' : 'Find or Pin a Location!'}</h1>
       <div className={`flex-container ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} />
+        <Sidebar collapsed={sidebarCollapsed} listings={houseLocations} onShowMarker={showMarkerForAddress} />
         <MapWithMarker onMarkerPlaced={onMarkerPlaced} />
         {!showReviewForm ? (
           <button onClick={handleReviewButtonClick}>Review</button>
