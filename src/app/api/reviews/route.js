@@ -76,6 +76,7 @@ async function getSeasonId(seasonName) {
 
 // request should have placeId, latitude, longitude, seasonName, and score
 // (seasonName can be the Season's name or id)
+// has the restriction of one review per user per listing per season
 export async function POST(request) {
   const loggedInData = await checkLoggedIn();
   if (!loggedInData.loggedIn) {
@@ -119,6 +120,29 @@ export async function POST(request) {
     return NextResponse.json({error: `score ${score} is not an Integer`}, {status: 500});
   }
 
+  // the backend will enforce one review per user per listing per season. 
+  // not ideal, but at this point it's easier than plunging into the frontend
+  const reviewsUpdated = await prisma.review.updateMany({
+    where: {
+      userId: {
+        equals: loggedInData.user?.id
+      }, 
+      listingId: {
+        equals: listingId
+      },
+      seasonId: {
+        equals: seasonId
+      }
+    }, 
+    data: {
+      score: score
+    }
+  });
+  if (reviewsUpdated.count > 0) {
+    return NextResponse.json(reviewsUpdated);
+  }
+
+  // if no reviews were updated, create a new review
   const review = await prisma.review.create({
     data: {
         userId: loggedInData.user?.id, 
@@ -126,7 +150,7 @@ export async function POST(request) {
         seasonId: seasonId, 
         score: score, 
     }
-  })
+  });
   return NextResponse.json(review);
 }
 
