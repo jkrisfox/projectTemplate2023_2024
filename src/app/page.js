@@ -62,10 +62,50 @@ const MyMapComponent = () => {
   }, []); // Run only once when the component mounts
 
   useEffect(() => {
+    let latitude = 35.299878;
+    let longitude = -120.662337;
+
+    // get location of user
+    if (navigator.geolocation) {
+      // Browser supports geolocation
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // Successfully retrieved the current location
+          latitude = position.coords.latitude;
+          longitude = position.coords.longitude;
+          
+          console.log(`Current location: Latitude ${latitude}, Longitude ${longitude}`);
+          
+          // Now you can use the latitude and longitude as needed
+        },
+        (error) => {
+          // Handle errors
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              console.error("User denied the request for geolocation.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              console.error("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              console.error("The request to get user location timed out.");
+              break;
+            case error.UNKNOWN_ERROR:
+              console.error("An unknown error occurred.");
+              break;
+          }
+        }
+      );
+    } else {
+      // Browser doesn't support geolocation
+      console.error("Geolocation is not supported by this browser.");
+    }
+    
+
     // Make sure the Google Maps API is loaded before trying to create a map
     if (window.google && window.google.maps) {
       const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 35.299878, lng: -120.662337 },
+        center: { lat: latitude, lng: longitude },
         zoom: 14,
       });
 
@@ -84,6 +124,25 @@ const MyMapComponent = () => {
       fetchReviews(mapInstance);
     }
   }, []);
+
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            resolve({ latitude, longitude });
+          },
+          (error) => {
+            reject(error);
+          }
+        );
+      } else {
+        reject(new Error("Geolocation is not supported by this browser."));
+      }
+    });
+  }
 
   // Function to place a marker on the map
   const placeMarker = (location, mapInstance) => {
