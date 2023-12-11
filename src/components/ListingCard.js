@@ -243,10 +243,10 @@ function ListingCard({
           open={openMenu}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={handleShareListing}>
+          {/* <MenuItem onClick={handleShareListing}>
             <ShareIcon fontSize="small" sx={{ marginRight: 1 }} /> Copy Link to
             Share
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem onClick={handleCopyListingId}>
             <FileCopyIcon fontSize="small" sx={{ marginRight: 1 }} /> Copy
             Listing ID
@@ -262,9 +262,9 @@ function ListingCard({
             </MenuItem>
           )}
           {/* Add the Report Listing menu item */}
-          <MenuItem onClick={handleReportListing}>
+          {/* <MenuItem onClick={handleReportListing}>
             <FlagIcon fontSize="small" sx={{ marginRight: 1 }} /> Report Listing
-          </MenuItem>
+          </MenuItem> */}
           {/* Add the Track Listing menu item */}
           {/* <MenuItem onClick={handleTrackListing}>
             <VisibilityIcon fontSize="small" sx={{ marginRight: 1 }} /> Track

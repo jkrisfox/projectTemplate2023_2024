@@ -57,7 +57,7 @@ const californiaCities = [
   "Cayucos",
 ];
 
-// Separate component for the Image Upload square
+
 const ImageUploadSquare = ({ image, onRemove }) => {
   return (
     <Paper
@@ -70,7 +70,7 @@ const ImageUploadSquare = ({ image, onRemove }) => {
         backgroundPosition: "center",
         position: "relative",
         "&:hover": {
-          // Change the hover effect here
+          
           boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
         },
       }}
@@ -81,12 +81,12 @@ const ImageUploadSquare = ({ image, onRemove }) => {
           position: "absolute",
           top: 8,
           right: 8,
-          backgroundColor: "rgba(255, 255, 255, 0.7)", // semi-transparent white background
-          color: "black", // black icon color
+          backgroundColor: "rgba(255, 255, 255, 0.7)", 
+          color: "black", 
           "&:hover": {
             backgroundColor: "rgba(255, 255, 255, 0.9)",
           },
-          zIndex: 2, // ensure it's above other elements
+          zIndex: 2, 
         }}
       >
         <CloseIcon />
@@ -97,7 +97,7 @@ const ImageUploadSquare = ({ image, onRemove }) => {
 
 export default function CreateListing() {
   const router = useRouter();
-  const { getUser, isAuthenticated } = useAuth(); // Assuming useAuth provides an 'isAuthenticated' boolean
+  const { getUser, isAuthenticated } = useAuth(); 
   const [listing, setListing] = useState({
     title: "",
     description: "",
@@ -106,7 +106,7 @@ export default function CreateListing() {
     location: "",
   });
   const [selectedCity, setSelectedCity] = useState(null);
-  const [listingImage, setListingImage] = useState([]); // Initialize as an empty array
+  const [listingImage, setListingImage] = useState([]); 
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const [isListingImageDialogOpen, setIsListingImageDialogOpen] =
     useState(false);
@@ -118,14 +118,14 @@ export default function CreateListing() {
   const [category, setCategory] = useState("");
   const [isStudent, setIsStudent] = useState(false);
 
-  // Fetch user details and determine if they are a student as soon as the component mounts and the user is authenticated
+  
   useEffect(() => {
-    // Since customAttributes are already a JSON string, you might not need to parse them.
+    
     if (firebaseAuth.currentUser && firebaseAuth.currentUser.reloadUserInfo) {
       const attributes =
         firebaseAuth.currentUser.reloadUserInfo.customAttributes;
       if (attributes) {
-        // The customAttributes seem to be a JSON string, so we parse it.
+        
         try {
           const customAttributes = JSON.parse(attributes);
           setIsStudent(customAttributes["student"] === true);
@@ -137,20 +137,20 @@ export default function CreateListing() {
   }, [firebaseAuth.currentUser]);
 
   useEffect(() => {
-    // Check if the user is authenticated
+    
     if (!isFirebaseLoggedIn) {
-      // User is not authenticated, navigate to the login page
+      
       router.push("/login");
     }
   }, [isFirebaseLoggedIn, router]);
 
   const handleCancel = () => {
-    router.push("/"); // Navigate back to the home page
+    router.push("/"); 
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    // Check if the input name is 'price' and handle the 'free' case
+    
     if (name === "price") {
       const priceValue = parseFloat(value);
       if (priceValue === 0) {
@@ -175,7 +175,7 @@ export default function CreateListing() {
       return;
     }
     try {
-      // Ensure that router and user are defined
+      
       if (!router || !isFirebaseLoggedIn) {
         console.error("Router is not defined or user is not logged in");
         return;
@@ -188,36 +188,36 @@ export default function CreateListing() {
       }
       const userId = user.uid;
 
-      // Include the userId in the listing data
+      
       const listingData = {
         title: listing.title,
         description: listing.description,
         price: listing.price,
         location: listing.location,
-        images: [], // This will be populated with URLs after image upload
+        images: [], 
         createdAt: Timestamp.fromDate(new Date()),
         sellerId: userId,
         studentVerification: isStudent,
-        category: category, // Add this line
+        category: category, 
       };
 
-      // Handle image upload if there is an image to upload
+      
       if (listingImage.length) {
         const imageUploadResponse = await uploadImage(
           userId,
           listingImage[0].file
         );
-        listingData.images.push(imageUploadResponse); // Add image URL to listing data
+        listingData.images.push(imageUploadResponse); 
       }
 
-      // Add the listing to the database
+      
       const docRef = await addDoc(collection(db, "listings"), listingData);
 
       setSnackbar({ open: true, message: "Listing created successfully!" });
       setNewListingId(docRef.id);
       setListingCreated(true);
 
-      // Redirect to the newly created listing page
+      
       router.push(`/listing/${docRef.id}`);
     } catch (err) {
       console.log(err);
@@ -231,7 +231,7 @@ export default function CreateListing() {
     if (!listing.price) return "Price is required.";
     if (!listing.location) return "Location is required.";
     if (listingImage.length === 0) return "At least one image is required.";
-    if (listing.price < 0) return "Price cannot be negative."; // Ensure price is not negative
+    if (listing.price < 0) return "Price cannot be negative."; 
     return "";
   };
 
@@ -243,7 +243,7 @@ export default function CreateListing() {
     setIsListingImageDialogOpen(false);
   };
 
-  // Function to remove an image from the list
+  
   const removeImage = (index) => {
     setListingImage((prevImages) => prevImages.filter((_, i) => i !== index));
   };
@@ -270,7 +270,7 @@ export default function CreateListing() {
         <Image
           src="/../../assets/illustrations/sitting-4.svg"
           alt="Listing Created"
-          width={200} // Adjust the size as needed
+          width={200} 
           height={200}
         />
         <Typography variant="h5" style={{ marginTop: "20px" }}>
@@ -360,7 +360,7 @@ export default function CreateListing() {
                 options={categories}
                 required
                 getOptionLabel={(option) => option}
-                // style={{ width: 300 }}
+                
                 renderInput={(params) => (
                   <TextField {...params} label="Category" variant="outlined" />
                 )}
@@ -403,12 +403,12 @@ export default function CreateListing() {
                     width: 250,
                     height: 250,
                     border: "1px dashed grey",
-                    borderRadius: "4px", // Adjust border radius here for square effect
+                    borderRadius: "4px", 
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)", // Square hover effect
+                      backgroundColor: "rgba(0, 0, 0, 0.04)", 
                     },
                   }}
                 >
@@ -478,7 +478,7 @@ export default function CreateListing() {
           >
             <Alert
               onClose={() => setSnackbar({ ...snackbar, open: false })}
-              severity="error" // Changed to "error" for validation errors
+              severity="error" 
               sx={{ width: "100%" }}
             >
               {snackbar.message}

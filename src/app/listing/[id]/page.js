@@ -32,8 +32,6 @@ import { useAuth } from "../../AuthProvider";
 import { getUser } from "@/lib/firebaseUtils";
 
 
-
-// Virtualized SwipeableViews for better performance
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 
 const ListingPage = () => {
@@ -48,30 +46,25 @@ const ListingPage = () => {
   const [isAdminStatus, setIsAdminStatus] = useState(false);
   const [isFavorited, setFavorited] = useState(false);
 
-
   const [user, setUser] = useState({ isAdmin: false, isStudent: false });
 
-
-
   const { getUser: getCurrentUser, isLoggedIn, isAdmin } = useAuth();
-  // State for selected image
+  
   const [selectedImage, setSelectedImage] = useState(0);
 
-  // Function to handle image selection
+  
   const handleImageSelect = (index) => {
     setSelectedImage(index);
   };
 
-
-
-  // Google Maps settings
-  // const mapOptions = {
-  //   center: {
-  //     lat: listing.location.lat, // Assuming 'location' contains 'lat' and 'lng'
-  //     lng: listing.location.lng,
-  //   },
-  //   zoom: 11,
-  // };
+  
+  
+  
+  
+  
+  
+  
+  
 
   useEffect(() => {
     if (id) {
@@ -99,31 +92,44 @@ const ListingPage = () => {
   }, [id]);
 
   useEffect(() => {
-    // Fetch the seller information based on sellerId
     const fetchSellerInfo = async () => {
       if (listing && listing.sellerId) {
-        // Replace 'users' with your actual user collection name
-        const userRef = doc(db, "users", listing.sellerId);
-        const userSnap = await getDoc(userRef);
+        try {
+          
+          const contactRef = doc(
+            db,
+            "users",
+            listing.sellerId,
+            "private",
+            "contact"
+          );
+          const contactSnap = await getDoc(contactRef);
 
-        if (userSnap.exists()) {
-          setSellerInfo(userSnap.data());
-        } else {
-          console.error("Seller not found");
+          if (contactSnap.exists()) {
+            
+            const sellerData = contactSnap.data();
+            const sellerWithId = { ...sellerData, id: contactSnap.id };
+            setSellerInfo(sellerWithId);
+          } else {
+            console.error("Seller contact not found");
+          }
+        } catch (error) {
+          console.error("Error fetching seller contact:", error);
         }
       }
     };
 
-    fetchSellerInfo();
+    if (listing) {
+      fetchSellerInfo();
+    }
   }, [listing]);
 
-
   useEffect(() => {
-    // Fetch the seller information based on sellerId
     
-      const user = getCurrentUser();
 
-      getUser(user.uid)
+    const user = getCurrentUser();
+
+    getUser(user.uid)
       .then((userData) => {
         if (!userData) {
           setUser(userData);
@@ -149,11 +155,13 @@ const ListingPage = () => {
               currentUser.email.split("@").pop() == "calpoly.edu" &&
               !userData.isStudent
             ) {
-              // Tell server to set user as student
-              fetch(`/api/verify/${user.uid}`, { method: "put" }).catch((err) => {
-                console.error(err);
-                setErrorMessage(err.message);
-              });
+              
+              fetch(`/api/verify/${user.uid}`, { method: "put" }).catch(
+                (err) => {
+                  console.error(err);
+                  setErrorMessage(err.message);
+                }
+              );
             }
           } else {
             isAdmin()
@@ -178,14 +186,14 @@ const ListingPage = () => {
           checkAdminStatus();
         }
 
-        // console.log(userData);
-        // console.log(user);
+        
+        
 
         setUser(userData);
         setIsLoading(false);
 
-        console.log(userData)
-        if (userData.favoriteListings.includes(id)){
+        console.log(userData);
+        if (userData.favoriteListings.includes(id)) {
           setFavorited(true);
         }
       })
@@ -194,44 +202,37 @@ const ListingPage = () => {
         setErrorMessage(err.message);
       });
 
-      console.log(user.favoriteListings)
-     
-
+    console.log(user.favoriteListings);
   }, [isLoggedIn, isAdmin]);
 
   const handleFavorite = async () => {
+    console.log(user);
+    user.favoriteListings.push(id);
 
-    console.log(user)
-    user.favoriteListings.push(id)
- 
     const favoritesRef = doc(db, "users", user.uid, "private", "favorites");
 
-
     await updateDoc(favoritesRef, {
-      favoriteListings: user.favoriteListings
+      favoriteListings: user.favoriteListings,
     });
 
     setFavorited(true);
-  }
+  };
 
   const handleUnfavorite = async () => {
+    console.log(user);
+    const index = user.favoriteListings.indexOf(id);
+    const random = user.favoriteListings.splice(index);
 
-    console.log(user)
-    const index = user.favoriteListings.indexOf(id)
-    const random = user.favoriteListings.splice(index)
- 
     const favoritesRef = doc(db, "users", user.uid, "private", "favorites");
 
-
     await updateDoc(favoritesRef, {
-      favoriteListings: user.favoriteListings
+      favoriteListings: user.favoriteListings,
     });
 
     setFavorited(false);
-  }
+  };
 
-
-  // Function to render slide
+  
   const renderSlide = ({ index, key }) => {
     return (
       <img
@@ -269,21 +270,21 @@ const ListingPage = () => {
   }
 
   return (
-    <Box sx={{ padding: 10 }}>
-      <Breadcrumbs aria-label="breadcrumb">
+    <Box sx={{ padding: 30 }}>
+      {/* <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="/">
           Home
         </Link>
         <Typography color="text.primary">{listing.title}</Typography>
-      </Breadcrumbs>
+      </Breadcrumbs> */}
 
       <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h2" gutterBottom>
           {listing.title}
         </Typography>
 
         {listing.images && listing.images.length > 0 && (
-          // This is used for efficient rendering of large sets of images.
+          
           <VirtualizeSwipeableViews slideRenderer={renderSlide} />
         )}
 
@@ -300,16 +301,21 @@ const ListingPage = () => {
         {sellerInfo && (
           <Card
             sx={{ maxWidth: 345, cursor: "pointer" }}
-            onClick={() => router.push(`/profile/${sellerInfo.id}`)}
+            onClick={() => router.push(`/profile/${listing.sellerId}`)}
           >
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 {sellerInfo.name}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {sellerInfo.email}
+                Email: {sellerInfo.email}
               </Typography>
-              {/* Include additional seller information here */}
+              <Typography variant="body2" color="text.secondary">
+                Phone: {sellerInfo.phoneNumber}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Location: {sellerInfo.location}
+              </Typography>
             </CardContent>
           </Card>
         )}
@@ -319,32 +325,29 @@ const ListingPage = () => {
             variant="contained"
             startIcon={<LocationOnIcon />}
             onClick={() => {
-              /* Implement Map View */
+             
             }}
           >
             View on Map
           </Button>
 
-          {!isFavorited && (<Button
-            variant="contained"
-            onClick={handleFavorite}
-          >
-            Favorite
-          </Button>)}
+          {!isFavorited && (
+            <Button variant="contained" onClick={handleFavorite}>
+              Favorite
+            </Button>
+          )}
 
-        {isFavorited && (
-          <Button
-            variant="contained"
-            onClick={handleUnfavorite}
-          >
-            Unfavorite
-          </Button>)}
-          
+          {isFavorited && (
+            <Button variant="contained" onClick={handleUnfavorite}>
+              Unfavorite
+            </Button>
+          )}
+
           <Button
             variant="outlined"
             startIcon={<ShareIcon />}
             onClick={() => {
-              /* Implement Share Functionality */
+             
             }}
           >
             Share

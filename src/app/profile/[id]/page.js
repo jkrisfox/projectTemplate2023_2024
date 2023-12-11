@@ -346,12 +346,12 @@ export default function Profile({ params }) {
                 </MenuItem>
               </>
               {/* )} */}
-              <MenuItem onClick={() => handleUserActions("report")}>
+              {/* <MenuItem onClick={() => handleUserActions("report")}>
                 <ReportIcon /> Report User
-              </MenuItem>
-              <MenuItem onClick={() => handleUserActions("share")}>
+              </MenuItem> */}
+              {/* <MenuItem onClick={() => handleUserActions("share")}>
                 <ShareIcon /> Share Profile
-              </MenuItem>
+              </MenuItem> */}
             </Menu>
           </Grid>
         </Grid>

@@ -75,7 +75,7 @@ export default function RootLayout({ children, title }) {
       {isLoggedIn() ? (
         <div>
           <MenuItem onClick={handleViewProfileClick}>View Profile</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+          {/* <MenuItem onClick={handleMenuClose}>Settings</MenuItem> */}
           <MenuItem
             onClick={() => {
               handleMenuClose();

@@ -1,6 +1,6 @@
-# SloMarket
+# SLOMarket
 
-SloMarket is a local marketplace platform for buying and selling goods within the San Luis Obispo area. Users can list items, browse available goods, and communicate with sellers in a user-friendly environment.
+SLOMarket is a local marketplace platform for buying and selling goods within the San Luis Obispo area. Users can list items, browse available goods, and communicate with sellers in a user-friendly environment.
 
 ## Stack
 
@@ -93,6 +93,15 @@ firebase deploy --only hosting
 ## Usage
 
 After logging in, users can create listings by providing details about the item they want to sell, including images, description, price, and location. Users can browse listings, filter by categories, and send messages to sellers to inquire more about items they are interested in.
+
+## Accounts
+
+For admin testing, use the following information
+
+Email: justinlau226@gmail.com
+PW: adminaccount
+
+Please be informed that you will not have a profile. This account was created on the admin console, and so it had skipped profile setup. 
 
 ## Contributing
 
