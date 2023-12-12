@@ -45,6 +45,7 @@ const ListingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdminStatus, setIsAdminStatus] = useState(false);
   const [isFavorited, setFavorited] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false)
 
   const [user, setUser] = useState({ isAdmin: false, isStudent: false });
 
@@ -124,11 +125,22 @@ const ListingPage = () => {
     }
   }, [listing]);
 
+
+
   useEffect(() => {
     
 
-    const user = getCurrentUser();
+    if(isLoggedIn()){
 
+      
+    }
+    const user = getCurrentUser();
+    console.log(user)
+
+    if(user==null){
+      console.log("user not logged in")
+    } else {
+      setLoggedIn(true)
     getUser(user.uid)
       .then((userData) => {
         if (!userData) {
@@ -201,8 +213,8 @@ const ListingPage = () => {
         console.error(err);
         setErrorMessage(err.message);
       });
-
-    console.log(user.favoriteListings);
+    }
+ 
   }, [isLoggedIn, isAdmin]);
 
   const handleFavorite = async () => {
@@ -331,13 +343,13 @@ const ListingPage = () => {
             View on Map
           </Button>
 
-          {!isFavorited && (
+          {(!isFavorited && loggedIn) && (
             <Button variant="contained" onClick={handleFavorite}>
               Favorite
             </Button>
           )}
 
-          {isFavorited && (
+          {(isFavorited && loggedIn) && (
             <Button variant="contained" onClick={handleUnfavorite}>
               Unfavorite
             </Button>
