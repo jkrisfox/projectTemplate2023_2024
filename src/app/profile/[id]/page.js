@@ -357,14 +357,15 @@ export default function Profile({ params }) {
         </Grid>
       )}
       <Divider sx={{ my: 2, width: "100%" }} />
-      {/* Tabs */}
-      <Tabs value={currentTab} onChange={handleTabChange} centered>
+    {/* Tabs */}
+    <Tabs value={currentTab} onChange={handleTabChange} centered>
         <Tab label="My Listings" />
         {currentUserOwnsProfile && <Tab label="Settings" />}
         {currentUserOwnsProfile && <Tab label="Favorites" />}
         {currentUserOwnsProfile && <Tab label="Purchase History" />}
-        {currentUserOwnsProfile && <Tab label="Admin Panel" />}
+        {user.isAdmin && <Tab label="Admin Panel" />} {/* Conditional Admin Panel Tab */}
       </Tabs>
+
       {/* Tab Content */}
       {currentTab === 0 && !isLoading && <MyListings user={user} />}
       {currentTab === 1 && !isLoading && currentUserOwnsProfile && (
@@ -376,9 +377,9 @@ export default function Profile({ params }) {
       {currentTab === 3 && !isLoading && currentUserOwnsProfile && (
         <div>Not implemented yet</div>
       )}
-      {currentTab === 4 && !isLoading && currentUserOwnsProfile && (
+      {currentTab === 4 && !isLoading && user.isAdmin && (
         <AdminPanel user={user} />
-      )}
+      )} {/* Conditional rendering of Admin Panel content */}
     </Box>
   );
 }

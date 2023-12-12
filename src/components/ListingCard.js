@@ -32,6 +32,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { red } from "@mui/material/colors";
 import FlagIcon from "@mui/icons-material/Flag"; // For reporting
 import FileCopyIcon from "@mui/icons-material/FileCopy";
+import { useAuth } from "../app/AuthProvider";
 
 import VisibilityIcon from "@mui/icons-material/Visibility"; // For tracking
 
@@ -52,13 +53,12 @@ function ListingCard({
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // Additional state for the menu
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
-  // State for snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
+  const { isLoggedIn, isAdmin } = useAuth();
 
   const handleBoxClick = () => {
     router.push(`/listing/${listingId}`);
@@ -93,6 +93,13 @@ function ListingCard({
   };
 
   const handleDeleteListing = async (listingId) => {
+    if (!isAdmin) {
+      // User is not an admin, show an error message
+      setSnackbarMessage("You do not have permission to delete listings. Contact support if you think this is an issue.");
+      setSnackbarOpen(true);
+      return;
+    }
+  
     try {
       const listingRef = doc(db, "listings", listingId);
       await deleteDoc(listingRef);
@@ -102,10 +109,11 @@ function ListingCard({
     } catch (error) {
       console.error("Error deleting listing: ", error);
       // Show error alert
-      setSnackbarMessage("Failed to delete listing.");
+      setSnackbarMessage("You do not have permission to delete listings. Contact support if you think this is an issue.");
       setSnackbarOpen(true);
     }
   };
+  
 
   const handleReportListing = () => {
     // Logic for reporting the listing
@@ -130,10 +138,6 @@ function ListingCard({
     setSnackbarOpen(true);
     handleCloseMenu();
   };
-
-  // Simulated authentication and role check (replace with your auth logic)
-  const isAuthenticated = true; // Replace with actual authentication check
-  const isAdmin = true; // Replace with actual admin role check
 
   const firstImage =
     Array.isArray(images) && images.length > 0
@@ -252,7 +256,7 @@ function ListingCard({
             Listing ID
           </MenuItem>
 
-          {isAuthenticated && isAdmin && (
+          {isLoggedIn && isAdmin && (
             <MenuItem
               onClick={() => handleDeleteListing(listingId)}
               sx={{ color: red[500] }}
