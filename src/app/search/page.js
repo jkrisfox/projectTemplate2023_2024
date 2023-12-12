@@ -163,9 +163,7 @@ const SearchPage = () => {
             variant="contained"
             color="primary"
             startIcon={<AddCircleOutlineIcon />}
-            onClick={() => {
-              /* Implement navigation to listing creation page */
-            }}
+            href="create-listing"
           >
             Create Listing
           </Button>
