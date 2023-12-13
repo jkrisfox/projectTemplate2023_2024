@@ -236,16 +236,6 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
             //     });
             // });
 
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    // User is signed in, you can now perform sensitive operation
-                } else {
-                    // User is signed out, handle accordingly
-                }
-            });
-
-
-
             // Delete profile documents
             const contactRef = doc(db, "users", userId, "private", "contact");
             const favoritesRef = doc(db, "users", userId, "private", "favorites");
