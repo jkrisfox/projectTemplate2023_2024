@@ -8,6 +8,10 @@ import ImageIcon from '@mui/icons-material/Image';
 import { useRouter } from 'next/navigation';
 import { updateUser, uploadImage } from '@/lib/firebaseUtils';
 import { useDropzone } from 'react-dropzone';
+import { useAuth } from "../../app/AuthProvider";
+import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { db } from "../../../firebase/firebaseConfig";
+import { doc, deleteDoc, collection, query, orderBy, getDocs, where } from "firebase/firestore";
 
 export default function Settings( {user, setUser, setCurrentTab} ) {
 
@@ -19,6 +23,7 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
     const [isHeroDialogOpen, setIsHeroDialogOpen] = useState(false);
     
     const router = useRouter();
+    const { getUser } = useAuth();
 
     // RADIO HANDLERS
     const [selectedOption1, setSelectedOption1] = useState(null);
@@ -83,11 +88,11 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
     function handleSetupSubmit(event) {
       if (event.nativeEvent.submitter.name == "saveSettings") {
         handleSaveSettings(event);
-    } /*else if (event.nativeEvent.submitter.name == "resetPassword") {
-        handleResetPassword(event);
-    } else if (event.nativeEvent.submitter.name == "deleteAccount") {
-        handleDeleteAccount(event);
-    }*/
+     } else if (event.nativeEvent.submitter.name == "saveNewPassword") {
+         handleResetPassword(event);
+     } else if (event.nativeEvent.submitter.name == "yesDeleteAccount") {
+         handleDeleteAccount(event);
+    }
   }
 
 
@@ -154,45 +159,118 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         return false;
     }
 
-    function handleResetPassword(event) {
-        event.preventDefault();
-        const userId = user.uid;
-    
-        // Submit form
-        fetch(`/api/users/${userId}/resetPassword`, {
-            method: 'put',
-        }).then((res) => {
-            if (res.ok) {
-            // Send to profile page
-            router.push(`/profile/${userId}`);
-            } else {
-            setError(true);
-            res.json().then((err) => console.error(err));
+        // Reset Password & Delete Account Popups
+        const [openPopup1, setOpenPopup1] = useState(false);
+        const [openPopup2, setOpenPopup2] = useState(false);
+
+        const handleOpenPopup1 = () => {
+            setOpenPopup1(true);
+        };
+
+        const handleClosePopup1 = () => {
+            setOpenPopup1(false);
+        };
+
+        const handleOpenPopup2 = () => {
+            setOpenPopup2(true);
+        };
+
+        const handleClosePopup2 = () => {
+            setOpenPopup2(false);
+        };
+
+
+        // Reset Password Button
+        const [previousPassword, setPreviousPassword] = useState('');
+        const [newPassword, setNewPassword] = useState('');
+        const [error, setError] = useState('');
+
+        // handleResetPassword
+        const handleResetPassword = async (event) => {
+            event.preventDefault();
+            const data = new FormData(event.currentTarget);
+            const newPassword = data.get('newPassword');
+
+            //setError('* aaaaaaaaa');
+            //return;
+
+            // Validate password with regex
+            if (newPassword &&
+                (!event.currentTarget.reportValidity() ||
+                newPassword.length < 6)) {
+                setError("Your password must be at least 6 characters long.");
+                return false;
             }
-        });
-    
-        return false;
+
+        
+
+            // Server-side validation...
+
+            const authUser = getUser();
+            // Reset password
+            await updatePassword(authUser, newPassword).then(() => {
+                handleClosePopup1();
+            }).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
         }
 
-    function handleDeleteAccount(event) {
-        event.preventDefault();
-        const userId = user.uid;
-    
-        // Submit form
-        fetch(`/api/users/${userId}`, {
-            method: 'delete',
-        }).then((res) => {
-            if (res.ok) {
-            // Send to profile page
-            router.push(`/profile/${userId}`);
-            } else {
-            setError(true);
-            res.json().then((err) => console.error(err));
-            }
-        });
-    
-        return false;
+
+        // handleDeleteAccount
+        const handleDeleteAccount = async (event) => {
+            event.preventDefault();
+            const userId = user.uid;
+
+            // // Delete all user listings
+            // const q = query(
+            //     collection(db, "listings"),
+            //     where("sellerId", "==", userId),
+            //     orderBy("createdAt", "desc")
+            // );
+            // const querySnapshot = await getDocs(q);
+            // querySnapshot.forEach(async (doc) => {
+            //     await doc.ref.delete().catch(err => {
+            //         console.error(err);
+            //         setErrorMessage(err.message);
+            //     });
+            // });
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // User is signed in, you can now perform sensitive operation
+                } else {
+                    // User is signed out, handle accordingly
+                }
+            });
+
+
+
+            // Delete profile documents
+            const contactRef = doc(db, "users", userId, "private", "contact");
+            const favoritesRef = doc(db, "users", userId, "private", "favorites");
+            const userRef = doc(db, "users", userId);
+            await deleteDoc(contactRef).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
+            await deleteDoc(favoritesRef).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
+            await deleteDoc(userRef).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
+
+            // Delete auth user
+            const authUser = getUser();
+            await authUser.delete();
+
+            // Send to home page
+            router.push('/');
         }
+
 
 return (
     <div style={{width: '100%', textAlign: 'left', height:'100vh'}}>
@@ -376,22 +454,93 @@ return (
             <br></br>
             <br></br>
             <Button type="submit" name="saveSettings" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
-            Save Settings
+                Save Settings
             </Button>
-            
+
             {/* RED BUTTONS */}
             <Grid container spacing={3} justifyContent="center" pt={6}>
                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button type="submit" name="resetPassword" variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                    <Button variant="contained" onClick={handleOpenPopup1} name="resetPassword" color="error" sx={{color:'white'}} fullWidth>
                         Reset Password
                     </Button>
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth>
+                <Button variant="contained" onClick={handleOpenPopup2} name="resetPassword" color="error" sx={{color:'white'}} fullWidth>
                         Delete Account
                     </Button>
                 </Grid>
             </Grid>
+            <div>
+                <Dialog open={openPopup1} onClose={handleClosePopup1}>
+                    <DialogContent>
+                        <>
+                            <form onSubmit={handleSetupSubmit}>
+                                
+                                <TextField
+                                    margin="dense"
+                                    variant="standard"
+                                    id="newPassword"
+                                    name="newPassword"
+                                    label="New Password"
+                                    type="password"
+                                    fullWidth
+                                    required
+                                    inputProps={{ maxLength: 64 }}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                />
+
+                                {/* Add vertical spacing */}
+                                <Box mt={3} />
+
+                                <Button
+                                    type="submit"
+                                    name="saveNewPassword"
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ color: 'white' }}
+                                    fullWidth
+                                >
+                                    Save New Password
+                                </Button>
+
+                                {error && <div style={{ color: 'red' }}>{error}</div>}
+                            </form>
+                        </>
+                    </DialogContent>
+                </Dialog>
+            </div>
+            <div>
+                <Dialog open={openPopup2} onClose={handleClosePopup2}>
+                    <DialogContent>
+                        <>
+                            <Box mt={6} />
+                            <div>
+                                <Typography align='center'>
+                                    Are you sure you want to delete your account?<br></br>
+                                    This action cannot be undone.
+                                </Typography>
+                            </div>
+
+                            {/* Add vertical spacing */}
+                            <Box mt={1} />
+
+                            <Grid container spacing={3} justifyContent="center" pt={6}>
+                                <Grid item xs={12} sm={6} md={6} lg={6}>
+                                    <Button type="submit" name="yesDeleteAccount" variant="contained" color="primary" sx={{color:'white'}} fullWidth onClick={handleDeleteAccount}>
+                                        Yes
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12} sm={6} md={6} lg={6}>
+                                    <Button type="submit" name="deleteAccount" variant="contained" color="error" sx={{color:'white'}} fullWidth onClick={handleClosePopup2}>
+                                        No
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </>
+                    </DialogContent>
+                </Dialog>
+            </div>
             <br></br>
           </div>
         </form>
