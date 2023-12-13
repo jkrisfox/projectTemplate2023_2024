@@ -10,6 +10,8 @@ import { updateUser, uploadImage } from '@/lib/firebaseUtils';
 import { useDropzone } from 'react-dropzone';
 import { useAuth } from "../../app/AuthProvider";
 import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { db } from "../../../firebase/firebaseConfig";
+import { doc, deleteDoc, collection, query, orderBy, getDocs, where } from "firebase/firestore";
 
 export default function Settings( {user, setUser, setCurrentTab} ) {
 
@@ -184,10 +186,9 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
         const [error, setError] = useState('');
 
         // handleResetPassword
-        const handleResetPassword = (event) => {
+        const handleResetPassword = async (event) => {
             event.preventDefault();
             const data = new FormData(event.currentTarget);
-            const previousPassword = data.get('previousPassword');
             const newPassword = data.get('newPassword');
 
             //setError('* aaaaaaaaa');
@@ -201,24 +202,14 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
                 return false;
             }
 
-            // Client-side validation
-            if (!previousPassword || !newPassword) {
-                setError('* Please fill out both fields.');
-                return false;
-            }
+        
 
             // Server-side validation...
 
             const authUser = getUser();
-            let newCredential = EmailAuthProvider.credential(authUser.email, previousPassword);
-            reauthenticateWithCredential(authUser, newCredential).then(() => {
-                // Reset password
-                updatePassword(authUser, newPassword).then(() => {
-                    handleClosePopup1();
-                }).catch(err => {
-                    console.error(err);
-                    setError(err.message);
-                });
+            // Reset password
+            await updatePassword(authUser, newPassword).then(() => {
+                handleClosePopup1();
             }).catch(err => {
                 console.error(err);
                 setError(err.message);
@@ -227,14 +218,57 @@ export default function Settings( {user, setUser, setCurrentTab} ) {
 
 
         // handleDeleteAccount
-        const handleDeleteAccount = (event) => {
+        const handleDeleteAccount = async (event) => {
             event.preventDefault();
             const userId = user.uid;
 
-            // Delete account
+            // // Delete all user listings
+            // const q = query(
+            //     collection(db, "listings"),
+            //     where("sellerId", "==", userId),
+            //     orderBy("createdAt", "desc")
+            // );
+            // const querySnapshot = await getDocs(q);
+            // querySnapshot.forEach(async (doc) => {
+            //     await doc.ref.delete().catch(err => {
+            //         console.error(err);
+            //         setErrorMessage(err.message);
+            //     });
+            // });
 
-            // Send to profile page
-            router.push(`/profile/${userId}`);
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // User is signed in, you can now perform sensitive operation
+                } else {
+                    // User is signed out, handle accordingly
+                }
+            });
+
+
+
+            // Delete profile documents
+            const contactRef = doc(db, "users", userId, "private", "contact");
+            const favoritesRef = doc(db, "users", userId, "private", "favorites");
+            const userRef = doc(db, "users", userId);
+            await deleteDoc(contactRef).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
+            await deleteDoc(favoritesRef).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
+            await deleteDoc(userRef).catch(err => {
+                console.error(err);
+                setError(err.message);
+            });
+
+            // Delete auth user
+            const authUser = getUser();
+            await authUser.delete();
+
+            // Send to home page
+            router.push('/');
         }
 
 
@@ -441,19 +475,7 @@ return (
                     <DialogContent>
                         <>
                             <form onSubmit={handleSetupSubmit}>
-                                <TextField
-                                    margin="dense"
-                                    variant="standard"
-                                    id="previousPassword"
-                                    name="previousPassword"
-                                    label="Previous Password"
-                                    type="password"
-                                    fullWidth
-                                    required
-                                    inputProps={{ maxLength: 64 }}
-                                    value={previousPassword}
-                                    onChange={(e) => setPreviousPassword(e.target.value)}
-                                />
+                                
                                 <TextField
                                     margin="dense"
                                     variant="standard"
@@ -505,7 +527,7 @@ return (
 
                             <Grid container spacing={3} justifyContent="center" pt={6}>
                                 <Grid item xs={12} sm={6} md={6} lg={6}>
-                                    <Button type="submit" name="yesDeleteAccount" variant="contained" color="primary" sx={{color:'white'}} fullWidth>
+                                    <Button type="submit" name="yesDeleteAccount" variant="contained" color="primary" sx={{color:'white'}} fullWidth onClick={handleDeleteAccount}>
                                         Yes
                                     </Button>
                                 </Grid>
