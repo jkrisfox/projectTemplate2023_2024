@@ -52,10 +52,6 @@ export default function AuthProvider({ children }) {
     });
   }
 
-  function makeCredential(password) {
-    return auth.EmailAuthProvider.credential(currentUser.email, password);
-  }
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(
       (user) => {
@@ -76,7 +72,6 @@ export default function AuthProvider({ children }) {
     getUser,
     isLoggedIn,
     isAdmin,
-    makeCredential,
     login,
     signOut,
     signUp
