@@ -52,20 +52,20 @@ export default function AuthProvider({ children }) {
     });
   }
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(
-      (user) => {
-        setCurrentUser(user);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Authentication error:", error);
-        setLoading(false);
-      }
-    );
-  
-    return unsubscribe;
-  }, []);
+useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged(
+    (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    },
+    (error) => {
+      console.error("Authentication error:", error);
+      setLoading(false);
+    }
+  );
+
+  return unsubscribe;
+}, []);
 
   const value = {
     currentUser,
